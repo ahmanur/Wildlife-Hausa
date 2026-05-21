@@ -1,18 +1,72 @@
-rules_version='2'
+rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      // This rule allows anyone with your database reference to view, edit,
-      // and delete all data in your database. It is useful for getting
-      // started, but it is configured to expire after 30 days because it
-      // leaves your app open to attackers. At that time, all client
-      // requests to your database will be denied.
-      //
-      // Make sure to write security rules for your app before that time, or
-      // else all client requests to your database will be denied until you
-      // update your rules.
-      allow read, write: if request.time < timestamp.date(2026, 6, 18);
+
+    // ─── Helper Functions ───────────────────────────────────
+    
+    // Check if the requester is an authenticated user
+    function isAuthenticated() {
+      return request.auth != null;
     }
+
+    // ─── Content Collections (Read-Only for Public) ─────────
+    // Safari packages, map locations, media items, adventure activities,
+    // and conservation notes are public content managed by admins.
+
+    match /safari_packages/{docId} {
+      allow read: if true;
+      allow create, update, delete: if isAuthenticated();
+    }
+
+    match /map_locations/{docId} {
+      allow read: if true;
+      allow create, update, delete: if isAuthenticated();
+    }
+
+    match /media_items/{docId} {
+      allow read: if true;
+      allow create, update, delete: if isAuthenticated();
+    }
+
+    match /adventure_activities/{docId} {
+      allow read: if true;
+      allow create, update, delete: if isAuthenticated();
+    }
+
+    match /conservation_notes/{docId} {
+      allow read: if true;
+      allow create, update, delete: if isAuthenticated();
+    }
+
+    // ─── Settings Collection (CMS Content) ──────────────────
+    // About page, services page, and other site-wide settings.
+
+    match /settings/{docId} {
+      allow read: if true;
+      allow create, update, delete: if isAuthenticated();
+    }
+
+    // ─── User-Submitted Data ────────────────────────────────
+    // Visitors can submit enquiries, bookings, and newsletter subscriptions.
+    // Only admins can read or modify these after submission.
+
+    match /enquiries/{docId} {
+      allow create: if true;
+      allow read, update, delete: if isAuthenticated();
+    }
+
+    match /bookings/{docId} {
+      allow create: if true;
+      allow read, update, delete: if isAuthenticated();
+    }
+
+    match /newsletter_subscribers/{docId} {
+      allow create: if true;
+      allow read, update, delete: if isAuthenticated();
+    }
+
+    // ─── Deny Everything Else ───────────────────────────────
+    // Any collection not explicitly listed above is denied by default.
   }
 }
