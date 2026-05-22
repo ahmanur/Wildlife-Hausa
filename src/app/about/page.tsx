@@ -17,7 +17,7 @@ const FALLBACK_CONTENT = {
   missionSubtitle: "A PURPOSE-DRIVEN EXPEDITION",
   missionP1: "Our mission is to promote environmental conservation, biodiversity, and sustainable living through high-quality nature documentaries, responsible eco-tourism, and engaging outdoor recreation facilities.",
   missionP2: "Whether we are capturing the breathtaking beauty of wildlife on camera or guiding adventurers through unforgettable safaris, Wild Hausa brings people closer to nature.",
-  missionImage: "https://images.unsplash.com/photo-1613109520778-1540f2edbc6d?auto=format&fit=crop&q=80&w=1000",
+  missionImage: "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&q=80&w=1000",
   principlesTitle: "Our Field Principles",
   principles: [
     { title: "Leave No Trace", text: "We strictly adhere to zero-impact eco-tourism standards." },

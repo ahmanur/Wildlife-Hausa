@@ -6,7 +6,7 @@ export const MOCK_SAFARI_PACKAGES = [
     difficulty: "Beginner / Family",
     bestFor: "Families & Tourists",
     price: "₦150,000",
-    image: "https://images.unsplash.com/photo-1613109520778-1540f2edbc6d?auto=format&fit=crop&q=80&w=800",
+    image: "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&q=80&w=800",
     slug: "yankari-grand-tour",
     overview: "Venture into one of West Africa's most renowned reserves. Expect to encounter elephants, baboons, and a spectacular array of birdlife as you explore the savanna plains and natural warm springs.",
     groupSize: "2 - 12 People",
@@ -101,7 +101,7 @@ export const MOCK_MEDIA_ITEMS = [
   {
     title: "Life in the Dry Season",
     category: "Wildlife",
-    image: "https://images.unsplash.com/photo-1613109520778-1540f2edbc6d?auto=format&fit=crop&q=80&w=800",
+    image: "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&q=80&w=800",
     duration: "18 min",
     featured: false,
     description: "How animals survive the harsh Sahelian dry season in search of fading water holes."
@@ -125,7 +125,7 @@ export const MOCK_MAP_LOCATIONS = [
     lng: 10.5000,
     state: 'Bauchi State',
     description: 'One of the most popular eco-tourism destinations featuring warm springs and diverse wildlife.',
-    image: 'https://images.unsplash.com/photo-1613109520778-1540f2edbc6d?auto=format&fit=crop&q=80&w=400',
+    image: 'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&q=80&w=400',
     link: '/safaris/yankari-grand-tour',
     cta: 'View Expedition'
   },
@@ -183,7 +183,7 @@ export const MOCK_ADVENTURE_ACTIVITIES = [
   {
     title: "Team Building",
     text: "Custom obstacle courses and team challenges for corporate groups.",
-    image: "https://images.unsplash.com/photo-1613109520778-1540f2edbc6d?auto=format&fit=crop&q=80&w=800",
+    image: "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&q=80&w=800",
     order: 3
   }
 ];

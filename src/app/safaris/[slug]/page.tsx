@@ -104,7 +104,7 @@ export default function SafariDetailsPage({ params }: { params: Promise<{ slug: 
       <section className="relative h-[60vh] min-h-[500px] flex items-end pb-16">
         <div className="absolute inset-0 bg-black/40 z-10" />
         <Image 
-          src={translatedSafari.image || "https://images.unsplash.com/photo-1613109520778-1540f2edbc6d?auto=format&fit=crop&q=80&w=2000"} 
+          src={translatedSafari.image || "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&q=80&w=2000"} 
           alt={translatedSafari.title} 
           fill 
           className="object-cover"
@@ -221,8 +221,9 @@ export default function SafariDetailsPage({ params }: { params: Promise<{ slug: 
             ) : (
               <form onSubmit={handleBookingSubmit} className="flex flex-col gap-4">
                 <div>
-                  <label className="block text-sm font-bold text-wild-forest mb-2">Name</label>
+                  <label htmlFor="booking_name" className="block text-sm font-bold text-wild-forest mb-2">Name</label>
                   <input 
+                    id="booking_name"
                     type="text" 
                     required
                     value={name}
@@ -232,8 +233,9 @@ export default function SafariDetailsPage({ params }: { params: Promise<{ slug: 
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-wild-forest mb-2">Email</label>
+                  <label htmlFor="booking_email" className="block text-sm font-bold text-wild-forest mb-2">Email</label>
                   <input 
+                    id="booking_email"
                     type="email" 
                     required
                     value={email}
@@ -243,8 +245,9 @@ export default function SafariDetailsPage({ params }: { params: Promise<{ slug: 
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-wild-forest mb-2">{t('book_start_date')}</label>
+                  <label htmlFor="booking_date" className="block text-sm font-bold text-wild-forest mb-2">{t('book_start_date')}</label>
                   <input 
+                    id="booking_date"
                     type="date" 
                     required
                     value={bookingDate}
@@ -253,8 +256,9 @@ export default function SafariDetailsPage({ params }: { params: Promise<{ slug: 
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-wild-forest mb-2">{t('book_guests')}</label>
+                  <label htmlFor="booking_guests" className="block text-sm font-bold text-wild-forest mb-2">{t('book_guests')}</label>
                   <select 
+                    id="booking_guests"
                     value={guests}
                     onChange={(e) => setGuests(e.target.value)}
                     className="w-full px-4 py-3 bg-wild-sand/50 border border-wild-brown/20 rounded-lg focus:outline-none focus:border-wild-sunset text-wild-charcoal"

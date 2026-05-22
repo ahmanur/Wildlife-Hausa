@@ -125,8 +125,9 @@ function ContactContent() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div>
-                  <label className="block text-sm font-bold text-wild-forest mb-2">{t('contact_form_name')} *</label>
+                  <label htmlFor="contact_name" className="block text-sm font-bold text-wild-forest mb-2">{t('contact_form_name')} *</label>
                   <input 
+                    id="contact_name"
                     type="text" 
                     name="name" 
                     value={formData.name}
@@ -137,8 +138,9 @@ function ContactContent() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-wild-forest mb-2">{t('contact_form_email')} *</label>
+                  <label htmlFor="contact_email" className="block text-sm font-bold text-wild-forest mb-2">{t('contact_form_email')} *</label>
                   <input 
+                    id="contact_email"
                     type="email" 
                     name="email" 
                     value={formData.email}
@@ -152,8 +154,9 @@ function ContactContent() {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div>
-                  <label className="block text-sm font-bold text-wild-forest mb-2">{t('contact_form_phone')}</label>
+                  <label htmlFor="contact_phone" className="block text-sm font-bold text-wild-forest mb-2">{t('contact_form_phone')}</label>
                   <input 
+                    id="contact_phone"
                     type="tel" 
                     name="phone" 
                     value={formData.phone}
@@ -163,8 +166,9 @@ function ContactContent() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-wild-forest mb-2">{t('contact_form_interest')}</label>
+                  <label htmlFor="contact_interest" className="block text-sm font-bold text-wild-forest mb-2">{t('contact_form_interest')}</label>
                   <select 
+                    id="contact_interest"
                     name="interest" 
                     value={formData.interest}
                     onChange={handleChange}
@@ -181,8 +185,9 @@ function ContactContent() {
               </div>
 
               <div className="mb-8">
-                <label className="block text-sm font-bold text-wild-forest mb-2">{t('contact_form_message')} *</label>
+                <label htmlFor="contact_message" className="block text-sm font-bold text-wild-forest mb-2">{t('contact_form_message')} *</label>
                 <textarea 
+                  id="contact_message"
                   rows={5} 
                   name="message" 
                   value={formData.message}

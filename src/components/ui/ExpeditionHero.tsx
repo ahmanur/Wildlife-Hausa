@@ -161,6 +161,7 @@ export function ExpeditionHero() {
                 onChange={(e) => setSearchLocation(e.target.value)}
                 placeholder={t('hero_location_placeholder')} 
                 className="w-full bg-transparent text-white placeholder:text-white/80 focus:outline-none font-semibold text-sm" 
+                aria-label={t('hero_location')}
               />
             </div>
           </div>
@@ -174,6 +175,7 @@ export function ExpeditionHero() {
                 value={searchDate}
                 onChange={(e) => setSearchDate(e.target.value)}
                 className="w-full bg-transparent text-white focus:outline-none font-semibold text-sm cursor-pointer [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert" 
+                aria-label={t('hero_date')}
               />
             </div>
           </div>

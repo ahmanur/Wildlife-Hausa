@@ -40,7 +40,7 @@ const DEFAULT_CONTENT: AboutContent = {
   missionSubtitle: "A PURPOSE-DRIVEN EXPEDITION",
   missionP1: "We believe that true conservation begins with connection. Our mission is to bridge the gap between people and the wild through immersive eco-tourism and powerful documentary storytelling.",
   missionP2: "By partnering with local communities, park rangers, and global researchers, we work tirelessly to ensure that the rich biodiversity of Northern Nigeria is preserved for future generations.",
-  missionImage: "https://images.unsplash.com/photo-1613109520778-1540f2edbc6d?auto=format&fit=crop&q=80&w=1000",
+  missionImage: "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&q=80&w=1000",
   principlesTitle: "Our Field Principles",
   principles: [
     { title: "Leave No Trace", text: "We strictly adhere to zero-impact eco-tourism standards." },
