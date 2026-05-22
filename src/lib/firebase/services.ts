@@ -282,11 +282,31 @@ export async function getSafariPackageBySlug(slug: string) {
   
   try {
     const ref = collection(db, COLLECTIONS.SAFARI_PACKAGES);
-    const q = query(ref, where('slug', '==', slug), limit(1));
+    const q = query(ref, where('slug', '==', slug));
     const snapshot = await withTimeout(getDocs(q), 3000);
     if (snapshot.empty) return null;
-    const docSnap = snapshot.docs[0];
-    return { id: docSnap.id, ...(docSnap.data() as any) };
+    
+    const docs = snapshot.docs.map((docSnap) => ({
+      id: docSnap.id,
+      ...(docSnap.data() as any)
+    }));
+
+    docs.sort((a, b) => {
+      const getTimestamp = (doc: any) => {
+        if (!doc) return 0;
+        const time = doc.updatedAt || doc.createdAt;
+        if (!time) return 0;
+        if (typeof time.toMillis === 'function') return time.toMillis();
+        if (typeof time.toDate === 'function') return time.toDate().getTime();
+        if (time.seconds !== undefined) return time.seconds * 1000;
+        if (typeof time === 'string') return new Date(time).getTime();
+        if (time instanceof Date) return time.getTime();
+        return 0;
+      };
+      return getTimestamp(b) - getTimestamp(a);
+    });
+
+    return docs[0];
   } catch (err) {
     console.error(`Firestore getSafariPackageBySlug failed for ${slug}, falling back to localStorage cache:`, err);
     const current = getLocalCache(COLLECTIONS.SAFARI_PACKAGES);

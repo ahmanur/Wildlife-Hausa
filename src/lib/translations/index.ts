@@ -325,6 +325,19 @@ export const translations: Record<string, TranslationDict> = {
 // Dynamic Data Translation Mappers
 
 export const safariTranslations: Record<string, any> = {
+  "the-yankari-grand-tour": {
+    title: "Gidan Gandun Yankari",
+    location: "Bauchi State",
+    duration: "Kwana 3, Dare 2",
+    difficulty: "Ga Kowa da Iyalai",
+    bestFor: "Iyalai da Masu Bude Ido",
+    overview: "Venture into one of West Africa's most renowned reserves. Expect to encounter elephants, baboons, and a spectacular array of birdlife as you explore the savanna plains and natural warm springs.",
+    itinerary: [
+      { title: "Isa Sansani & Ziyara ta Yamma", description: "Isa sansanin daji, daidaita masauki, sannan ku fita don ganin dabbobi lokacin faduwar rana." },
+      { title: "Tsakiyar Daji da Wikki Warm Springs", description: "Cikakken yini na binciken reserve din tare da guides, sannan yin wanka a magudanar ruwan dumin halitta na Wikki." },
+      { title: "Tafiyar safe ta Karshe da Tashi", description: "Tafiyar kafa ta safe don gano sawun dabbobi da kokarin kiyayewa kafin komawa gida." }
+    ]
+  },
   "yankari-grand-tour": {
     title: "Gidan Gandun Yankari",
     location: "Bauchi State",
