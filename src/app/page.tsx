@@ -12,8 +12,70 @@ import { useLanguage } from '@/components/providers/LanguageProvider';
 import { translateSafari, translateMediaItem } from '@/lib/translations';
 import { VideoModal } from '@/components/ui/VideoModal';
 
+const DEFAULT_WORLDS = [
+  {
+    id: 'film',
+    title_en: "Film the Wild",
+    title_ha: "Dauki Fim din Daji",
+    label_en: "Nature Media",
+    label_ha: "Kafofin Yada Labaran Halitta",
+    description_en: "Cinematic storytelling bringing the untamed beauty of Northern Nigeria to the world.",
+    description_ha: "Hada fina-finan musamman masu nuna kyawun halittar Arewacin Najeriya ga duniya.",
+    image: "https://images.unsplash.com/photo-1549490349-8643362247b5?auto=format&fit=crop&q=80&w=800",
+    link: "/documentaries"
+  },
+  {
+    id: 'journey',
+    title_en: "Journey the Wild",
+    title_ha: "Tafiya Daji",
+    label_en: "Eco-Tourism",
+    label_ha: "Yawon Bude Ido na Halitta",
+    description_en: "Guided safaris and expeditions into the heart of the savanna and deep forests.",
+    description_ha: "Ziyara ta musamman zuwa tsakiyar yankunan daji da manyan dazuzzuka.",
+    image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=80&w=800",
+    link: "/safaris"
+  },
+  {
+    id: 'play',
+    title_en: "Play in the Wild",
+    title_ha: "Wasa a Daji",
+    label_en: "Adventure Recreation",
+    label_ha: "Wasannin Kasada",
+    description_en: "Outdoor recreation, nature trails, and challenges designed for all ages.",
+    description_ha: "Wasannin motsa jiki a fili, hanyoyin yawo a daji, da kalubale ga kowane shekaru.",
+    image: "https://images.unsplash.com/photo-1523987355523-c7b5b0dd90a7?auto=format&fit=crop&q=80&w=800",
+    link: "/adventure-park"
+  },
+  {
+    id: 'protect',
+    title_en: "Protect the Wild",
+    title_ha: "Kare Daji",
+    label_en: "Conservation",
+    label_ha: "Kiyayewa",
+    description_en: "Active efforts to preserve habitats, protect wildlife, and educate communities.",
+    description_ha: "Ayyukan kare muhalli, kare dabbobin daji, da ilimantar da al'ummomi.",
+    image: "https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&q=80&w=800",
+    link: "/conservation"
+  }
+];
+
+const getWorldIcon = (id: string) => {
+  switch (id) {
+    case 'film':
+      return <Play size={32} />;
+    case 'journey':
+      return <Compass size={32} />;
+    case 'play':
+      return <Tent size={32} />;
+    case 'protect':
+      return <Leaf size={32} />;
+    default:
+      return <Compass size={32} />;
+  }
+};
+
 export default function Home() {
-  const { language, t } = useLanguage();
+  const { language, t, settings } = useLanguage();
   const [safaris, setSafaris] = useState<any[]>([]);
   const [mediaItems, setMediaItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -43,6 +105,20 @@ export default function Home() {
   // Find featured documentary or fallback to first item
   const featuredDoc = translatedMedia.find(item => item.featured) || translatedMedia[0];
   const otherDocs = translatedMedia.filter(item => item.id !== (featuredDoc?.id)).slice(0, 3);
+
+  // Parse worlds settings
+  const rawWorlds = settings?.worlds || DEFAULT_WORLDS;
+  const worldsData = rawWorlds.map((w: any) => {
+    const fallback = DEFAULT_WORLDS.find(def => def.id === w.id) || DEFAULT_WORLDS[0];
+    return {
+      id: w.id,
+      title: language === 'ha' ? (w.title_ha || fallback.title_ha) : (w.title_en || fallback.title_en),
+      label: language === 'ha' ? (w.label_ha || fallback.label_ha) : (w.label_en || fallback.label_en),
+      description: language === 'ha' ? (w.description_ha || fallback.description_ha) : (w.description_en || fallback.description_en),
+      image: w.image || fallback.image,
+      link: w.link || fallback.link,
+    };
+  });
 
   return (
     <div className="flex flex-col">
@@ -76,42 +152,18 @@ export default function Home() {
           />
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <WorldCard 
-              icon={<Play size={32} />}
-              title={t('film_the_wild')}
-              label={t('mission_media')}
-              description={t('film_desc')}
-              image="https://images.unsplash.com/photo-1549490349-8643362247b5?auto=format&fit=crop&q=80&w=800"
-              link="/documentaries"
-              exploreText={t('explore_world')}
-            />
-            <WorldCard 
-              icon={<Compass size={32} />}
-              title={t('journey_the_wild')}
-              label={t('mission_ecotourism')}
-              description={t('journey_desc')}
-              image="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=80&w=800"
-              link="/safaris"
-              exploreText={t('explore_world')}
-            />
-            <WorldCard 
-              icon={<Tent size={32} />}
-              title={t('play_in_the_wild')}
-              label={t('mission_adventure')}
-              description={t('play_desc')}
-              image="https://images.unsplash.com/photo-1523987355523-c7b5b0dd90a7?auto=format&fit=crop&q=80&w=800"
-              link="/adventure-park"
-              exploreText={t('explore_world')}
-            />
-            <WorldCard 
-              icon={<Leaf size={32} />}
-              title={t('protect_the_wild')}
-              label={t('mission_conservation')}
-              description={t('protect_desc')}
-              image="https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&q=80&w=800"
-              link="/conservation"
-              exploreText={t('explore_world')}
-            />
+            {worldsData.map((world: any) => (
+              <WorldCard 
+                key={world.id}
+                icon={getWorldIcon(world.id)}
+                title={world.title}
+                label={world.label}
+                description={world.description}
+                image={world.image}
+                link={world.link}
+                exploreText={t('explore_world')}
+              />
+            ))}
           </div>
         </div>
       </section>

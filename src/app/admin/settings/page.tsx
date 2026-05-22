@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { db, storage } from '@/lib/firebase/config';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { Loader2, Video, Languages, Plus, Trash2, Save, Play, Check, UploadCloud } from 'lucide-react';
+import { Loader2, Video, Languages, Plus, Trash2, Save, Play, Check, UploadCloud, Compass } from 'lucide-react';
 
 interface OverrideEntry {
   en: string;
@@ -40,19 +40,69 @@ const DEFAULT_VIDEO_CLIPS = [
   "https://videos.pexels.com/video-files/20600021/20600021-uhd_2560_1440_25fps.mp4"
 ];
 
+const DEFAULT_WORLDS = [
+  {
+    id: 'film',
+    title_en: "Film the Wild",
+    title_ha: "Dauki Fim din Daji",
+    label_en: "Nature Media",
+    label_ha: "Kafofin Yada Labaran Halitta",
+    description_en: "Cinematic storytelling bringing the untamed beauty of Northern Nigeria to the world.",
+    description_ha: "Hada fina-finan musamman masu nuna kyawun halittar Arewacin Najeriya ga duniya.",
+    image: "https://images.unsplash.com/photo-1549490349-8643362247b5?auto=format&fit=crop&q=80&w=800",
+    link: "/documentaries"
+  },
+  {
+    id: 'journey',
+    title_en: "Journey the Wild",
+    title_ha: "Tafiya Daji",
+    label_en: "Eco-Tourism",
+    label_ha: "Yawon Bude Ido na Halitta",
+    description_en: "Guided safaris and expeditions into the heart of the savanna and deep forests.",
+    description_ha: "Ziyara ta musamman zuwa tsakiyar yankunan daji da manyan dazuzzuka.",
+    image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=80&w=800",
+    link: "/safaris"
+  },
+  {
+    id: 'play',
+    title_en: "Play in the Wild",
+    title_ha: "Wasa a Daji",
+    label_en: "Adventure Recreation",
+    label_ha: "Wasannin Kasada",
+    description_en: "Outdoor recreation, nature trails, and challenges designed for all ages.",
+    description_ha: "Wasannin motsa jiki a fili, hanyoyin yawo a daji, da kalubale ga kowane shekaru.",
+    image: "https://images.unsplash.com/photo-1523987355523-c7b5b0dd90a7?auto=format&fit=crop&q=80&w=800",
+    link: "/adventure-park"
+  },
+  {
+    id: 'protect',
+    title_en: "Protect the Wild",
+    title_ha: "Kare Daji",
+    label_en: "Conservation",
+    label_ha: "Kiyayewa",
+    description_en: "Active efforts to preserve habitats, protect wildlife, and educate communities.",
+    description_ha: "Ayyukan kare muhalli, kare dabbobin daji, da ilimantar da al'ummomi.",
+    image: "https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&q=80&w=800",
+    link: "/conservation"
+  }
+];
+
 export default function AdminSettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
-  const [activeTab, setActiveTab] = useState<'copy' | 'videos'>('copy');
+  const [activeTab, setActiveTab] = useState<'copy' | 'videos' | 'worlds'>('copy');
   const [error, setError] = useState('');
 
   // States for edited content
   const [copyOverrides, setCopyOverrides] = useState<Record<string, { en: string; ha: string }>>({});
   const [videoUrls, setVideoUrls] = useState<string[]>([]);
+  const [worlds, setWorlds] = useState<any[]>([]);
   const [newVideoUrl, setNewVideoUrl] = useState('');
   const [uploadingVideo, setUploadingVideo] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadingWorldId, setUploadingWorldId] = useState<string | null>(null);
+  const [worldUploadProgress, setWorldUploadProgress] = useState<number>(0);
 
   useEffect(() => {
     async function loadSettings() {
@@ -63,12 +113,22 @@ export default function AdminSettingsPage() {
 
         let overridesVal: Record<string, { en: string; ha: string }> = {};
         let videosVal: string[] = DEFAULT_VIDEO_CLIPS;
+        let worldsVal: any[] = DEFAULT_WORLDS;
 
         if (docSnap.exists()) {
           const data = docSnap.data();
           overridesVal = data.overrides || {};
           if ('hero_videos' in data) {
             videosVal = data.hero_videos;
+          }
+          if ('worlds' in data && Array.isArray(data.worlds)) {
+            worldsVal = DEFAULT_WORLDS.map(defWorld => {
+              const found = data.worlds.find((w: any) => w.id === defWorld.id);
+              if (found) {
+                return { ...defWorld, ...found };
+              }
+              return defWorld;
+            });
           }
         }
 
@@ -83,6 +143,7 @@ export default function AdminSettingsPage() {
 
         setCopyOverrides(mergedCopy);
         setVideoUrls(videosVal);
+        setWorlds(worldsVal);
       } catch (err) {
         console.error('Failed to load settings:', err);
         setError('Failed to fetch settings from Firestore database.');
@@ -157,6 +218,54 @@ export default function AdminSettingsPage() {
     setVideoUrls(videoUrls.filter((_, i) => i !== index));
   };
 
+  const handleWorldFieldChange = (worldId: string, field: string, value: string) => {
+    setWorlds(prev =>
+      prev.map(w => w.id === worldId ? { ...w, [field]: value } : w)
+    );
+  };
+
+  const handleWorldImageUpload = async (worldId: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file.');
+      return;
+    }
+
+    setUploadingWorldId(worldId);
+    setWorldUploadProgress(0);
+
+    try {
+      const storageRef = ref(storage, `world_images/${worldId}_${Date.now()}_${file.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      uploadTask.on(
+        'state_changed',
+        (snapshot) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setWorldUploadProgress(Math.round(progress));
+        },
+        (error) => {
+          console.error("Upload failed", error);
+          alert('Failed to upload image.');
+          setUploadingWorldId(null);
+        },
+        async () => {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          setWorlds(prev => 
+            prev.map(w => w.id === worldId ? { ...w, image: downloadURL } : w)
+          );
+          setUploadingWorldId(null);
+        }
+      );
+    } catch (err) {
+      console.error(err);
+      setUploadingWorldId(null);
+      alert('Failed to initialize upload.');
+    }
+  };
+
   const handleSave = async () => {
     setSaving(true);
     setError('');
@@ -167,6 +276,7 @@ export default function AdminSettingsPage() {
       await setDoc(docRef, {
         overrides: copyOverrides,
         hero_videos: videoUrls,
+        worlds: worlds,
         updatedAt: new Date()
       }, { merge: true });
 
@@ -244,6 +354,18 @@ export default function AdminSettingsPage() {
           <Video size={16} />
           <span>Homepage Hero Videos</span>
         </button>
+
+        <button
+          onClick={() => setActiveTab('worlds')}
+          className={`pb-4 border-b-2 flex items-center gap-2 transition-colors ${
+            activeTab === 'worlds' 
+              ? 'border-wild-sunset text-wild-sunset' 
+              : 'border-transparent text-gray-500 hover:text-gray-800'
+          }`}
+        >
+          <Compass size={16} />
+          <span>Four Worlds of Wild Hausa</span>
+        </button>
       </div>
 
       {/* Content panes */}
@@ -305,7 +427,7 @@ export default function AdminSettingsPage() {
             );
           })}
         </div>
-      ) : (
+      ) : activeTab === 'videos' ? (
         <div className="space-y-6 bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
           <div>
             <h3 className="font-serif font-bold text-gray-800">Slideshow Videos List</h3>
@@ -376,6 +498,152 @@ export default function AdminSettingsPage() {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-8 bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+          <div>
+            <h3 className="font-serif font-bold text-gray-800">Four Worlds of Wild Hausa</h3>
+            <p className="text-gray-500 text-xs mt-0.5">Customize the title, label, description, redirect link, and background image for each of the 4 worlds featured on the homepage.</p>
+          </div>
+
+          <div className="space-y-8">
+            {worlds.map((world) => (
+              <div key={world.id} className="p-6 bg-gray-50 rounded-xl border border-gray-200 relative">
+                <div className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-200 pb-4 mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-wild-sunset/10 flex items-center justify-center text-wild-sunset font-bold uppercase">
+                      {world.id}
+                    </div>
+                    <div>
+                      <h4 className="font-serif font-bold text-gray-800 text-lg">
+                        {world.title_en || world.id}
+                      </h4>
+                      <p className="text-gray-400 text-xs font-mono">id: {world.id}</p>
+                    </div>
+                  </div>
+                  
+                  {world.image && (
+                    <div className="relative w-24 h-12 rounded overflow-hidden border border-gray-300">
+                      <img src={world.image} alt={world.title_en} className="object-cover w-full h-full animate-fade-in" />
+                    </div>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* English Fields */}
+                  <div className="space-y-4">
+                    <h5 className="text-xs font-bold text-wild-deep-forest tracking-wider uppercase">English Content</h5>
+                    
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Title (English)</label>
+                      <input
+                        type="text"
+                        value={world.title_en || ''}
+                        onChange={(e) => handleWorldFieldChange(world.id, 'title_en', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-850 focus:outline-none focus:border-wild-sunset"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Label (English)</label>
+                      <input
+                        type="text"
+                        value={world.label_en || ''}
+                        onChange={(e) => handleWorldFieldChange(world.id, 'label_en', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-850 focus:outline-none focus:border-wild-sunset"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Description (English)</label>
+                      <textarea
+                        rows={3}
+                        value={world.description_en || ''}
+                        onChange={(e) => handleWorldFieldChange(world.id, 'description_en', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-850 focus:outline-none focus:border-wild-sunset resize-none"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Hausa Fields */}
+                  <div className="space-y-4">
+                    <h5 className="text-xs font-bold text-wild-sunset tracking-wider uppercase">Hausa Content</h5>
+
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Title (Hausa)</label>
+                      <input
+                        type="text"
+                        value={world.title_ha || ''}
+                        onChange={(e) => handleWorldFieldChange(world.id, 'title_ha', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-850 focus:outline-none focus:border-wild-sunset"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Label (Hausa)</label>
+                      <input
+                        type="text"
+                        value={world.label_ha || ''}
+                        onChange={(e) => handleWorldFieldChange(world.id, 'label_ha', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-850 focus:outline-none focus:border-wild-sunset"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Description (Hausa)</label>
+                      <textarea
+                        rows={3}
+                        value={world.description_ha || ''}
+                        onChange={(e) => handleWorldFieldChange(world.id, 'description_ha', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-850 focus:outline-none focus:border-wild-sunset resize-none"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 pt-6 border-t border-gray-200">
+                  {/* Link Redirect Field */}
+                  <div>
+                    <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Redirect Destination Link</label>
+                    <input
+                      type="text"
+                      value={world.link || ''}
+                      onChange={(e) => handleWorldFieldChange(world.id, 'link', e.target.value)}
+                      placeholder="/documentaries"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-850 focus:outline-none focus:border-wild-sunset"
+                    />
+                  </div>
+
+                  {/* Image Field */}
+                  <div className="space-y-3">
+                    <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Card Background Image</label>
+                    
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={world.image || ''}
+                        onChange={(e) => handleWorldFieldChange(world.id, 'image', e.target.value)}
+                        placeholder="https://images.unsplash.com/..."
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-850 focus:outline-none focus:border-wild-sunset bg-white"
+                      />
+                      
+                      <label className="flex items-center justify-center bg-white border border-gray-300 hover:border-wild-sunset text-gray-700 px-4 rounded-lg cursor-pointer transition-colors shadow-sm text-xs font-semibold shrink-0">
+                        <UploadCloud size={14} className="text-wild-sunset mr-1.5" />
+                        {uploadingWorldId === world.id ? `Uploading ${worldUploadProgress}%` : 'Upload File'}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleWorldImageUpload(world.id, e)}
+                          className="hidden"
+                          disabled={uploadingWorldId !== null}
+                        />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}
