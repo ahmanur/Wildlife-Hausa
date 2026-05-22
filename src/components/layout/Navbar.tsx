@@ -42,7 +42,7 @@ export function Navbar() {
 
   return (
     <>
-      <header className="fixed top-6 left-0 right-0 z-50 px-6 pointer-events-none flex justify-center">
+      <header className="fixed top-6 left-0 right-0 z-[9999] px-6 pointer-events-none flex justify-center">
         <div className="w-full max-w-7xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-lg rounded-full pointer-events-auto transition-all duration-300">
           <div className="px-6 h-20 flex items-center justify-between">
             <Link href="/" className="flex items-center gap-3 group" onClick={closeMenu}>
@@ -93,7 +93,7 @@ export function Navbar() {
               {/* Mobile menu button */}
               <button 
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden text-wild-forest p-2 hover:bg-black/5 rounded-full transition-colors relative z-50"
+                className="md:hidden text-wild-forest p-2 hover:bg-black/5 rounded-full transition-colors relative z-[9999]"
                 aria-label="Toggle mobile menu"
               >
                 {isMobileMenuOpen ? (
@@ -113,7 +113,7 @@ export function Navbar() {
 
       {/* Mobile Navigation Drawer */}
       <div 
-        className={`fixed inset-0 z-40 bg-white/98 backdrop-blur-xl transition-all duration-500 ease-in-out flex flex-col md:hidden pt-32 pb-8 ${
+        className={`fixed inset-0 z-[9998] bg-white/98 backdrop-blur-xl transition-all duration-500 ease-in-out flex flex-col md:hidden pt-32 pb-8 ${
           isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
         }`}
       >

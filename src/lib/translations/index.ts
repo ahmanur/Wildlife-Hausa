@@ -106,6 +106,7 @@ export const translations: Record<string, TranslationDict> = {
   view_all_routes: { en: "View All Safari Routes", ha: "Duba Duk Hanyoyin Tafiya" },
   starting_from: { en: "Starting from", ha: "Fara daga" },
   explore_world: { en: "Explore World", ha: "Binciki Wannan Bangare" },
+  view_safari_details: { en: "View Safari Details", ha: "Duba Cikakken Bayanin Safari" },
 
   // Stories From the Wild
   stories_title: { en: "Stories From the Wild", ha: "Labaran Daji" },

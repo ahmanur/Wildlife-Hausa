@@ -146,6 +146,7 @@ export default function Home() {
                   image={safari.image}
                   slug={safari.slug}
                   startingText={t('starting_from')}
+                  viewDetailsLabel={t('view_safari_details')}
                 />
               ))}
             </div>
@@ -271,6 +272,7 @@ export default function Home() {
                 <input 
                   type="email" 
                   placeholder={t('email_placeholder')}
+                  aria-label={t('email_placeholder')}
                   className="w-full px-6 py-4 bg-wild-sand/30 border border-wild-brown/20 rounded-full focus:outline-none focus:border-wild-sunset focus:ring-1 focus:ring-wild-sunset transition-colors text-wild-charcoal font-medium"
                 />
                 <WildCTA variant="primary" className="w-full h-14 text-base">{t('subscribe_btn')}</WildCTA>
@@ -336,7 +338,7 @@ function WorldCard({ icon, title, label, description, image, link, exploreText }
   );
 }
 
-function SafariCard({ title, location, duration, difficulty, bestFor, price, image, slug, startingText }: any) {
+function SafariCard({ title, location, duration, difficulty, bestFor, price, image, slug, startingText, viewDetailsLabel }: any) {
   return (
     <div className="bg-white rounded-[2rem] overflow-hidden shadow-sm border border-wild-sand hover:shadow-xl transition-all duration-500 flex flex-col h-full group p-2">
       <div className="h-64 relative rounded-[1.5rem] overflow-hidden">
@@ -367,7 +369,7 @@ function SafariCard({ title, location, duration, difficulty, bestFor, price, ima
             <span className="block text-[10px] text-wild-muted uppercase tracking-[0.2em] font-bold mb-1">{startingText}</span>
             <span className="font-serif font-bold text-2xl text-wild-forest">{price}</span>
           </div>
-          <a href={`/safaris/${slug}`} className="w-12 h-12 rounded-full bg-wild-sunset text-white flex items-center justify-center hover:bg-[#FF8C42] hover:scale-105 transition-all shadow-md">
+          <a href={`/safaris/${slug}`} aria-label={viewDetailsLabel} className="w-12 h-12 rounded-full bg-wild-sunset text-white flex items-center justify-center hover:bg-[#FF8C42] hover:scale-105 transition-all shadow-md">
             <ArrowRight size={20} />
           </a>
         </div>

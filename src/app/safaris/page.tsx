@@ -169,6 +169,7 @@ function SafarisContent() {
                 difficultyLabel={t('safari_difficulty')}
                 bestForLabel={t('safari_best_for')}
                 startingFromLabel={t('starting_from')}
+                viewDetailsLabel={t('view_safari_details')}
               />
             ))}
           </div>
@@ -190,7 +191,8 @@ function SafariCard({
   durationLabel,
   difficultyLabel,
   bestForLabel,
-  startingFromLabel
+  startingFromLabel,
+  viewDetailsLabel
 }: any) {
   return (
     <div className="bg-white rounded-xl overflow-hidden shadow-sm border border-wild-cream hover:shadow-lg hover:border-wild-sunset/30 transition-all duration-300 flex flex-col h-full">
@@ -230,7 +232,7 @@ function SafariCard({
             <span className="block text-xs text-wild-muted uppercase tracking-wider">{startingFromLabel}</span>
             <span className="font-serif font-bold text-xl text-wild-forest">{price}</span>
           </div>
-          <a href={`/safaris/${slug}`} className="w-10 h-10 rounded-full bg-wild-cream text-wild-forest flex items-center justify-center hover:bg-wild-sunset hover:text-white transition-colors">
+          <a href={`/safaris/${slug}`} aria-label={viewDetailsLabel} className="w-10 h-10 rounded-full bg-wild-cream text-wild-forest flex items-center justify-center hover:bg-wild-sunset hover:text-white transition-colors">
             <ArrowRight size={20} />
           </a>
         </div>
