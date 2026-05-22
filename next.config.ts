@@ -11,6 +11,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'cdnjs.cloudflare.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'files.manuscdn.com',
+      },
     ],
   },
 };

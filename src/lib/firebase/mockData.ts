@@ -80,7 +80,8 @@ export const MOCK_MEDIA_ITEMS = [
     image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=80&w=800",
     duration: "45 min",
     featured: true,
-    description: "An exclusive look into the nocturnal lives of predators in Northern Nigeria's largest reserves."
+    description: "An exclusive look into the nocturnal lives of predators in Northern Nigeria's largest reserves.",
+    videoUrl: "https://www.youtube.com/embed/uYYbQLtwP28"
   },
   {
     title: "The Last Giraffes",
@@ -88,7 +89,8 @@ export const MOCK_MEDIA_ITEMS = [
     image: "https://images.unsplash.com/photo-1549490349-8643362247b5?auto=format&fit=crop&q=80&w=800",
     duration: "24 min",
     featured: false,
-    description: "Documenting the efforts to save the West African Giraffe from local extinction."
+    description: "Documenting the efforts to save the West African Giraffe from local extinction.",
+    videoUrl: "https://videos.pexels.com/video-files/7710516/7710516-hd_1920_1080_25fps.mp4"
   },
   {
     title: "Rangers on the Frontline",
@@ -96,7 +98,8 @@ export const MOCK_MEDIA_ITEMS = [
     image: "https://images.unsplash.com/photo-1456926631375-92c8ce872def?auto=format&fit=crop&q=80&w=800",
     duration: "32 min",
     featured: false,
-    description: "A day in the life of dedicated anti-poaching rangers risking their lives to protect the reserves."
+    description: "A day in the life of dedicated anti-poaching rangers risking their lives to protect the reserves.",
+    videoUrl: "https://videos.pexels.com/video-files/20600021/20600021-uhd_2560_1440_25fps.mp4"
   },
   {
     title: "Life in the Dry Season",
@@ -104,7 +107,8 @@ export const MOCK_MEDIA_ITEMS = [
     image: "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&q=80&w=800",
     duration: "18 min",
     featured: false,
-    description: "How animals survive the harsh Sahelian dry season in search of fading water holes."
+    description: "How animals survive the harsh Sahelian dry season in search of fading water holes.",
+    videoUrl: "https://videos.pexels.com/video-files/4038481/4038481-hd_1920_1080_25fps.mp4"
   },
   {
     title: "Into the Deep Forest",
@@ -112,7 +116,8 @@ export const MOCK_MEDIA_ITEMS = [
     image: "https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&q=80&w=800",
     duration: "28 min",
     featured: false,
-    description: "An exploration of Taraba's rainforests and the hidden communities protecting them."
+    description: "An exploration of Taraba's rainforests and the hidden communities protecting them.",
+    videoUrl: "https://videos.pexels.com/video-files/5843336/5843336-hd_1920_1080_25fps.mp4"
   }
 ];
 

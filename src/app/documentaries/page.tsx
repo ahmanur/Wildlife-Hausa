@@ -7,6 +7,7 @@ import { Play } from 'lucide-react';
 import { getMediaItems } from '@/lib/firebase/services';
 import { useLanguage } from '@/components/providers/LanguageProvider';
 import { translateMediaItem } from '@/lib/translations';
+import { VideoModal } from '@/components/ui/VideoModal';
 
 export default function DocumentariesPage() {
   const { language, t } = useLanguage();
@@ -14,6 +15,7 @@ export default function DocumentariesPage() {
   const [filteredFilms, setFilteredFilms] = useState<any[]>([]);
   const [activeFilter, setActiveFilter] = useState('All');
   const [loading, setLoading] = useState(true);
+  const [activeVideoUrl, setActiveVideoUrl] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadFilms() {
@@ -96,18 +98,35 @@ export default function DocumentariesPage() {
                 category={film.category}
                 image={film.image}
                 duration={film.duration}
+                onClick={() => {
+                  if (film.videoUrl) {
+                    setActiveVideoUrl(film.videoUrl);
+                  } else {
+                    // Fallback video URL
+                    const fallbacks = [
+                      "https://videos.pexels.com/video-files/855538/855538-hd_1920_1080_25fps.mp4",
+                      "https://videos.pexels.com/video-files/7710516/7710516-hd_1920_1080_25fps.mp4",
+                      "https://videos.pexels.com/video-files/20600021/20600021-uhd_2560_1440_25fps.mp4",
+                      "https://videos.pexels.com/video-files/4038481/4038481-hd_1920_1080_25fps.mp4",
+                      "https://videos.pexels.com/video-files/5843336/5843336-hd_1920_1080_25fps.mp4"
+                    ];
+                    setActiveVideoUrl(fallbacks[idx % fallbacks.length]);
+                  }
+                }}
               />
             ))}
           </div>
         )}
       </section>
+
+      <VideoModal videoUrl={activeVideoUrl} onClose={() => setActiveVideoUrl(null)} />
     </div>
   );
 }
 
-function DocCard({ title, category, image, duration }: any) {
+function DocCard({ title, category, image, duration, onClick }: any) {
   return (
-    <div className="group relative rounded-xl overflow-hidden cursor-pointer bg-black">
+    <div onClick={onClick} className="group relative rounded-xl overflow-hidden cursor-pointer bg-black">
       <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors z-10" />
       <div className="absolute inset-0 border border-wild-sand/20 z-20 m-3 rounded-lg pointer-events-none" />
       <div className="h-64 relative">

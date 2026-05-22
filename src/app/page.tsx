@@ -10,12 +10,14 @@ import { Play, Map, BookOpen, Compass, Tent, Leaf, ArrowRight } from 'lucide-rea
 import { getSafariPackages, getMediaItems } from '@/lib/firebase/services';
 import { useLanguage } from '@/components/providers/LanguageProvider';
 import { translateSafari, translateMediaItem } from '@/lib/translations';
+import { VideoModal } from '@/components/ui/VideoModal';
 
 export default function Home() {
   const { language, t } = useLanguage();
   const [safaris, setSafaris] = useState<any[]>([]);
   const [mediaItems, setMediaItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeVideoUrl, setActiveVideoUrl] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadData() {
@@ -189,7 +191,17 @@ export default function Home() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               {/* Featured Video */}
               {featuredDoc && (
-                <div className="lg:col-span-8 group relative rounded-[2rem] overflow-hidden cursor-pointer shadow-2xl">
+                <div 
+                  onClick={() => {
+                    if (featuredDoc.videoUrl) {
+                      setActiveVideoUrl(featuredDoc.videoUrl);
+                    } else {
+                      // Fallback if videoUrl is missing, use default pexels
+                      setActiveVideoUrl("https://videos.pexels.com/video-files/855538/855538-hd_1920_1080_25fps.mp4");
+                    }
+                  }}
+                  className="lg:col-span-8 group relative rounded-[2rem] overflow-hidden cursor-pointer shadow-2xl"
+                >
                   <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors z-10" />
                   <div className="absolute inset-0 border border-wild-sand/20 z-20 m-6 rounded-[1.5rem] pointer-events-none" />
                   <div className="absolute top-10 left-10 z-20 bg-red-600 text-white text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-2 shadow-lg">
@@ -224,6 +236,20 @@ export default function Home() {
                     duration={docItem.duration}
                     image={docItem.image}
                     tagText={t('field_recording')}
+                    onClick={() => {
+                      if (docItem.videoUrl) {
+                        setActiveVideoUrl(docItem.videoUrl);
+                      } else {
+                        // Fallback pexels videos
+                        const idx = mediaItems.indexOf(docItem) % 3;
+                        const fallbacks = [
+                          "https://videos.pexels.com/video-files/7710516/7710516-hd_1920_1080_25fps.mp4",
+                          "https://videos.pexels.com/video-files/20600021/20600021-uhd_2560_1440_25fps.mp4",
+                          "https://videos.pexels.com/video-files/4038481/4038481-hd_1920_1080_25fps.mp4"
+                        ];
+                        setActiveVideoUrl(fallbacks[idx]);
+                      }
+                    }}
                   />
                 ))}
               </div>
@@ -303,6 +329,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <VideoModal videoUrl={activeVideoUrl} onClose={() => setActiveVideoUrl(null)} />
     </div>
   );
 }
@@ -378,9 +406,9 @@ function SafariCard({ title, location, duration, difficulty, bestFor, price, ima
   );
 }
 
-export function DocMiniCard({ title, duration, image, tagText }: { title: string; duration: string; image?: string; tagText: string }) {
+export function DocMiniCard({ title, duration, image, tagText, onClick }: { title: string; duration: string; image?: string; tagText: string; onClick?: () => void }) {
   return (
-    <div className="group flex items-start gap-4 p-4 rounded-2xl hover:bg-wild-sand/5 transition-colors cursor-pointer border border-transparent hover:border-wild-sand/10">
+    <div onClick={onClick} className="group flex items-start gap-4 p-4 rounded-2xl hover:bg-wild-sand/5 transition-colors cursor-pointer border border-transparent hover:border-wild-sand/10">
       <div className="relative w-24 h-24 rounded-xl overflow-hidden shrink-0 bg-wild-forest/20">
         {image && <Image src={image} alt={title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />}
         <div className="absolute inset-0 flex items-center justify-center">

@@ -110,6 +110,7 @@ export function ExpeditionHero() {
         <video
           ref={videoRefA}
           src={videoClips[0]}
+          autoPlay
           muted
           playsInline
           loop
@@ -122,6 +123,7 @@ export function ExpeditionHero() {
         <video
           ref={videoRefB}
           src={videoClips[1]}
+          autoPlay
           muted
           playsInline
           loop
