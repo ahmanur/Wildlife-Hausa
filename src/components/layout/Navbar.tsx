@@ -61,7 +61,8 @@ export function Navbar() {
               </div>
             </Link>
             
-            <nav className="hidden md:flex items-center gap-8">
+            <nav className="hidden md:flex items-center gap-4 lg:gap-6 xl:gap-8">
+              <NavLink href="/">{t('home')}</NavLink>
               <NavLink href="/about">{t('our_story')}</NavLink>
               <NavLink href="/services">{t('worlds')}</NavLink>
               <NavLink href="/safaris">{t('expeditions')}</NavLink>
@@ -123,6 +124,7 @@ export function Navbar() {
           }`}
         >
           <nav className="flex flex-col items-center gap-6 w-full">
+            <Link href="/" onClick={closeMenu} className="text-2xl font-serif font-bold text-wild-forest hover:text-wild-sunset transition-colors">{t('home')}</Link>
             <Link href="/about" onClick={closeMenu} className="text-2xl font-serif font-bold text-wild-forest hover:text-wild-sunset transition-colors">{t('our_story')}</Link>
             <Link href="/services" onClick={closeMenu} className="text-2xl font-serif font-bold text-wild-forest hover:text-wild-sunset transition-colors">{t('worlds')}</Link>
             <Link href="/safaris" onClick={closeMenu} className="text-2xl font-serif font-bold text-wild-forest hover:text-wild-sunset transition-colors">{t('expeditions')}</Link>

@@ -7,6 +7,7 @@ export interface TranslationDict {
 
 export const translations: Record<string, TranslationDict> = {
   // Navigation
+  home: { en: "Home", ha: "Gida" },
   our_story: { en: "Our Story", ha: "Tarihinmu" },
   worlds: { en: "Services", ha: "Ayyukanmu" },
   expeditions: { en: "Expeditions", ha: "Tafiye-tafiye" },
