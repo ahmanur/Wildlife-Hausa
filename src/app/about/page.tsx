@@ -31,7 +31,7 @@ const FALLBACK_CONTENT = {
 
 export default function AboutPage() {
   const { language, t } = useLanguage();
-  const [content, setContent] = useState<any>(FALLBACK_CONTENT);
+  const [content, setContent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -40,15 +40,27 @@ export default function AboutPage() {
         const data = await getAboutContent();
         if (data && Object.keys(data).length > 0) {
           setContent(data);
+        } else {
+          setContent(FALLBACK_CONTENT);
         }
       } catch (error) {
         console.error('Failed to load about content:', error);
+        setContent(FALLBACK_CONTENT);
       } finally {
         setLoading(false);
       }
     }
     loadData();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col min-h-screen bg-wild-cream items-center justify-center">
+        <div className="w-12 h-12 border-4 border-wild-sunset border-t-transparent rounded-full animate-spin mb-4" />
+        <p className="text-wild-forest font-serif font-bold text-lg">{t('about_loading', 'Loading story...')}</p>
+      </div>
+    );
+  }
 
   const translatedContent = translateAbout(content, language) || FALLBACK_CONTENT;
 

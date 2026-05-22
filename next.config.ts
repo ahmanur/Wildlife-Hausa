@@ -5,15 +5,11 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'images.unsplash.com',
+        hostname: '**',
       },
       {
-        protocol: 'https',
-        hostname: 'cdnjs.cloudflare.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'files.manuscdn.com',
+        protocol: 'http',
+        hostname: '**',
       },
     ],
   },

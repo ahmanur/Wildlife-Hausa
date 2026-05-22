@@ -101,8 +101,8 @@ const FALLBACK_CONTENT = {
 };
 
 export default function ServicesPage() {
-  const { language } = useLanguage();
-  const [content, setContent] = useState<any>(FALLBACK_CONTENT);
+  const { language, t } = useLanguage();
+  const [content, setContent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -111,15 +111,27 @@ export default function ServicesPage() {
         const data = await getServicesContent();
         if (data && Object.keys(data).length > 0) {
           setContent(data);
+        } else {
+          setContent(FALLBACK_CONTENT);
         }
       } catch (error) {
         console.error('Failed to load services content:', error);
+        setContent(FALLBACK_CONTENT);
       } finally {
         setLoading(false);
       }
     }
     loadData();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col min-h-screen bg-wild-cream items-center justify-center">
+        <div className="w-12 h-12 border-4 border-wild-sunset border-t-transparent rounded-full animate-spin mb-4" />
+        <p className="text-wild-forest font-serif font-bold text-lg">{t('services_loading', 'Loading services...')}</p>
+      </div>
+    );
+  }
 
   const translatedContent = translateServices(content, language) || FALLBACK_CONTENT;
 

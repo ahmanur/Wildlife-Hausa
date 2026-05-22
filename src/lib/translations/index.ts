@@ -316,6 +316,8 @@ export const translations: Record<string, TranslationDict> = {
   cons_school_desc: { en: "We offer immersive educational modules for students of all ages. Bring your classroom into the wild or invite our conservation educators to your school for an interactive workshop.", ha: "Muna ba da kyawawan shirye-shiryen ilimi don dalibai na kowane shekaru. Ku kawo daliban ku zuwa daji ko ku gayyaci malamai zuwa makarantarku." },
   cons_school_btn_tour: { en: "Book a School Tour", ha: "Shirya Ziyarar Makaranta" },
   cons_school_btn_dl: { en: "Download Resources", ha: "Saukar da Kayan Aiki" },
+  about_loading: { en: "Loading story...", ha: "Ana loda labarinmu..." },
+  services_loading: { en: "Loading services...", ha: "Ana loda ayyukanmu..." },
 };
 
 // Dynamic Data Translation Mappers
