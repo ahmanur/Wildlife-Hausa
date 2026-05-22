@@ -22,18 +22,10 @@ export default function AdminLoginPage() {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      localStorage.setItem('wildhausa_admin_logged_in', 'true');
       router.push('/admin');
     } catch (err: any) {
       console.error('Login error:', err);
-      // Fallback bypass for offline/local testing
-      if (process.env.NODE_ENV === 'development' && email === 'ahmanur@gmail.com' && password === 'Admin@3528') {
-        console.warn('Firebase Auth failed, logging in with mock admin credentials.');
-        localStorage.setItem('wildhausa_admin_logged_in', 'true');
-        router.push('/admin');
-      } else {
-        setError(err.message || 'Invalid email or password. Please try again.');
-      }
+      setError(err.message || 'Invalid email or password. Please try again.');
     } finally {
       setLoading(false);
     }

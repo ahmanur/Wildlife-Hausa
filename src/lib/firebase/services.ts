@@ -145,7 +145,16 @@ export async function fetchCollection<T = DocumentData>(
     const ref = collection(db, collectionName);
     const q = constraints.length > 0 ? query(ref, ...constraints) : ref;
     const snapshot = await withTimeout(getDocs(q), 3000);
-    const docs = snapshot.docs.map((d) => ({ id: d.id, ...(d.data() as T) }));
+    const rawDocs = snapshot.docs.map((d) => ({ id: d.id, ...(d.data() as T) }));
+    // Deduplicate by title or id to prevent seeded + cached duplicates
+    const seen = new Map<string, typeof rawDocs[0]>();
+    for (const doc of rawDocs) {
+      const key = (doc as any).title || (doc as any).slug || doc.id;
+      if (!seen.has(key)) {
+        seen.set(key, doc);
+      }
+    }
+    const docs = Array.from(seen.values());
     // Update local cache
     saveLocalCache(collectionName, docs);
     return docs;

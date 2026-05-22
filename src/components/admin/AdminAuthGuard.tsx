@@ -13,11 +13,9 @@ export function AdminAuthGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    const localLoggedIn = typeof window !== 'undefined' && localStorage.getItem('wildhausa_admin_logged_in') === 'true';
-
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser || localLoggedIn) {
-        setUser(currentUser || ({ email: 'admin@wildhausa.com', uid: 'mock-admin-uid' } as any));
+      if (currentUser) {
+        setUser(currentUser);
         setLoading(false);
         if (pathname === '/admin/login') {
           router.push('/admin');
