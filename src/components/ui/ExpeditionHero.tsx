@@ -135,11 +135,6 @@ export function ExpeditionHero() {
       </div>
 
       <div className="relative z-20 w-full max-w-7xl mx-auto px-6 flex flex-col items-center justify-center text-center pt-20">
-        <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-bold tracking-[0.2em] uppercase">
-          <span className="w-1.5 h-1.5 rounded-full bg-wild-sunset animate-pulse" />
-          {t('hero_badge')}
-        </div>
-        
         <h1 className="font-serif text-5xl md:text-7xl lg:text-[5.5rem] text-white font-bold leading-[1.1] mb-6 drop-shadow-2xl">
           {t('hero_title_1')} <br />
           <span className="text-wild-sand italic font-light">{t('hero_title_2')}</span>
