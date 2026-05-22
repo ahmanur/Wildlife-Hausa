@@ -119,7 +119,9 @@ export default function DocumentariesPage() {
         )}
       </section>
 
-      <VideoModal videoUrl={activeVideoUrl} onClose={() => setActiveVideoUrl(null)} />
+      {activeVideoUrl && (
+        <VideoModal videoUrl={activeVideoUrl} onClose={() => setActiveVideoUrl(null)} />
+      )}
     </div>
   );
 }

@@ -13,6 +13,8 @@ export function VideoModal({ videoUrl, onClose }: VideoModalProps) {
 
   // Close on Escape key press
   useEffect(() => {
+    if (!videoUrl) return;
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose();
@@ -24,9 +26,9 @@ export function VideoModal({ videoUrl, onClose }: VideoModalProps) {
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = '';
     };
-  }, [onClose]);
+  }, [videoUrl, onClose]);
 
   if (!videoUrl) return null;
 
