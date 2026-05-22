@@ -75,7 +75,7 @@ export function VideoModal({ videoUrl, onClose }: VideoModalProps) {
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 md:p-10 transition-opacity duration-300"
+      className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/85 backdrop-blur-md p-4 md:p-10 transition-opacity duration-300"
       onClick={handleBackdropClick}
       role="dialog"
       aria-modal="true"
