@@ -7,7 +7,7 @@ import { WildCTA } from '@/components/ui/WildCTA';
 import { Map, ArrowRight } from 'lucide-react';
 import { getSafariPackages } from '@/lib/firebase/services';
 import { useLanguage } from '@/components/providers/LanguageProvider';
-import { translateSafari } from '@/lib/translations';
+import { translateSafari, formatSafariPrice, parsePrice } from '@/lib/translations';
 import { useSearchParams } from 'next/navigation';
 
 function SafarisContent() {
@@ -154,7 +154,7 @@ function SafarisContent() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {translatedFiltered.map((safari) => (
+             {translatedFiltered.map((safari) => (
               <SafariCard 
                 key={safari.id}
                 title={safari.title}
@@ -163,6 +163,7 @@ function SafarisContent() {
                 difficulty={safari.difficulty}
                 bestFor={safari.bestFor}
                 price={safari.price}
+                showPricing={safari.showPricing}
                 image={safari.image}
                 slug={safari.slug}
                 durationLabel={t('safari_duration')}
@@ -186,6 +187,7 @@ function SafariCard({
   difficulty, 
   bestFor, 
   price, 
+  showPricing,
   image, 
   slug,
   durationLabel,
@@ -194,6 +196,7 @@ function SafariCard({
   startingFromLabel,
   viewDetailsLabel
 }: any) {
+  const { language } = useLanguage();
   return (
     <div className="bg-white rounded-xl overflow-hidden shadow-sm border border-wild-cream hover:shadow-lg hover:border-wild-sunset/30 transition-all duration-300 flex flex-col h-full">
       <div className="h-56 relative">
@@ -229,8 +232,10 @@ function SafariCard({
         </div>
         <div className="border-t border-wild-sand pt-4 mt-auto flex items-center justify-between">
           <div>
-            <span className="block text-xs text-wild-muted uppercase tracking-wider">{startingFromLabel}</span>
-            <span className="font-serif font-bold text-xl text-wild-forest">{price}</span>
+            {showPricing !== false && parsePrice(price) > 0 && (
+              <span className="block text-xs text-wild-muted uppercase tracking-wider">{startingFromLabel}</span>
+            )}
+            <span className="font-serif font-bold text-xl text-wild-forest">{formatSafariPrice(price, showPricing, language)}</span>
           </div>
           <a href={`/safaris/${slug}`} aria-label={viewDetailsLabel} className="w-10 h-10 rounded-full bg-wild-cream text-wild-forest flex items-center justify-center hover:bg-wild-sunset hover:text-white transition-colors">
             <ArrowRight size={20} />

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, X, Loader2, Compass, Trash, PlusCircle } from 'lucide-react';
 import { getSafariPackages, createDocument, updateDocument, removeDocument } from '@/lib/firebase/services';
 import { COLLECTIONS } from '@/lib/firebase/collections';
+import { parsePrice } from '@/lib/translations';
 
 interface ItineraryDay {
   day: number;
@@ -33,6 +34,7 @@ interface SafariPackage {
   groupSize: string;
   bestTime: string;
   itinerary: ItineraryDay[];
+  showPricing?: boolean;
   createdAt?: any;
 }
 
@@ -62,6 +64,7 @@ export default function AdminSafarisPage() {
   const [groupSize, setGroupSize] = useState('');
   const [bestTime, setBestTime] = useState('');
   const [itinerary, setItinerary] = useState<ItineraryDay[]>([]);
+  const [showPricing, setShowPricing] = useState(true);
 
   useEffect(() => {
     loadSafaris();
@@ -98,6 +101,7 @@ export default function AdminSafarisPage() {
     setGroupSize('');
     setBestTime('');
     setItinerary([{ day: 1, title: '', title_ha: '', description: '', description_ha: '' }]);
+    setShowPricing(true);
     setError('');
     setIsModalOpen(true);
   };
@@ -114,7 +118,7 @@ export default function AdminSafarisPage() {
     setDifficultyHa(safari.difficulty_ha || '');
     setBestFor(safari.bestFor || '');
     setBestForHa(safari.bestFor_ha || '');
-    setPrice(safari.price || '');
+    setPrice(safari.price ? parsePrice(safari.price).toString() : '');
     setImage(safari.image || '');
     setOverview(safari.overview || '');
     setOverviewHa(safari.overview_ha || '');
@@ -124,6 +128,7 @@ export default function AdminSafarisPage() {
       ? safari.itinerary 
       : [{ day: 1, title: '', title_ha: '', description: '', description_ha: '' }]
     );
+    setShowPricing(safari.showPricing !== false);
     setError('');
     setIsModalOpen(true);
   };
@@ -186,6 +191,7 @@ export default function AdminSafarisPage() {
       bestFor,
       bestFor_ha,
       price,
+      showPricing,
       image,
       slug,
       overview,
@@ -297,7 +303,11 @@ export default function AdminSafarisPage() {
                       {safari.duration}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-wild-brown font-mono">
-                      {safari.price}
+                      {safari.showPricing === false ? (
+                        <span className="text-gray-400 italic">Hidden (₦{parsePrice(safari.price).toLocaleString()})</span>
+                      ) : (
+                        <span>₦{parsePrice(safari.price).toLocaleString()}</span>
+                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex justify-end gap-3">
@@ -424,13 +434,13 @@ export default function AdminSafarisPage() {
               {/* Price, Difficulty & Difficulty HA */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-gray-700 uppercase font-sans">Price *</label>
+                  <label className="text-xs font-bold text-gray-700 uppercase font-sans">Price Per Person (₦) *</label>
                   <input
-                    type="text"
+                    type="number"
                     required
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
-                    placeholder="e.g. ₦150,000"
+                    placeholder="e.g. 150000"
                     className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-wild-sunset text-sm text-gray-800"
                   />
                 </div>
@@ -457,6 +467,20 @@ export default function AdminSafarisPage() {
                     className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-wild-sunset text-sm text-gray-800"
                   />
                 </div>
+              </div>
+
+              {/* Price Visibility Toggle */}
+              <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <input
+                  type="checkbox"
+                  id="showPricing"
+                  checked={showPricing}
+                  onChange={(e) => setShowPricing(e.target.checked)}
+                  className="w-4 h-4 text-wild-sunset border-gray-300 rounded focus:ring-wild-sunset cursor-pointer"
+                />
+                <label htmlFor="showPricing" className="text-xs font-bold text-gray-700 uppercase font-sans cursor-pointer select-none">
+                  Show Pricing on Website (e.g. on safari cards & details page)
+                </label>
               </div>
 
               {/* Best For, Group Size, Best Time */}

@@ -7,7 +7,7 @@ import { WildCTA } from '@/components/ui/WildCTA';
 import { Map, Clock, CheckCircle, ShieldAlert, Calendar, Users, Info } from 'lucide-react';
 import { getSafariPackageBySlug, submitBooking } from '@/lib/firebase/services';
 import { useLanguage } from '@/components/providers/LanguageProvider';
-import { translateSafari } from '@/lib/translations';
+import { translateSafari, formatSafariPrice, calculateEstimatedTotal } from '@/lib/translations';
 
 export default function SafariDetailsPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = React.use(params);
@@ -146,7 +146,9 @@ export default function SafariDetailsPage({ params }: { params: Promise<{ slug: 
               </div>
               <div>
                 <span className="block text-xs text-wild-muted uppercase tracking-wider mb-1">{t('details_starting_price')}</span>
-                <span className="font-bold text-wild-charcoal">{translatedSafari.price}</span>
+                <span className="font-bold text-wild-charcoal">
+                  {formatSafariPrice(translatedSafari.price, translatedSafari.showPricing, language)}
+                </span>
               </div>
             </div>
           </div>
@@ -273,7 +275,10 @@ export default function SafariDetailsPage({ params }: { params: Promise<{ slug: 
                   <div className="flex justify-between items-center text-lg">
                     <span className="font-bold text-wild-forest">{t('book_est_total')}</span>
                     <span className="font-serif font-bold text-wild-sunset text-2xl">
-                      {language === 'en' ? 'From' : 'Daga'} {translatedSafari.price}
+                      {translatedSafari.showPricing === false 
+                        ? t('price_on_request')
+                        : calculateEstimatedTotal(translatedSafari.price, guests, language)
+                      }
                     </span>
                   </div>
                 </div>

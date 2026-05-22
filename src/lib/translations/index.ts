@@ -8,6 +8,7 @@ export interface TranslationDict {
 export const translations: Record<string, TranslationDict> = {
   // Navigation
   home: { en: "Home", ha: "Gida" },
+  price_on_request: { en: "Price on request", ha: "Nemi Farashi" },
   our_story: { en: "Our Story", ha: "Tarihinmu" },
   worlds: { en: "Services", ha: "Ayyukanmu" },
   expeditions: { en: "Expeditions", ha: "Tafiye-tafiye" },
@@ -590,4 +591,63 @@ export function translateServices(content: any, language: Language) {
       cta: s.cta_ha || s.cta
     }))
   };
+}
+
+export function parsePrice(priceStr: any): number {
+  if (typeof priceStr === 'number') return priceStr;
+  if (!priceStr) return 0;
+  const normalized = priceStr.toString().replace(/[^0-9.]/g, '');
+  const parsed = parseFloat(normalized);
+  return isNaN(parsed) ? 0 : parsed;
+}
+
+export function formatSafariPrice(price: any, showPricing: boolean | undefined, language: Language): string {
+  // By default, if showPricing is undefined or true, we show pricing.
+  if (showPricing === false) {
+    return language === 'en' ? 'Price on request' : 'Nemi Farashi';
+  }
+  
+  const numPrice = parsePrice(price);
+  if (numPrice === 0) {
+    return language === 'en' ? 'Price on request' : 'Nemi Farashi';
+  }
+
+  // Format with NGN currency symbol (₦)
+  return new Intl.NumberFormat('en-NG', {
+    style: 'currency',
+    currency: 'NGN',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(numPrice);
+}
+
+export function calculateEstimatedTotal(price: any, guestsStr: string, language: Language): string {
+  const priceNum = parsePrice(price);
+  if (priceNum === 0) {
+    return language === 'en' ? 'Price on request' : 'Nemi Farashi';
+  }
+
+  const format = (val: number) => {
+    return new Intl.NumberFormat('en-NG', {
+      style: 'currency',
+      currency: 'NGN',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(val);
+  };
+
+  if (guestsStr === '1 Explorer') {
+    return format(priceNum);
+  }
+  if (guestsStr === '2 Explorers') {
+    return format(priceNum * 2);
+  }
+  if (guestsStr === '3 - 5 Explorers') {
+    return `${format(priceNum * 3)} - ${format(priceNum * 5)}`;
+  }
+  if (guestsStr === 'Group (6+)') {
+    return `${language === 'en' ? 'From' : 'Daga'} ${format(priceNum * 6)}`;
+  }
+  
+  return format(priceNum);
 }
