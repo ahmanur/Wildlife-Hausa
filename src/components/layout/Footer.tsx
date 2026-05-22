@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useLanguage } from '@/components/providers/LanguageProvider';
 import { subscribeNewsletter } from '@/lib/firebase/services';
 import { usePathname } from 'next/navigation';
@@ -52,9 +53,14 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           {/* Brand Col */}
           <div>
-            <div className="flex items-center gap-2 mb-6">
-              <div className="w-8 h-8 rounded-full border-2 border-wild-sunset flex items-center justify-center">
-                <div className="w-3 h-3 bg-wild-sun-soft rounded-full" />
+            <div className="flex items-center gap-3 mb-6">
+              <div className="relative w-12 h-12 shrink-0">
+                <Image
+                  src="/logo.png"
+                  alt="Wild Hausa Logo"
+                  fill
+                  className="object-contain"
+                />
               </div>
               <span className="font-serif text-2xl font-bold tracking-wide">WILD HAUSA</span>
             </div>
