@@ -132,7 +132,6 @@ export function Footer() {
           <div className="flex gap-6">
             <Link href="#" className="hover:text-wild-sunset transition-colors">{t('footer_privacy')}</Link>
             <Link href="#" className="hover:text-wild-sunset transition-colors">{t('footer_terms')}</Link>
-            <Link href="/admin/login" className="hover:text-wild-sunset transition-colors">WILD HAUSA Admin</Link>
           </div>
         </div>
       </div>
