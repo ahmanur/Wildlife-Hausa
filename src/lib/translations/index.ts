@@ -14,6 +14,7 @@ export const translations: Record<string, TranslationDict> = {
   expeditions: { en: "Expeditions", ha: "Tafiye-tafiye" },
   films: { en: "Films", ha: "Fina-finai" },
   map: { en: "Map", ha: "Taswira" },
+  field_journal: { en: "Field Journal", ha: "Littafin Daji" },
   plan_journey: { en: "Plan Journey", ha: "Shirya Tafiya" },
   contact_us: { en: "Contact Us", ha: "Tuntube Mu" },
 

@@ -67,6 +67,7 @@ export function Navbar() {
               <NavLink href="/services">{t('worlds')}</NavLink>
               <NavLink href="/safaris">{t('expeditions')}</NavLink>
               <NavLink href="/documentaries">{t('films')}</NavLink>
+              <NavLink href="/conservation">{t('field_journal')}</NavLink>
               <NavLink href="/expedition-map">{t('map')}</NavLink>
             </nav>
             
@@ -129,6 +130,7 @@ export function Navbar() {
             <Link href="/services" onClick={closeMenu} className="text-2xl font-serif font-bold text-wild-forest hover:text-wild-sunset transition-colors">{t('worlds')}</Link>
             <Link href="/safaris" onClick={closeMenu} className="text-2xl font-serif font-bold text-wild-forest hover:text-wild-sunset transition-colors">{t('expeditions')}</Link>
             <Link href="/documentaries" onClick={closeMenu} className="text-2xl font-serif font-bold text-wild-forest hover:text-wild-sunset transition-colors">{t('films')}</Link>
+            <Link href="/conservation" onClick={closeMenu} className="text-2xl font-serif font-bold text-wild-forest hover:text-wild-sunset transition-colors">{t('field_journal')}</Link>
             <Link href="/expedition-map" onClick={closeMenu} className="text-2xl font-serif font-bold text-wild-forest hover:text-wild-sunset transition-colors">{t('map')}</Link>
           </nav>
 
