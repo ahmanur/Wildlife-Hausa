@@ -72,11 +72,11 @@ export default function ConservationPage() {
       {activeNote && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6 bg-black/75 backdrop-blur-sm animate-fade-in">
           <div 
-            className="bg-white rounded-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto relative shadow-2xl border border-wild-cream flex flex-col"
+            className="bg-white rounded-3xl max-w-2xl w-full max-h-[85vh] overflow-y-auto relative shadow-2xl border border-wild-cream flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Hero Image */}
-            <div className="relative w-full h-64 md:h-80 shrink-0">
+            <div className="relative w-full h-64 md:h-80 shrink-0 rounded-t-3xl overflow-hidden">
               <Image 
                 src={activeNote.image || "https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&q=80&w=800"} 
                 alt={activeNote.title} 
