@@ -157,7 +157,7 @@ export const translations: Record<string, TranslationDict> = {
     en: "Bringing people closer to nature through filmmaking, eco-tourism, and active wildlife conservation.",
     ha: "Kusantar da mutane ga halitta ta hanyar shirya fina-finai, yawon bude ido, da kiyaye dabbobin daji."
   },
-  footer_rights: { en: "(c) All Rights Reserved\n: WILD HAUSA 2026", ha: "(c) Duk hakkoki mallaka ne\n: WILD HAUSA 2026" },
+  footer_rights: { en: "© 2026 All Rights Reserve. WILD HAUSA.", ha: "© 2026 Duk hakkoki mallaka ne. WILD HAUSA." },
   designed_by: { en: "Designed by IBK Technologies", ha: "Tsarin IBK Technologies" },
   footer_quick_links: { en: "Quick Links", ha: "Hanyoyi Masu Sauri" },
   footer_legal: { en: "Legal", ha: "Shari'a" },
