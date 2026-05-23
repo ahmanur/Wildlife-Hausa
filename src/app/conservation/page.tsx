@@ -6,6 +6,7 @@ import { FileDown, X } from 'lucide-react';
 import { getConservationNotes } from '@/lib/firebase/services';
 import { useLanguage } from '@/components/providers/LanguageProvider';
 import { translateConservationNote } from '@/lib/translations';
+import { WildCTA } from '@/components/ui/WildCTA';
 
 export default function ConservationPage() {
   const { language, t } = useLanguage();
@@ -70,75 +71,75 @@ export default function ConservationPage() {
 
       {/* Premium Interactive Detail Modal */}
       {activeNote && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6 bg-black/75 backdrop-blur-sm animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6 bg-black/75 backdrop-blur-md animate-fade-in">
           <div 
-            className="bg-white rounded-3xl max-w-2xl w-full max-h-[85vh] overflow-y-auto relative shadow-2xl border border-wild-cream flex flex-col"
+            className="bg-white rounded-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto relative shadow-2xl border border-wild-forest/5 flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Hero Image */}
-            <div className="relative w-full h-64 md:h-80 shrink-0 rounded-t-3xl overflow-hidden">
+            <div className="relative w-full h-64 md:h-80 shrink-0 rounded-t-2xl overflow-hidden bg-wild-sand">
               <Image 
                 src={activeNote.image || "https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&q=80&w=800"} 
                 alt={activeNote.title} 
                 fill 
                 className="object-cover"
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-wild-forest/30 via-transparent to-transparent opacity-90" />
               <button 
                 onClick={() => setActiveNote(null)}
-                className="absolute top-4 right-4 bg-black/40 hover:bg-black/70 backdrop-blur-md text-white w-9 h-9 rounded-full flex items-center justify-center transition-colors z-10"
+                className="absolute top-4 right-4 bg-black/35 hover:bg-wild-sunset text-white hover:text-white rounded-full p-2.5 backdrop-blur-md border border-white/10 hover:border-transparent transition-all duration-300 cursor-pointer shadow-lg hover:scale-105 group z-20"
                 aria-label="Close modal"
               >
-                <X size={18} />
+                <X size={18} className="group-hover:rotate-90 transition-transform duration-300" />
               </button>
             </div>
             
             {/* Modal Body Content */}
-            <div className="p-8 overflow-y-auto">
-              <div className="flex items-center gap-3 mb-4">
-                {activeNote.category && (
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-wild-cream text-wild-forest tracking-wider uppercase">
-                    {activeNote.category}
-                  </span>
-                )}
-                {activeNote.subtitle && (
-                  <span className="text-[11px] font-bold text-wild-sunset uppercase tracking-wider">
-                    {activeNote.subtitle.split('·')[0].trim()}
-                  </span>
-                )}
-              </div>
+            <div className="p-8 overflow-y-auto flex flex-col flex-grow">
+              {/* Subtitle / Tagline */}
+              {activeNote.category && (
+                <span className="text-[10px] tracking-wider font-bold font-sans uppercase text-wild-sunset mb-2 block">
+                  {activeNote.category}
+                </span>
+              )}
               
-              <h2 className="font-serif text-2xl md:text-3xl text-wild-forest font-bold mb-4 leading-tight">
+              {/* Title */}
+              <h2 className="font-serif text-xl md:text-2xl font-bold text-wild-forest mb-3 leading-tight">
                 {activeNote.title}
               </h2>
               
+              {/* Subtitle details */}
               {activeNote.subtitle && (
-                <p className="text-xs text-wild-muted/80 font-medium mb-6">
+                <p className="text-[11px] font-bold text-wild-forest/50 uppercase tracking-wider mb-5">
                   {activeNote.subtitle}
                 </p>
               )}
               
-              <div className="text-wild-muted text-sm leading-relaxed mb-8 whitespace-pre-wrap font-sans">
+              {/* Description */}
+              <div className="text-wild-forest/75 text-sm leading-relaxed mb-6 font-sans whitespace-pre-wrap">
                 {activeNote.text}
               </div>
               
-              <div className="flex flex-wrap gap-4 border-t border-wild-cream pt-6 mt-6">
+              {/* Action Buttons */}
+              <div className="flex flex-wrap gap-4 border-t border-wild-forest/5 pt-6 mt-auto">
                 {activeNote.downloadUrl && (
-                  <a 
-                    href={activeNote.downloadUrl} 
-                    target="_blank" 
+                  <WildCTA 
+                    variant="primary"
+                    href={activeNote.downloadUrl}
+                    target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-wild-sunset text-white text-xs font-bold uppercase tracking-wider rounded hover:bg-wild-sun-soft transition-all duration-300 shadow-sm"
+                    className="flex items-center gap-2"
                   >
-                    <FileDown size={14} />
-                    <span>Download Journal</span>
-                  </a>
+                    <FileDown size={16} />
+                    <span>{t('download_journal')}</span>
+                  </WildCTA>
                 )}
-                <button 
+                <WildCTA 
+                  variant="outline"
                   onClick={() => setActiveNote(null)}
-                  className="px-5 py-2.5 border border-wild-forest/30 text-wild-forest text-xs font-bold uppercase tracking-wider rounded hover:bg-wild-sand/20 transition-all"
                 >
-                  Close
-                </button>
+                  {t('close_btn')}
+                </WildCTA>
               </div>
             </div>
           </div>

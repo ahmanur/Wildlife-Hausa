@@ -12,7 +12,7 @@ export const translations: Record<string, TranslationDict> = {
   our_story: { en: "Our Story", ha: "Tarihinmu" },
   worlds: { en: "Services", ha: "Ayyukanmu" },
   expeditions: { en: "Expeditions", ha: "Tafiye-tafiye" },
-  films: { en: "Films", ha: "Fina-finai" },
+  films: { en: "Archives", ha: "Fina-finai" },
   map: { en: "Map", ha: "Taswira" },
   field_journal: { en: "Blog", ha: "Littafin Daji" },
   plan_journey: { en: "Plan Journey", ha: "Shirya Tafiya" },
@@ -254,10 +254,10 @@ export const translations: Record<string, TranslationDict> = {
   book_contact_guides: { en: "Contact our guides", ha: "Tuntubi guides dinmu" },
 
   // Documentaries page
-  docs_hero_title: { en: "Nature Film Archive", ha: "Rumbun Fina-finan Daji" },
+  docs_hero_title: { en: "Archive", ha: "Rumbun Fina-finan Daji" },
   docs_hero_subtitle: { en: "Explore our territories, track our expeditions, and discover the wild spaces.", ha: "Bincika yankunanmu, bi sahun tafiye-tafiyenmu, kuma gano filayen daji." },
   docs_categories: { en: "Categories:", ha: "Rukunoni:" },
-  docs_all_films: { en: "All Films", ha: "Duk Fina-finai" },
+  docs_all_films: { en: "All archive", ha: "Duk Fina-finai" },
   docs_cat_wildlife: { en: "Wildlife", ha: "Dabbobin Daji" },
   docs_cat_conservation: { en: "Conservation", ha: "Kiyayewa" },
   docs_cat_culture: { en: "Culture", ha: "Al'ada" },
@@ -322,6 +322,8 @@ export const translations: Record<string, TranslationDict> = {
   cons_school_btn_dl: { en: "Download Resources", ha: "Saukar da Kayan Aiki" },
   about_loading: { en: "Loading story...", ha: "Ana loda labarinmu..." },
   services_loading: { en: "Loading services...", ha: "Ana loda ayyukanmu..." },
+  download_journal: { en: "Download Journal", ha: "Saukar da Littafin" },
+  close_btn: { en: "Close", ha: "Rufe" },
 };
 
 // Dynamic Data Translation Mappers
