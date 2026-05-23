@@ -67,8 +67,31 @@ export function Footer() {
             <p className="text-wild-sand/70 font-sans text-sm leading-relaxed mb-6">
               {t('footer_tagline')}
             </p>
-            <div className="text-wild-sunset text-xs uppercase tracking-widest font-bold">
+            <div className="text-wild-sunset text-xs uppercase tracking-widest font-bold mb-6">
               Duniyar Dabbobin Daji
+            </div>
+            {/* Social Media Links */}
+            <div className="flex items-center gap-3">
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-wild-forest/50 hover:bg-wild-sunset border border-wild-moss hover:border-wild-sunset flex items-center justify-center text-wild-cream hover:text-white transition-all duration-300 shadow-sm" aria-label="Facebook">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path fillRule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clipRule="evenodd" />
+                </svg>
+              </a>
+              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-wild-forest/50 hover:bg-wild-sunset border border-wild-moss hover:border-wild-sunset flex items-center justify-center text-wild-cream hover:text-white transition-all duration-300 shadow-sm" aria-label="Twitter">
+                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
+              </a>
+              <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-wild-forest/50 hover:bg-wild-sunset border border-wild-moss hover:border-wild-sunset flex items-center justify-center text-wild-cream hover:text-white transition-all duration-300 shadow-sm" aria-label="YouTube">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path fillRule="evenodd" d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.517 3.545 12 3.545 12 3.545s-7.517 0-9.388.508a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.871.508 9.388.508 9.388.508s7.517 0 9.388-.508a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" clipRule="evenodd" />
+                </svg>
+              </a>
+              <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-wild-forest/50 hover:bg-wild-sunset border border-wild-moss hover:border-wild-sunset flex items-center justify-center text-wild-cream hover:text-white transition-all duration-300 shadow-sm" aria-label="TikTok">
+                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.52-4.06-1.39-.24-.18-.45-.38-.66-.6V12.1c.01 2.58-.78 5.25-2.67 7.03-2.15 2.05-5.46 2.65-8.22 1.63-2.91-1.05-4.99-4.14-4.83-7.25.13-3.32 2.61-6.26 5.89-6.73 1.18-.18 2.39-.08 3.52.28V11.2c-.89-.48-1.94-.6-2.91-.32-1.48.4-2.58 1.83-2.61 3.37-.02 1.89 1.48 3.55 3.39 3.57 1.9.04 3.55-1.41 3.63-3.3V0z" />
+                </svg>
+              </a>
             </div>
           </div>
 
