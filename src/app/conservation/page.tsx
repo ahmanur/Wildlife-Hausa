@@ -2,8 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { WildSectionHeader } from '@/components/ui/WildSectionHeader';
-import { WildCTA } from '@/components/ui/WildCTA';
+
 import { BookOpen, Leaf, HeartHandshake, FileDown } from 'lucide-react';
 import { getConservationNotes } from '@/lib/firebase/services';
 import { useLanguage } from '@/components/providers/LanguageProvider';
@@ -77,21 +76,6 @@ export default function ConservationPage() {
           </div>
         )}
 
-        <div className="bg-white rounded-3xl overflow-hidden shadow-xl border border-wild-sand flex flex-col lg:flex-row">
-          <div className="lg:w-1/2 p-12 lg:p-16 flex flex-col justify-center">
-            <h2 className="font-serif text-4xl text-wild-forest font-bold mb-6">{t('cons_school_title')}</h2>
-            <p className="text-wild-muted text-lg mb-8 leading-relaxed">
-              {t('cons_school_desc')}
-            </p>
-            <div className="flex gap-4">
-              <WildCTA variant="primary" href="/contact?interest=school-tour">{t('cons_school_btn_tour')}</WildCTA>
-              <WildCTA variant="outline" href="/contact?interest=resources">{t('cons_school_btn_dl')}</WildCTA>
-            </div>
-          </div>
-          <div className="lg:w-1/2 h-64 lg:h-auto relative">
-            <Image src="https://images.unsplash.com/photo-1549490349-8643362247b5?auto=format&fit=crop&q=80&w=1000" alt="Conservation Education" fill className="object-cover" />
-          </div>
-        </div>
       </section>
     </div>
   );
