@@ -158,6 +158,7 @@ export const translations: Record<string, TranslationDict> = {
     ha: "Kusantar da mutane ga halitta ta hanyar shirya fina-finai, yawon bude ido, da kiyaye dabbobin daji."
   },
   footer_rights: { en: "All Rights Reserved", ha: "Duk hakkoki mallaka ne." },
+  designed_by: { en: "Designed by IBK Technologies", ha: "Tsarin IBK Technologies" },
   footer_quick_links: { en: "Quick Links", ha: "Hanyoyi Masu Sauri" },
   footer_legal: { en: "Legal", ha: "Shari'a" },
   footer_privacy: { en: "Privacy Policy", ha: "Tsarin Tsare Sirri" },

@@ -128,7 +128,7 @@ export function Footer() {
         </div>
 
         <div className="pt-8 border-t border-wild-forest/50 flex flex-col md:flex-row justify-between items-center gap-4 text-wild-sand/50 text-xs font-sans">
-          <p>{t('footer_rights')}</p>
+          <p>{t('footer_rights')} · {t('designed_by')}</p>
           <div className="flex gap-6">
             <Link href="#" className="hover:text-wild-sunset transition-colors">{t('footer_privacy')}</Link>
             <Link href="#" className="hover:text-wild-sunset transition-colors">{t('footer_terms')}</Link>
