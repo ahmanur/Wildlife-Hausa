@@ -253,7 +253,7 @@ export const translations: Record<string, TranslationDict> = {
 
   // Documentaries page
   docs_hero_title: { en: "Nature Film Archive", ha: "Rumbun Fina-finan Daji" },
-  docs_hero_subtitle: { en: "Explore our collection of cinematic documentaries capturing the hidden wonders of the wild.", ha: "Kalli rumbun fina-finanmu na cinematic masu nuna abubuwan ban al'ajabi na daji." },
+  docs_hero_subtitle: { en: "Explore our territories, track our expeditions, and discover the wild spaces.", ha: "Bincika yankunanmu, bi sahun tafiye-tafiyenmu, kuma gano filayen daji." },
   docs_categories: { en: "Categories:", ha: "Rukunoni:" },
   docs_all_films: { en: "All Films", ha: "Duk Fina-finai" },
   docs_cat_wildlife: { en: "Wildlife", ha: "Dabbobin Daji" },
