@@ -109,7 +109,17 @@ function getLocalCache<T = any>(collectionName: string): (T & { id: string })[] 
   const stored = localStorage.getItem(key);
   if (stored) {
     try {
-      return JSON.parse(stored) as (T & { id: string })[];
+      const parsed = JSON.parse(stored) as (T & { id: string })[];
+      // Discard and reset cache if conservation notes are missing category or image fields
+      if (collectionName === COLLECTIONS.CONSERVATION_NOTES) {
+        const isOldSchema = parsed.some((item: any) => item.id.startsWith('mock-') && (!item.category || !item.image));
+        if (isOldSchema) {
+          const defaults = getDefaultMockData(collectionName);
+          localStorage.setItem(key, JSON.stringify(defaults));
+          return defaults as (T & { id: string })[];
+        }
+      }
+      return parsed;
     } catch (e) {
       console.error(`Failed to parse cache for ${collectionName}`, e);
     }
@@ -331,7 +341,26 @@ export async function getAdventureActivities() {
 
 /** Fetch all conservation notes. */
 export async function getConservationNotes() {
-  return fetchCollection<any>(COLLECTIONS.CONSERVATION_NOTES, orderBy('order', 'asc'));
+  const notes = await fetchCollection<any>(COLLECTIONS.CONSERVATION_NOTES, orderBy('order', 'asc'));
+  return notes.map(note => {
+    const mock = MOCK_CONSERVATION_NOTES.find(m => m.title === note.title || m.title_ha === note.title);
+    if (mock && (!note.category || !note.image)) {
+      return {
+        ...mock,
+        id: note.id,
+        ...note,
+        category: note.category || mock.category,
+        category_ha: note.category_ha || mock.category_ha,
+        subtitle: note.subtitle || mock.subtitle,
+        subtitle_ha: note.subtitle_ha || mock.subtitle_ha,
+        image: note.image || mock.image,
+        downloadUrl: note.downloadUrl || mock.downloadUrl,
+        title_ha: note.title_ha || mock.title_ha,
+        text_ha: note.text_ha || mock.text_ha,
+      };
+    }
+    return note;
+  });
 }
 
 /** Submit a contact enquiry. */

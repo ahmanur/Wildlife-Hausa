@@ -196,19 +196,43 @@ export const MOCK_ADVENTURE_ACTIVITIES = [
 export const MOCK_CONSERVATION_NOTES = [
   {
     title: "Habitat Preservation",
+    title_ha: "Kiyaye Muhallin Halitta",
     text: "Understanding the delicate balance of the Sahel ecosystem and our efforts to restore degraded lands.",
+    text_ha: "Fahimtar daidaiton muhallin Sahel da kokarinmu na dawo da yankunan da suka lalace ta hanyar kiyaye kasa.",
+    category: "Ecosystem",
+    category_ha: "Muhallin Daji",
+    subtitle: "Sahelian Soil & Plant Restoration · 2026",
+    subtitle_ha: "Gyaran Kasa da Shuke-shuke na Sahel · 2026",
+    image: "https://images.unsplash.com/photo-1500485035595-cbe6f645feb1?auto=format&fit=crop&q=80&w=800",
+    downloadUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
     icon: "Leaf",
     order: 1
   },
   {
     title: "Wildlife Facts",
+    title_ha: "Gaskiya Game da Dabbobi",
     text: "Did you know? The West African Giraffe was once on the brink of extinction. Learn about their incredible recovery.",
+    text_ha: "Ko kun sani? Rakumin Dajin Yammacin Afirka ya kusa bacewa a duniya. Koyi game da matakan da muka dauka don farfadowarsu.",
+    category: "Species Conservation",
+    category_ha: "Kiyaye Dabbobi",
+    subtitle: "West African Giraffe Recovery Program · 2025",
+    subtitle_ha: "Shirin Farfado da Rakumin Dajin Yammacin Afirka · 2025",
+    image: "https://images.unsplash.com/photo-1549490349-8643362247b5?auto=format&fit=crop&q=80&w=800",
+    downloadUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
     icon: "BookOpen",
     order: 2
   },
   {
     title: "Community Action",
+    title_ha: "Aikin Al'umma",
     text: "Conservation only works when local communities thrive. Discover our community-led anti-poaching initiatives.",
+    text_ha: "Aikin kiyaye muhalli yana samun nasara ne kawai idan al'umma ke ci gaba. Gano shirye-shiryenmu na hadin gwiwa da al'ummomin yankin.",
+    category: "Community Outreach",
+    category_ha: "Aikin Al'umma",
+    subtitle: "Anti-Poaching & Native Ranger Alliances · 2026",
+    subtitle_ha: "Yaki da Mafarauta da Hadin Kan Jami'an Daji · 2026",
+    image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80&w=800",
+    downloadUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
     icon: "HeartHandshake",
     order: 3
   }
