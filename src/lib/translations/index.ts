@@ -156,7 +156,7 @@ export const translations: Record<string, TranslationDict> = {
     en: "Bringing people closer to nature through filmmaking, eco-tourism, and active wildlife conservation.",
     ha: "Kusantar da mutane ga halitta ta hanyar shirya fina-finai, yawon bude ido, da kiyaye dabbobin daji."
   },
-  footer_rights: { en: "All rights reserved.", ha: "Duk hakkoki mallaka ne." },
+  footer_rights: { en: "All Rights Reserved", ha: "Duk hakkoki mallaka ne." },
   footer_quick_links: { en: "Quick Links", ha: "Hanyoyi Masu Sauri" },
   footer_legal: { en: "Legal", ha: "Shari'a" },
   footer_privacy: { en: "Privacy Policy", ha: "Tsarin Tsare Sirri" },
