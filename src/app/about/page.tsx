@@ -9,6 +9,8 @@ import { useLanguage } from '@/components/providers/LanguageProvider';
 import { getAboutContent } from '@/lib/firebase/services';
 import { translateAbout } from '@/lib/translations';
 
+import { Footprints, Users, Binoculars, BookOpen, Sprout, FlaskConical, Leaf } from 'lucide-react';
+
 const FALLBACK_CONTENT = {
   heroTitle: "About Us",
   heroSubtitle: "Wild Hausa is a dynamic, multi-disciplinary company dedicated to celebrating and preserving the natural world. We bridge the gap between immersive outdoor experiences and captivating digital storytelling.",
@@ -27,6 +29,18 @@ const FALLBACK_CONTENT = {
     { title: "Sustainable Logistics", text: "From solar-powered camps to minimal plastic use." },
     { title: "Scientific Support", text: "A percentage of our revenue funds ecological research." },
   ]
+};
+
+const getPrincipleIcon = (index: number) => {
+  const icons = [
+    <Footprints key="0" size={20} />,
+    <Users key="1" size={20} />,
+    <Binoculars key="2" size={20} />,
+    <BookOpen key="3" size={20} />,
+    <Sprout key="4" size={20} />,
+    <FlaskConical key="5" size={20} />,
+  ];
+  return icons[index] || <Leaf key="fallback" size={20} />;
 };
 
 export default function AboutPage() {
@@ -109,9 +123,14 @@ export default function AboutPage() {
       <section className="py-24 bg-wild-sand">
         <div className="container mx-auto px-6 lg:px-12">
           <WildSectionHeader title={translatedContent.principlesTitle} centered />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-12 max-w-6xl mx-auto">
             {translatedContent.principles?.map((principle: any, idx: number) => (
-              <PrincipleCard key={idx} title={principle.title} text={principle.text} />
+              <PrincipleCard 
+                key={idx} 
+                title={principle.title} 
+                text={principle.text} 
+                icon={getPrincipleIcon(idx)}
+              />
             ))}
           </div>
         </div>
@@ -126,14 +145,14 @@ export default function AboutPage() {
   );
 }
 
-function PrincipleCard({ title, text }: { title: string, text: string }) {
+function PrincipleCard({ title, text, icon }: { title: string, text: string, icon: React.ReactNode }) {
   return (
-    <div className="bg-white p-8 rounded-xl shadow-sm border border-wild-sand/50 hover:shadow-md transition-shadow h-full">
-      <div className="w-12 h-12 rounded-full border-2 border-wild-sunset flex items-center justify-center mb-6">
-        <div className="w-2 h-2 rounded-full bg-wild-sunset" />
+    <div className="bg-white p-6 rounded-2xl shadow-sm border border-wild-cream hover:shadow-md hover:border-wild-sunset/20 transition-all duration-300 h-full flex flex-col justify-start">
+      <div className="w-10 h-10 rounded-xl bg-wild-sunset/10 flex items-center justify-center mb-4 text-wild-sunset shrink-0">
+        {icon}
       </div>
-      <h3 className="font-serif text-2xl text-wild-forest font-bold mb-3">{title}</h3>
-      <p className="text-wild-muted leading-relaxed whitespace-pre-line">{text}</p>
+      <h3 className="font-serif text-lg md:text-xl text-wild-forest font-bold mb-2">{title}</h3>
+      <p className="text-wild-muted text-sm leading-relaxed whitespace-pre-line">{text}</p>
     </div>
   );
 }
