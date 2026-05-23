@@ -14,7 +14,7 @@ export const translations: Record<string, TranslationDict> = {
   expeditions: { en: "Expeditions", ha: "Tafiye-tafiye" },
   films: { en: "Films", ha: "Fina-finai" },
   map: { en: "Map", ha: "Taswira" },
-  field_journal: { en: "Field Journal", ha: "Littafin Daji" },
+  field_journal: { en: "Blog", ha: "Littafin Daji" },
   plan_journey: { en: "Plan Journey", ha: "Shirya Tafiya" },
   contact_us: { en: "Contact Us", ha: "Tuntube Mu" },
 
@@ -312,10 +312,10 @@ export const translations: Record<string, TranslationDict> = {
   adventure_book_btn: { en: "Book an Adventure", ha: "Aiko da Bukatar Wasa" },
 
   // Conservation Classroom Page
-  cons_field_notes: { en: "Field Journal", ha: "Littafin Daji" },
-  cons_hero_title: { en: "Field Journal", ha: "Littafin Daji" },
+  cons_field_notes: { en: "Blog", ha: "Littafin Daji" },
+  cons_hero_title: { en: "Blog", ha: "Littafin Daji" },
   cons_hero_subtitle: { en: "Explore our field logs, conservation updates, and wilderness journals.", ha: "Karanta rahotannin daji, labaran kiyaye muhalli, da sauran labarai." },
-  cons_loading: { en: "Loading field journals...", ha: "Ana loda littafin daji..." },
+  cons_loading: { en: "Loading blog entries...", ha: "Ana loda littafin daji..." },
   cons_school_title: { en: "School Programmes", ha: "Shirye-shiryen Makarantu" },
   cons_school_desc: { en: "We offer immersive educational modules for students of all ages. Bring your classroom into the wild or invite our conservation educators to your school for an interactive workshop.", ha: "Muna ba da kyawawan shirye-shiryen ilimi don dalibai na kowane shekaru. Ku kawo daliban ku zuwa daji ko ku gayyaci malamai zuwa makarantarku." },
   cons_school_btn_tour: { en: "Book a School Tour", ha: "Shirya Ziyarar Makaranta" },
