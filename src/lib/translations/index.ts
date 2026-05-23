@@ -540,11 +540,13 @@ export function translateActivity(activity: any, language: Language) {
 export function translateConservationNote(note: any, language: Language) {
   if (language === 'en') return note;
   
-  if (note.title_ha || note.text_ha) {
+  if (note.title_ha || note.text_ha || note.category_ha || note.subtitle_ha) {
     return {
       ...note,
       title: note.title_ha || note.title,
-      text: note.text_ha || note.text
+      text: note.text_ha || note.text,
+      category: note.category_ha || note.category,
+      subtitle: note.subtitle_ha || note.subtitle
     };
   }
 

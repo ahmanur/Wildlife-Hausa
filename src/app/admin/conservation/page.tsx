@@ -19,6 +19,12 @@ interface ConservationNote {
   text_ha?: string;
   icon: string;
   order: number;
+  category?: string;
+  category_ha?: string;
+  subtitle?: string;
+  subtitle_ha?: string;
+  image?: string;
+  downloadUrl?: string;
 }
 
 const AVAILABLE_ICONS = [
@@ -93,6 +99,93 @@ export default function AdminConservationPage() {
   const [text_ha, setTextHa] = useState('');
   const [icon, setIcon] = useState('Leaf');
   const [order, setOrder] = useState(1);
+  const [category, setCategory] = useState('');
+  const [category_ha, setCategoryHa] = useState('');
+  const [subtitle, setSubtitle] = useState('');
+  const [subtitle_ha, setSubtitleHa] = useState('');
+  const [image, setImage] = useState('');
+  const [downloadUrl, setDownloadUrl] = useState('');
+
+  // Upload States
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [imageProgress, setImageProgress] = useState(0);
+  const [uploadingDoc, setUploadingDoc] = useState(false);
+  const [docProgress, setDocProgress] = useState(0);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file.');
+      return;
+    }
+
+    setUploadingImage(true);
+    setImageProgress(0);
+
+    try {
+      const storageRef = ref(storage, `journal_images/${Date.now()}_${file.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      uploadTask.on(
+        'state_changed',
+        (snapshot) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setImageProgress(Math.round(progress));
+        },
+        (error) => {
+          console.error("Upload failed", error);
+          alert('Failed to upload image.');
+          setUploadingImage(false);
+        },
+        async () => {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          setImage(downloadURL);
+          setUploadingImage(false);
+        }
+      );
+    } catch (err) {
+      console.error(err);
+      setUploadingImage(false);
+      alert('Failed to initialize upload.');
+    }
+  };
+
+  const handleDocUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingDoc(true);
+    setDocProgress(0);
+
+    try {
+      const storageRef = ref(storage, `journal_docs/${Date.now()}_${file.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      uploadTask.on(
+        'state_changed',
+        (snapshot) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setDocProgress(Math.round(progress));
+        },
+        (error) => {
+          console.error("Upload failed", error);
+          alert('Failed to upload document.');
+          setUploadingDoc(false);
+        },
+        async () => {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          setDownloadUrl(downloadURL);
+          setUploadingDoc(false);
+        }
+      );
+    } catch (err) {
+      console.error(err);
+      setUploadingDoc(false);
+      alert('Failed to initialize upload.');
+    }
+  };
 
   // Worlds States
   const [worlds, setWorlds] = useState<any[]>([]);
@@ -157,6 +250,12 @@ export default function AdminConservationPage() {
     setTextHa('');
     setIcon('Leaf');
     setOrder(notes.length + 1);
+    setCategory('');
+    setCategoryHa('');
+    setSubtitle('');
+    setSubtitleHa('');
+    setImage('');
+    setDownloadUrl('');
     setError('');
     setIsModalOpen(true);
   };
@@ -169,6 +268,12 @@ export default function AdminConservationPage() {
     setTextHa(note.text_ha || '');
     setIcon(note.icon || 'Leaf');
     setOrder(note.order || 1);
+    setCategory(note.category || '');
+    setCategoryHa(note.category_ha || '');
+    setSubtitle(note.subtitle || '');
+    setSubtitleHa(note.subtitle_ha || '');
+    setImage(note.image || '');
+    setDownloadUrl(note.downloadUrl || '');
     setError('');
     setIsModalOpen(true);
   };
@@ -190,6 +295,12 @@ export default function AdminConservationPage() {
       text_ha,
       icon,
       order: Number(order) || 1,
+      category,
+      category_ha,
+      subtitle,
+      subtitle_ha,
+      image,
+      downloadUrl,
     };
 
     try {
@@ -377,10 +488,11 @@ export default function AdminConservationPage() {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-gray-50/75 border-b border-gray-100 text-xs font-bold text-gray-500 uppercase tracking-wider">
-                    <th className="px-6 py-4 w-16 text-center">Icon</th>
-                    <th className="px-6 py-4">Title (English / Hausa)</th>
-                    <th className="px-6 py-4">Text (English / Hausa)</th>
+                    <th className="px-6 py-4 w-20 text-center">Cover</th>
+                    <th className="px-6 py-4">Title & Details (English / Hausa)</th>
+                    <th className="px-6 py-4">Description (English / Hausa)</th>
                     <th className="px-6 py-4 w-20">Order</th>
+                    <th className="px-6 py-4 w-24">Download</th>
                     <th className="px-6 py-4 w-28 text-right">Actions</th>
                   </tr>
                 </thead>
@@ -389,19 +501,38 @@ export default function AdminConservationPage() {
                     notes.map((note) => (
                       <tr key={note.id} className="hover:bg-gray-50/50 transition-colors">
                         <td className="px-6 py-4 text-center">
-                          <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center border border-gray-100 mx-auto shadow-sm">
-                            {renderIcon(note.icon)}
+                          <div className="w-12 h-10 relative bg-gray-100 rounded-lg overflow-hidden border border-gray-200 mx-auto shadow-sm">
+                            <img 
+                              src={note.image || "https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&q=80&w=150"} 
+                              alt={note.title} 
+                              className="object-cover w-full h-full"
+                            />
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <div className="font-semibold text-gray-900">{note.title}</div>
-                          {note.title_ha && <div className="text-xs text-wild-sunset font-medium italic mt-0.5">HA: {note.title_ha}</div>}
+                          <div className="font-semibold text-gray-900 leading-tight">{note.title}</div>
+                          {note.subtitle && <div className="text-xs text-gray-500 mt-0.5">{note.subtitle}</div>}
+                          {note.category && (
+                            <span className="inline-block px-1.5 py-0.5 mt-1 text-[8px] font-bold bg-wild-cream text-wild-forest rounded uppercase tracking-wider">
+                              {note.category}
+                            </span>
+                          )}
+                          {note.title_ha && <div className="text-[10px] text-wild-sunset font-medium italic mt-0.5">HA: {note.title_ha}</div>}
                         </td>
                         <td className="px-6 py-4 max-w-xs md:max-w-md truncate">
                           <div className="truncate text-gray-600">{note.text}</div>
                           {note.text_ha && <div className="truncate text-xs text-wild-moss italic mt-0.5">HA: {note.text_ha}</div>}
                         </td>
                         <td className="px-6 py-4 font-semibold text-gray-600">{note.order}</td>
+                        <td className="px-6 py-4">
+                          {note.downloadUrl ? (
+                            <span className="text-xs text-green-600 font-medium flex items-center gap-1">
+                              <Check size={14} /> Yes
+                            </span>
+                          ) : (
+                            <span className="text-xs text-gray-400">No</span>
+                          )}
+                        </td>
                         <td className="px-6 py-4 text-right">
                           <div className="flex justify-end gap-2">
                             <button 
@@ -609,7 +740,6 @@ export default function AdminConservationPage() {
                   {error}
                 </div>
               )}
-
               <div>
                 <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Entry Title (English) *</label>
                 <input 
@@ -633,8 +763,102 @@ export default function AdminConservationPage() {
                 />
               </div>
 
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Category (English)</label>
+                  <input 
+                    type="text" 
+                    value={category} 
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="w-full px-3.5 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-wild-sunset text-sm"
+                    placeholder="e.g. PAST, CONSERVATION"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Category (Hausa)</label>
+                  <input 
+                    type="text" 
+                    value={category_ha} 
+                    onChange={(e) => setCategoryHa(e.target.value)}
+                    className="w-full px-3.5 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-wild-sunset text-sm"
+                    placeholder="e.g. NA DA, KIYAYEWA"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Subtitle/Details (English)</label>
+                  <input 
+                    type="text" 
+                    value={subtitle} 
+                    onChange={(e) => setSubtitle(e.target.value)}
+                    className="w-full px-3.5 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-wild-sunset text-sm"
+                    placeholder="e.g. University of Ilorin · 2018"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Subtitle/Details (Hausa)</label>
+                  <input 
+                    type="text" 
+                    value={subtitle_ha} 
+                    onChange={(e) => setSubtitleHa(e.target.value)}
+                    className="w-full px-3.5 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-wild-sunset text-sm"
+                    placeholder="e.g. Jami'ar Ilorin · 2018"
+                  />
+                </div>
+              </div>
+
               <div>
-                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Text Content (English) *</label>
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Cover Image URL</label>
+                <div className="flex gap-2">
+                  <input 
+                    type="text" 
+                    value={image} 
+                    onChange={(e) => setImage(e.target.value)}
+                    className="flex-1 px-3.5 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-wild-sunset text-sm bg-white"
+                    placeholder="https://images.unsplash.com/..."
+                  />
+                  <label className="flex items-center justify-center bg-white border border-gray-300 hover:border-wild-sunset text-gray-700 px-4 rounded-lg cursor-pointer transition-colors shadow-sm text-xs font-semibold shrink-0">
+                    <UploadCloud size={14} className="text-wild-sunset mr-1.5" />
+                    {uploadingImage ? `Uploading ${imageProgress}%` : 'Upload Image'}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                      disabled={uploadingImage}
+                    />
+                  </label>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Journal File/PDF URL</label>
+                <div className="flex gap-2">
+                  <input 
+                    type="text" 
+                    value={downloadUrl} 
+                    onChange={(e) => setDownloadUrl(e.target.value)}
+                    className="flex-1 px-3.5 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-wild-sunset text-sm bg-white"
+                    placeholder="https://firebasestorage.googleapis.com/..."
+                  />
+                  <label className="flex items-center justify-center bg-white border border-gray-300 hover:border-wild-sunset text-gray-700 px-4 rounded-lg cursor-pointer transition-colors shadow-sm text-xs font-semibold shrink-0">
+                    <UploadCloud size={14} className="text-wild-sunset mr-1.5" />
+                    {uploadingDoc ? `Uploading ${docProgress}%` : 'Upload PDF'}
+                    <input
+                      type="file"
+                      accept=".pdf,.doc,.docx,.txt"
+                      onChange={handleDocUpload}
+                      className="hidden"
+                      disabled={uploadingDoc}
+                    />
+                  </label>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Description (English) *</label>
                 <textarea 
                   rows={3}
                   value={text} 
@@ -646,7 +870,7 @@ export default function AdminConservationPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Text Content (Hausa)</label>
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Description (Hausa)</label>
                 <textarea 
                   rows={3}
                   value={text_ha} 
