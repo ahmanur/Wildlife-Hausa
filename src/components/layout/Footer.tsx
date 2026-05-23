@@ -128,11 +128,11 @@ export function Footer() {
         </div>
 
         <div className="pt-8 border-t border-wild-forest/50 flex flex-col md:flex-row justify-between items-center gap-4 text-wild-sand/50 text-xs font-sans">
-          <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-3 gap-y-1">
-            <span>{t('footer_rights')}</span>
-            <span className="text-wild-forest/30">·</span>
+          <div className="flex flex-wrap items-start justify-center md:justify-start gap-x-3 gap-y-1">
+            <span className="whitespace-pre-line">{t('footer_rights')}</span>
+            <span className="text-wild-sand/30">·</span>
             <Link href="#" className="hover:text-wild-sunset transition-colors">{t('footer_privacy')}</Link>
-            <span className="text-wild-forest/30">·</span>
+            <span className="text-wild-sand/30">·</span>
             <Link href="#" className="hover:text-wild-sunset transition-colors">{t('footer_terms')}</Link>
           </div>
           <div className="text-wild-sand/60 font-medium">
