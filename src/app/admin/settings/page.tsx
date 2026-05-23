@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { db, storage } from '@/lib/firebase/config';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { Loader2, Video, Languages, Plus, Trash2, Save, Play, Check, UploadCloud, Compass } from 'lucide-react';
+import { Loader2, Video, Languages, Plus, Trash2, Save, Play, Check, UploadCloud, Compass, Image as ImageIcon } from 'lucide-react';
 
 interface OverrideEntry {
   en: string;
@@ -34,6 +34,14 @@ const DEFAULT_OVERRIDES: Record<string, OverrideEntry> = {
   contact_val: { en: "hello@wildhausa.com | +234 800 WILD HAUSA", ha: "hello@wildhausa.com | +234 800 WILD HAUSA", label: "Contact Phone & Email Row (Footer/Contact Page, e.g., 'hello@wildhausa.com | +234...')", type: 'text' },
 };
 
+const DEFAULT_HERO_IMAGES: Record<string, string> = {
+  about: "https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&q=80&w=2000",
+  services: "https://images.unsplash.com/photo-1549490349-8643362247b5?auto=format&fit=crop&q=80&w=2000",
+  safaris: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=80&w=2000",
+  archive: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&q=80&w=2000",
+  blog: "https://images.unsplash.com/photo-1602491453979-54a3a1a7220c?auto=format&fit=crop&q=80&w=2000"
+};
+
 const DEFAULT_VIDEO_CLIPS = [
   "https://videos.pexels.com/video-files/855538/855538-hd_1920_1080_25fps.mp4",
   "https://videos.pexels.com/video-files/7710516/7710516-hd_1920_1080_25fps.mp4",
@@ -44,7 +52,7 @@ export default function AdminSettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
-  const [activeTab, setActiveTab] = useState<'copy' | 'videos'>('copy');
+  const [activeTab, setActiveTab] = useState<'copy' | 'videos' | 'hero_images'>('copy');
   const [error, setError] = useState('');
 
   // States for edited content
@@ -53,6 +61,11 @@ export default function AdminSettingsPage() {
   const [newVideoUrl, setNewVideoUrl] = useState('');
   const [uploadingVideo, setUploadingVideo] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+
+  // States for Hero Section Images
+  const [heroImages, setHeroImages] = useState<Record<string, string>>({});
+  const [uploadingHero, setUploadingHero] = useState<Record<string, boolean>>({});
+  const [heroProgress, setHeroProgress] = useState<Record<string, number>>({});
 
   useEffect(() => {
     async function loadSettings() {
@@ -63,12 +76,16 @@ export default function AdminSettingsPage() {
 
         let overridesVal: Record<string, { en: string; ha: string }> = {};
         let videosVal: string[] = DEFAULT_VIDEO_CLIPS;
+        let heroImagesVal: Record<string, string> = {};
 
         if (docSnap.exists()) {
           const data = docSnap.data();
           overridesVal = data.overrides || {};
           if ('hero_videos' in data) {
             videosVal = data.hero_videos;
+          }
+          if ('hero_images' in data) {
+            heroImagesVal = data.hero_images || {};
           }
         }
 
@@ -81,8 +98,15 @@ export default function AdminSettingsPage() {
           };
         });
 
+        // Initialize heroImages with values from firestore, merging with DEFAULT_HERO_IMAGES for keys
+        const mergedHeroImages: Record<string, string> = {};
+        Object.keys(DEFAULT_HERO_IMAGES).forEach(key => {
+          mergedHeroImages[key] = heroImagesVal[key] || DEFAULT_HERO_IMAGES[key];
+        });
+
         setCopyOverrides(mergedCopy);
         setVideoUrls(videosVal);
+        setHeroImages(mergedHeroImages);
       } catch (err) {
         console.error('Failed to load settings:', err);
         setError('Failed to fetch settings from Firestore database.');
@@ -131,11 +155,11 @@ export default function AdminSettingsPage() {
 
       uploadTask.on(
         'state_changed',
-        (snapshot) => {
+        (snapshot: any) => {
           const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           setUploadProgress(Math.round(progress));
         },
-        (error) => {
+        (error: any) => {
           console.error("Upload failed", error);
           alert('Failed to upload video.');
           setUploadingVideo(false);
@@ -157,6 +181,50 @@ export default function AdminSettingsPage() {
     setVideoUrls(videoUrls.filter((_, i) => i !== index));
   };
 
+  const handleHeroImageUrlChange = (pageKey: string, value: string) => {
+    setHeroImages(prev => ({ ...prev, [pageKey]: value }));
+  };
+
+  const handleHeroImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, pageKey: string) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file.');
+      return;
+    }
+
+    setUploadingHero(prev => ({ ...prev, [pageKey]: true }));
+    setHeroProgress(prev => ({ ...prev, [pageKey]: 0 }));
+
+    try {
+      const storageRef = ref(storage, `hero_images/${pageKey}_${Date.now()}_${file.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      uploadTask.on(
+        'state_changed',
+        (snapshot: any) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setHeroProgress(prev => ({ ...prev, [pageKey]: Math.round(progress) }));
+        },
+        (error: any) => {
+          console.error("Upload failed", error);
+          alert('Failed to upload image.');
+          setUploadingHero(prev => ({ ...prev, [pageKey]: false }));
+        },
+        async () => {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          setHeroImages(prev => ({ ...prev, [pageKey]: downloadURL }));
+          setUploadingHero(prev => ({ ...prev, [pageKey]: false }));
+        }
+      );
+    } catch (err) {
+      console.error(err);
+      setUploadingHero(prev => ({ ...prev, [pageKey]: false }));
+      alert('Failed to initialize upload.');
+    }
+  };
+
   const handleSave = async () => {
     setSaving(true);
     setError('');
@@ -167,6 +235,7 @@ export default function AdminSettingsPage() {
       await setDoc(docRef, {
         overrides: copyOverrides,
         hero_videos: videoUrls,
+        hero_images: heroImages,
         updatedAt: new Date()
       }, { merge: true });
 
@@ -245,11 +314,21 @@ export default function AdminSettingsPage() {
           <span>Homepage Hero Videos</span>
         </button>
 
-
+        <button
+          onClick={() => setActiveTab('hero_images')}
+          className={`pb-4 border-b-2 flex items-center gap-2 transition-colors ${
+            activeTab === 'hero_images' 
+              ? 'border-wild-sunset text-wild-sunset' 
+              : 'border-transparent text-gray-500 hover:text-gray-800'
+          }`}
+        >
+          <ImageIcon size={16} />
+          <span>Hero Images</span>
+        </button>
       </div>
 
       {/* Content panes */}
-      {activeTab === 'copy' ? (
+      {activeTab === 'copy' && (
         <div className="space-y-6 bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
           <h3 className="font-serif font-bold text-gray-800 border-b border-gray-100 pb-3 mb-4">Static Copy overrides</h3>
           
@@ -307,7 +386,9 @@ export default function AdminSettingsPage() {
             );
           })}
         </div>
-      ) : (
+      )}
+
+      {activeTab === 'videos' && (
         <div className="space-y-6 bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
           <div>
             <h3 className="font-serif font-bold text-gray-800">Slideshow Videos List</h3>
@@ -378,6 +459,99 @@ export default function AdminSettingsPage() {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'hero_images' && (
+        <div className="space-y-6 bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+          <div>
+            <h3 className="font-serif font-bold text-gray-800">Navbar Pages Hero Images</h3>
+            <p className="text-gray-500 text-xs mt-0.5">Manage the background images displayed in the top hero banner sections of each main page.</p>
+          </div>
+
+          <div className="space-y-8">
+            {[
+              { key: 'about', label: 'About Page (Our Story)', desc: 'Header image for the Our Story page.' },
+              { key: 'services', label: 'Services Page (Worlds)', desc: 'Header image for the Services / Our Wild Worlds page.' },
+              { key: 'safaris', label: 'Safaris Page (Expeditions)', desc: 'Header image for the Safari Routes & Expeditions page.' },
+              { key: 'archive', label: 'Archive Page (Documentaries)', desc: 'Header image for the Film Archive / Documentaries page.' },
+              { key: 'blog', label: 'Blog Page (Field Journal)', desc: 'Header image for the Blog / Field Journal page.' }
+            ].map((page) => {
+              const currentUrl = heroImages[page.key] || DEFAULT_HERO_IMAGES[page.key];
+              const isUploading = uploadingHero[page.key] || false;
+              const progress = heroProgress[page.key] || 0;
+
+              return (
+                <div key={page.key} className="p-5 bg-gray-50 rounded-xl border border-gray-200 flex flex-col md:flex-row gap-6">
+                  {/* Left: Input fields */}
+                  <div className="flex-1 space-y-4">
+                    <div>
+                      <h4 className="text-sm font-bold text-wild-deep-forest">{page.label}</h4>
+                      <p className="text-xs text-gray-400 mt-0.5">{page.desc}</p>
+                    </div>
+
+                    <div className="space-y-3">
+                      {/* Option 1: URL input */}
+                      <div>
+                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Image URL</label>
+                        <input
+                          type="url"
+                          value={currentUrl}
+                          onChange={(e) => handleHeroImageUrlChange(page.key, e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs text-gray-800 focus:outline-none focus:border-wild-sunset bg-white"
+                          placeholder="https://example.com/image.jpg"
+                        />
+                      </div>
+
+                      {/* Option 2: Upload file */}
+                      <div>
+                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Or Upload Image File</label>
+                        <div className="flex items-center gap-3">
+                          <label className="flex items-center gap-1.5 bg-white border border-gray-300 hover:border-wild-sunset text-gray-700 px-3 py-1.5 rounded-lg cursor-pointer transition-colors shadow-sm text-xs font-medium">
+                            <UploadCloud size={14} className="text-wild-sunset" />
+                            {isUploading ? `Uploading ${progress}%` : 'Select File'}
+                            <input 
+                              type="file" 
+                              accept="image/*" 
+                              onChange={(e) => handleHeroImageUpload(e, page.key)}
+                              className="hidden"
+                              disabled={isUploading}
+                            />
+                          </label>
+                          {isUploading && (
+                            <div className="w-24 bg-gray-200 rounded-full h-1.5">
+                              <div className="bg-wild-sunset h-1.5 rounded-full transition-all duration-300" style={{ width: `${progress}%` }}></div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right: Image Preview */}
+                  <div className="w-full md:w-48 shrink-0 flex flex-col justify-center items-center bg-gray-150 rounded-lg border border-gray-200 overflow-hidden relative group min-h-[120px]">
+                    {currentUrl ? (
+                      <>
+                        <img 
+                          src={currentUrl} 
+                          alt={`${page.label} Preview`} 
+                          className="w-full h-full object-cover min-h-[120px]"
+                          onError={(e) => {
+                            (e.target as HTMLElement).style.display = 'none';
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white text-[10px] font-medium pointer-events-none">
+                          Image Preview
+                        </div>
+                      </>
+                    ) : (
+                      <span className="text-xs text-gray-400">No Image Selected</span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

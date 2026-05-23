@@ -2,14 +2,14 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { FileDown, X, ArrowRight, BookOpen } from 'lucide-react';
+import { ArrowLeft, ArrowRight, FileDown } from 'lucide-react';
 import { getConservationNotes } from '@/lib/firebase/services';
 import { useLanguage } from '@/components/providers/LanguageProvider';
 import { translateConservationNote } from '@/lib/translations';
 import { WildCTA } from '@/components/ui/WildCTA';
 
 export default function ConservationPage() {
-  const { language, t } = useLanguage();
+  const { language, t, settings } = useLanguage();
   const [notes, setNotes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeNote, setActiveNote] = useState<any>(null);
@@ -30,6 +30,90 @@ export default function ConservationPage() {
 
   const translatedNotes = notes.map(note => translateConservationNote(note, language));
 
+  if (activeNote) {
+    return (
+      <div className="flex flex-col min-h-screen bg-wild-sand">
+        {/* Full Page Blog Post Header Banner */}
+        <section className="pt-44 pb-24 bg-wild-deep-forest relative overflow-hidden flex items-end min-h-[40vh] md:min-h-[45vh]">
+          {/* Overlay for premium dark cinematic atmosphere */}
+          <div className="absolute inset-0 bg-black/55 z-10 pointer-events-none" />
+          <div className="absolute inset-0 opacity-60" style={{
+            backgroundImage: `url("${activeNote.image || "https://images.unsplash.com/photo-1602491453979-54a3a1a7220c?auto=format&fit=crop&q=80&w=2000"}")`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center 35%',
+          }} />
+          
+          <div className="relative z-20 container mx-auto px-6 lg:px-16">
+            {activeNote.category && (
+              <span className="inline-block mb-4 px-3 py-1 bg-wild-sunset text-white text-xs font-bold tracking-widest uppercase rounded">
+                {activeNote.category}
+              </span>
+            )}
+            <h1 className="font-serif text-4xl md:text-6xl text-white font-bold leading-tight drop-shadow-lg max-w-4xl">
+              {activeNote.title}
+            </h1>
+          </div>
+        </section>
+
+        {/* Blog Post Detailed Content Section */}
+        <section className="py-16 container mx-auto px-6 lg:px-16 flex-grow">
+          <div className="max-w-4xl mx-auto">
+            {/* Back Button */}
+            <button 
+              onClick={() => {
+                setActiveNote(null);
+                window.scrollTo(0, 0);
+              }}
+              className="inline-flex items-center gap-2 text-wild-forest hover:text-wild-sunset font-bold text-sm mb-8 transition-colors duration-300 group cursor-pointer"
+            >
+              <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+              <span>{t('back_to_blog')}</span>
+            </button>
+
+            {/* Premium detailed card layout */}
+            <div className="bg-white p-8 md:p-12 rounded-[2rem] shadow-sm border border-wild-sand flex flex-col">
+              {/* Tagline / Subtitle Details */}
+              {activeNote.subtitle && (
+                <p className="text-sm font-sans text-wild-muted mb-8 leading-relaxed italic border-l-4 border-wild-sunset pl-4">
+                  {activeNote.subtitle}
+                </p>
+              )}
+
+              {/* Body Text */}
+              <div className="text-wild-forest/90 text-lg leading-relaxed whitespace-pre-wrap font-sans mb-10">
+                {activeNote.text}
+              </div>
+
+              {/* Action Buttons Row */}
+              <div className="border-t border-wild-sand/80 pt-8 flex flex-wrap gap-4 mt-auto">
+                {activeNote.downloadUrl && (
+                  <WildCTA 
+                    variant="primary"
+                    href={activeNote.downloadUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <FileDown size={18} />
+                    <span>{t('download_journal')}</span>
+                  </WildCTA>
+                )}
+                <WildCTA 
+                  variant="outline"
+                  onClick={() => {
+                    setActiveNote(null);
+                    window.scrollTo(0, 0);
+                  }}
+                >
+                  {t('back_to_blog')}
+                </WildCTA>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-wild-sand">
       {/* Blog Page Hero Banner */}
@@ -37,7 +121,7 @@ export default function ConservationPage() {
         {/* Overlay for premium dark cinematic atmosphere */}
         <div className="absolute inset-0 bg-black/45 z-10 pointer-events-none" />
         <div className="absolute inset-0 opacity-55" style={{
-          backgroundImage: 'url("https://images.unsplash.com/photo-1602491453979-54a3a1a7220c?auto=format&fit=crop&q=80&w=2000")',
+          backgroundImage: `url("${settings?.hero_images?.blog || "https://images.unsplash.com/photo-1602491453979-54a3a1a7220c?auto=format&fit=crop&q=80&w=2000"}")`,
           backgroundSize: 'cover',
           backgroundPosition: 'center 35%',
         }} />
@@ -66,101 +150,22 @@ export default function ConservationPage() {
                 subtitle={note.subtitle}
                 image={note.image}
                 downloadUrl={note.downloadUrl}
-                onReadMore={() => setActiveNote(note)}
+                onReadMore={() => {
+                  setActiveNote(note);
+                  window.scrollTo(0, 0);
+                }}
               />
             ))}
           </div>
         )}
       </section>
-
-      {/* Premium Interactive Detail Modal (Services Design System) */}
-      {activeNote && (
-        <div 
-          className="fixed inset-0 z-[10000] flex items-center justify-center p-4 md:p-6 bg-black/80 backdrop-blur-md animate-fade-in"
-          onClick={() => setActiveNote(null)}
-        >
-          <div 
-            className="bg-white rounded-[2rem] max-w-2xl w-full max-h-[90vh] overflow-y-auto relative shadow-2xl border border-wild-sand flex flex-col p-3 animate-fade-in-up"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Modal Hero Image */}
-            <div className="relative w-full h-64 md:h-80 shrink-0 rounded-[1.5rem] overflow-hidden bg-wild-sand">
-              <Image 
-                src={activeNote.image || "https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&q=80&w=800"} 
-                alt={activeNote.title} 
-                fill 
-                className="object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent opacity-90" />
-              <button 
-                onClick={() => setActiveNote(null)}
-                className="absolute top-4 right-4 bg-black/35 hover:bg-wild-sunset text-white hover:text-white rounded-full p-2.5 backdrop-blur-md border border-white/10 hover:border-transparent transition-all duration-300 cursor-pointer shadow-lg hover:scale-105 group z-20"
-                aria-label="Close modal"
-              >
-                <X size={18} className="group-hover:rotate-90 transition-transform duration-300" />
-              </button>
-            </div>
-            
-            {/* Modal Body Content */}
-            <div className="p-8 overflow-y-auto flex flex-col flex-grow">
-              {/* Subtitle / Tagline */}
-              {activeNote.category && (
-                <span className="text-xs font-bold tracking-widest font-sans uppercase text-wild-sunset mb-2 block">
-                  {activeNote.category}
-                </span>
-              )}
-              
-              {/* Title */}
-              <h2 className="font-serif text-3xl text-wild-forest font-bold mb-3 leading-tight">
-                {activeNote.title}
-              </h2>
-              
-              {/* Subtitle details */}
-              {activeNote.subtitle && (
-                <p className="text-xs font-sans text-wild-muted mb-6">
-                  {activeNote.subtitle}
-                </p>
-              )}
-
-              {/* Separation line */}
-              <div className="border-t border-wild-sand/80 my-2" />
-              
-              {/* Description */}
-              <div className="text-wild-forest/80 text-base leading-relaxed mb-8 whitespace-pre-wrap font-sans">
-                {activeNote.text}
-              </div>
-              
-              {/* Action Buttons */}
-              <div className="flex flex-wrap gap-4 border-t border-wild-sand/80 pt-6 mt-auto">
-                {activeNote.downloadUrl && (
-                  <WildCTA 
-                    variant="primary"
-                    href={activeNote.downloadUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2"
-                  >
-                    <FileDown size={16} />
-                    <span>{t('download_journal')}</span>
-                  </WildCTA>
-                )}
-                <WildCTA 
-                  variant="outline"
-                  onClick={() => setActiveNote(null)}
-                >
-                  {t('close_btn')}
-                </WildCTA>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
 
 function FieldNoteCard({ title, text, category, subtitle, image, downloadUrl, onReadMore }: any) {
   const fallbackImage = "https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&q=80&w=800";
+  const { t } = useLanguage();
   
   return (
     <div className="bg-white rounded-[2rem] overflow-hidden shadow-sm border border-wild-sand hover:shadow-xl transition-all duration-500 flex flex-col h-full group p-2">
@@ -175,12 +180,6 @@ function FieldNoteCard({ title, text, category, subtitle, image, downloadUrl, on
           fill 
           className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
         />
-        {/* Category Pill Overlay */}
-        {category && (
-          <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider text-wild-forest z-10 shadow-sm flex items-center gap-1.5">
-            <BookOpen size={13} className="text-wild-sunset" /> {category}
-          </div>
-        )}
       </div>
       
       {/* Text Content container */}
@@ -211,20 +210,9 @@ function FieldNoteCard({ title, text, category, subtitle, image, downloadUrl, on
             onClick={onReadMore}
             className="inline-flex items-center gap-2 text-wild-sunset font-bold text-sm tracking-wide group-hover:underline"
           >
-            <span>READ MORE</span>
+            <span>{t('read_more')}</span>
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
           </button>
-          {downloadUrl && (
-            <a 
-              href={downloadUrl} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="w-10 h-10 rounded-full bg-wild-sunset text-white flex items-center justify-center hover:bg-[#FF8C42] hover:scale-105 transition-all shadow-md"
-              title="Download Journal"
-            >
-              <FileDown size={18} />
-            </a>
-          )}
         </div>
       </div>
     </div>

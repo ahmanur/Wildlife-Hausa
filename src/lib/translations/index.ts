@@ -316,6 +316,8 @@ export const translations: Record<string, TranslationDict> = {
   cons_hero_title: { en: "Blog", ha: "Littafin Daji" },
   cons_hero_subtitle: { en: "Explore our field logs, conservation updates, and wilderness journals.", ha: "Karanta rahotannin daji, labaran kiyaye muhalli, da sauran labarai." },
   cons_loading: { en: "Loading blog entries...", ha: "Ana loda littafin daji..." },
+  back_to_blog: { en: "Back to Blog", ha: "Koma ga Blog" },
+  read_more: { en: "READ MORE", ha: "KARA KARANTAWA" },
   cons_school_title: { en: "School Programmes", ha: "Shirye-shiryen Makarantu" },
   cons_school_desc: { en: "We offer immersive educational modules for students of all ages. Bring your classroom into the wild or invite our conservation educators to your school for an interactive workshop.", ha: "Muna ba da kyawawan shirye-shiryen ilimi don dalibai na kowane shekaru. Ku kawo daliban ku zuwa daji ko ku gayyaci malamai zuwa makarantarku." },
   cons_school_btn_tour: { en: "Book a School Tour", ha: "Shirya Ziyarar Makaranta" },

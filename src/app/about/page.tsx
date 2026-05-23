@@ -44,7 +44,7 @@ const getPrincipleIcon = (index: number) => {
 };
 
 export default function AboutPage() {
-  const { language, t } = useLanguage();
+  const { language, t, settings } = useLanguage();
   const [content, setContent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -83,7 +83,7 @@ export default function AboutPage() {
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 bg-wild-deep-forest text-wild-cream overflow-hidden">
         <div className="absolute inset-0 opacity-30" style={{
-          backgroundImage: `url("${translatedContent.heroImage || FALLBACK_CONTENT.heroImage}")`,
+          backgroundImage: `url("${settings?.hero_images?.about || translatedContent.heroImage || FALLBACK_CONTENT.heroImage}")`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }} />

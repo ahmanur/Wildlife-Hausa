@@ -11,7 +11,7 @@ import { translateSafari, formatSafariPrice, parsePrice } from '@/lib/translatio
 import { useSearchParams } from 'next/navigation';
 
 function SafarisContent() {
-  const { language, t } = useLanguage();
+  const { language, t, settings } = useLanguage();
   const searchParams = useSearchParams();
   const searchLocation = searchParams.get('location')?.toLowerCase() || '';
   // Date parameter exists, but usually safaris are not purely date-filtered unless there's a strict schedule. 
@@ -84,7 +84,7 @@ function SafarisContent() {
     <div className="flex flex-col min-h-screen bg-wild-sand">
       <section className="pt-32 pb-20 bg-wild-deep-forest text-center relative overflow-hidden">
         <div className="absolute inset-0 opacity-20" style={{
-          backgroundImage: 'url("https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=80&w=2000")',
+          backgroundImage: `url("${settings?.hero_images?.safaris || "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=80&w=2000"}")`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }} />

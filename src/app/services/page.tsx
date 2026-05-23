@@ -101,7 +101,7 @@ const FALLBACK_CONTENT = {
 };
 
 export default function ServicesPage() {
-  const { language, t } = useLanguage();
+  const { language, t, settings } = useLanguage();
   const [content, setContent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -138,12 +138,19 @@ export default function ServicesPage() {
   return (
     <div className="flex flex-col min-h-screen bg-wild-cream">
       {/* Hero Section */}
-      <section className="pt-32 pb-20 bg-wild-sand text-center">
-        <div className="container mx-auto px-6 max-w-4xl">
-          <h1 className="font-serif text-5xl md:text-7xl text-wild-forest font-bold mb-6">{translatedContent.heroTitle}</h1>
-          <p className="text-xl text-wild-muted font-sans leading-relaxed whitespace-pre-line">
-            {translatedContent.heroSubtitle}
-          </p>
+      <section className="relative pt-32 pb-20 bg-wild-deep-forest text-wild-cream overflow-hidden">
+        <div className="absolute inset-0 opacity-30" style={{
+          backgroundImage: `url("${settings?.hero_images?.services || "https://images.unsplash.com/photo-1549490349-8643362247b5?auto=format&fit=crop&q=80&w=2000"}")`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }} />
+        <div className="relative z-10 container mx-auto px-6 lg:px-12 text-center md:text-left">
+          <div className="max-w-3xl mx-auto md:mx-0">
+            <h1 className="font-serif text-5xl md:text-7xl font-bold mb-6">{translatedContent.heroTitle}</h1>
+            <p className="text-xl text-wild-sand/90 font-sans leading-relaxed whitespace-pre-line">
+              {translatedContent.heroSubtitle}
+            </p>
+          </div>
         </div>
       </section>
 

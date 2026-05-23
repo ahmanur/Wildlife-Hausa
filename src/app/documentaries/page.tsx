@@ -10,7 +10,7 @@ import { translateMediaItem } from '@/lib/translations';
 import { VideoModal } from '@/components/ui/VideoModal';
 
 export default function DocumentariesPage() {
-  const { language, t } = useLanguage();
+  const { language, t, settings } = useLanguage();
   const [films, setFilms] = useState<any[]>([]);
   const [filteredFilms, setFilteredFilms] = useState<any[]>([]);
   const [activeFilter, setActiveFilter] = useState('All');
@@ -53,10 +53,15 @@ export default function DocumentariesPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-wild-deep-forest text-wild-cream">
-      <section className="pt-32 pb-20 bg-black/40 text-center relative">
-        <div className="container mx-auto px-6 max-w-4xl relative z-10">
-          <h1 className="font-serif text-5xl md:text-7xl font-bold mb-6">{t('docs_hero_title')}</h1>
-          <p className="text-xl text-wild-sand/80 font-sans leading-relaxed">
+      <section className="relative pt-32 pb-20 bg-wild-deep-forest text-center overflow-hidden">
+        <div className="absolute inset-0 opacity-20" style={{
+          backgroundImage: `url("${settings?.hero_images?.archive || "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&q=80&w=2000"}")`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }} />
+        <div className="relative z-10 container mx-auto px-6 max-w-4xl">
+          <h1 className="font-serif text-5xl md:text-7xl text-wild-cream font-bold mb-6">{t('docs_hero_title')}</h1>
+          <p className="text-xl text-wild-sand/90 font-sans leading-relaxed">
             {t('docs_hero_subtitle')}
           </p>
         </div>
