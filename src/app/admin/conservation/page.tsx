@@ -202,20 +202,20 @@ export default function AdminConservationPage() {
       await loadNotes();
     } catch (err) {
       console.error(err);
-      setError('An error occurred while saving the conservation note.');
+      setError('An error occurred while saving the field journal entry.');
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this conservation note?')) return;
+    if (!confirm('Are you sure you want to delete this field journal entry?')) return;
     try {
       await removeDocument(COLLECTIONS.CONSERVATION_NOTES, id);
       await loadNotes();
     } catch (err) {
       console.error(err);
-      alert('Failed to delete note.');
+      alert('Failed to delete entry.');
     }
   };
 
@@ -305,10 +305,10 @@ export default function AdminConservationPage() {
     <div>
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-serif font-bold text-gray-900">Conservation Notes</h1>
+          <h1 className="text-3xl font-serif font-bold text-gray-900">Field Journal</h1>
           <p className="text-gray-500 mt-1">
             {activeTab === 'notes' 
-              ? 'Manage notes displayed on the Conservation Classroom page.' 
+              ? 'Manage entries displayed on the Field Journal page.' 
               : 'Customize titles, descriptions, and media for the Four Worlds of Wild Hausa.'}
           </p>
         </div>
@@ -318,7 +318,7 @@ export default function AdminConservationPage() {
             className="flex items-center gap-2 bg-wild-sunset hover:bg-wild-sunset/90 text-white px-4 py-2.5 rounded-lg transition-colors font-medium text-sm shadow-sm self-start sm:self-auto"
           >
             <Plus size={16} />
-            <span>Add Note</span>
+            <span>Add Entry</span>
           </button>
         ) : (
           <button 
@@ -349,7 +349,7 @@ export default function AdminConservationPage() {
           }`}
         >
           <BookOpen size={16} />
-          <span>Conservation Notes List</span>
+          <span>Field Journal Entries</span>
         </button>
 
         <button
@@ -369,7 +369,7 @@ export default function AdminConservationPage() {
         loading ? (
           <div className="flex flex-col items-center justify-center min-h-[400px]">
             <Loader2 className="w-10 h-10 animate-spin text-wild-sunset mb-2" />
-            <p className="text-gray-500 font-serif">Loading conservation notes...</p>
+            <p className="text-gray-500 font-serif">Loading field journal...</p>
           </div>
         ) : (
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -425,7 +425,7 @@ export default function AdminConservationPage() {
                   ) : (
                     <tr>
                       <td colSpan={5} className="px-6 py-12 text-center text-gray-500 font-serif">
-                        No notes found. Seed or create some to get started!
+                        No journal entries found. Create one to get started!
                       </td>
                     </tr>
                   )}
@@ -596,7 +596,7 @@ export default function AdminConservationPage() {
           <div className="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-xl border border-gray-100">
             <div className="px-6 py-4 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
               <h3 className="font-serif font-bold text-lg text-gray-900">
-                {currentNote ? 'Edit Conservation Note' : 'Add New Note'}
+                {currentNote ? 'Edit Field Journal Entry' : 'Add New Entry'}
               </h3>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 p-1">
                 <X size={20} />
@@ -611,7 +611,7 @@ export default function AdminConservationPage() {
               )}
 
               <div>
-                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Note Title (English) *</label>
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Entry Title (English) *</label>
                 <input 
                   type="text" 
                   value={title} 
@@ -623,7 +623,7 @@ export default function AdminConservationPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Note Title (Hausa)</label>
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Entry Title (Hausa)</label>
                 <input 
                   type="text" 
                   value={title_ha} 
@@ -699,7 +699,7 @@ export default function AdminConservationPage() {
                   className="flex items-center gap-1.5 bg-wild-sunset hover:bg-wild-sunset/90 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm disabled:opacity-50"
                 >
                   {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
-                  <span>Save Note</span>
+                  <span>Save Entry</span>
                 </button>
               </div>
             </form>

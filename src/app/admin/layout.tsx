@@ -132,7 +132,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     <SidebarLink href="/admin/map-locations" icon={<MapIcon size={18} />} text="Map Locations" active={pathname.startsWith('/admin/map-locations')} />
                     <SidebarLink href="/admin/content" icon={<Video size={18} />} text="Content & Films" active={pathname.startsWith('/admin/content')} />
                     <SidebarLink href="/admin/activities" icon={<Activity size={18} />} text="Adventure Activities" active={pathname.startsWith('/admin/activities')} />
-                    <SidebarLink href="/admin/conservation" icon={<BookOpen size={18} />} text="Conservation Notes" active={pathname.startsWith('/admin/conservation')} />
+                    <SidebarLink href="/admin/conservation" icon={<BookOpen size={18} />} text="Field Journal" active={pathname.startsWith('/admin/conservation')} />
                     <SidebarLink href="/admin/about" icon={<FileText size={18} />} text="About Page" active={pathname.startsWith('/admin/about')} />
                     <SidebarLink href="/admin/services" icon={<FileText size={18} />} text="Services Page" active={pathname.startsWith('/admin/services')} />
                     <SidebarLink href="/admin/settings" icon={<Settings size={18} />} text="Settings" active={pathname.startsWith('/admin/settings')} />
@@ -229,7 +229,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         <SidebarLink href="/admin/map-locations" icon={<MapIcon size={18} />} text="Map Locations" active={pathname.startsWith('/admin/map-locations')} onClick={() => setIsMobileDrawerOpen(false)} />
                         <SidebarLink href="/admin/content" icon={<Video size={18} />} text="Content & Films" active={pathname.startsWith('/admin/content')} onClick={() => setIsMobileDrawerOpen(false)} />
                         <SidebarLink href="/admin/activities" icon={<Activity size={18} />} text="Adventure Activities" active={pathname.startsWith('/admin/activities')} onClick={() => setIsMobileDrawerOpen(false)} />
-                        <SidebarLink href="/admin/conservation" icon={<BookOpen size={18} />} text="Conservation Notes" active={pathname.startsWith('/admin/conservation')} onClick={() => setIsMobileDrawerOpen(false)} />
+                        <SidebarLink href="/admin/conservation" icon={<BookOpen size={18} />} text="Field Journal" active={pathname.startsWith('/admin/conservation')} onClick={() => setIsMobileDrawerOpen(false)} />
                         <SidebarLink href="/admin/about" icon={<FileText size={18} />} text="About Page" active={pathname.startsWith('/admin/about')} onClick={() => setIsMobileDrawerOpen(false)} />
                         <SidebarLink href="/admin/services" icon={<FileText size={18} />} text="Services Page" active={pathname.startsWith('/admin/services')} onClick={() => setIsMobileDrawerOpen(false)} />
                         <SidebarLink href="/admin/settings" icon={<Settings size={18} />} text="Settings" active={pathname.startsWith('/admin/settings')} onClick={() => setIsMobileDrawerOpen(false)} />

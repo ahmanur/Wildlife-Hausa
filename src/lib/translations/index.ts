@@ -311,10 +311,10 @@ export const translations: Record<string, TranslationDict> = {
   adventure_book_btn: { en: "Book an Adventure", ha: "Aiko da Bukatar Wasa" },
 
   // Conservation Classroom Page
-  cons_field_notes: { en: "Field Notes", ha: "Bayanin Daji" },
-  cons_hero_title: { en: "Conservation Classroom", ha: "Koyar da Kiyaye Muhalli" },
-  cons_hero_subtitle: { en: "Learn, protect, and advocate for the wild.", ha: "Koya, kare, da kuma tallafawa daji." },
-  cons_loading: { en: "Loading conservation notes...", ha: "Ana loda bayanan kiyaye daji..." },
+  cons_field_notes: { en: "Field Journal", ha: "Littafin Daji" },
+  cons_hero_title: { en: "Field Journal", ha: "Littafin Daji" },
+  cons_hero_subtitle: { en: "Explore our field logs, conservation updates, and wilderness journals.", ha: "Karanta rahotannin daji, labaran kiyaye muhalli, da sauran labarai." },
+  cons_loading: { en: "Loading field journals...", ha: "Ana loda littafin daji..." },
   cons_school_title: { en: "School Programmes", ha: "Shirye-shiryen Makarantu" },
   cons_school_desc: { en: "We offer immersive educational modules for students of all ages. Bring your classroom into the wild or invite our conservation educators to your school for an interactive workshop.", ha: "Muna ba da kyawawan shirye-shiryen ilimi don dalibai na kowane shekaru. Ku kawo daliban ku zuwa daji ko ku gayyaci malamai zuwa makarantarku." },
   cons_school_btn_tour: { en: "Book a School Tour", ha: "Shirya Ziyarar Makaranta" },
