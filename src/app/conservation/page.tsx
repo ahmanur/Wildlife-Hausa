@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { ArrowLeft, ArrowRight, FileDown } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { getConservationNotes } from '@/lib/firebase/services';
 import { useLanguage } from '@/components/providers/LanguageProvider';
 import { translateConservationNote } from '@/lib/translations';
@@ -86,17 +86,6 @@ export default function ConservationPage() {
 
               {/* Action Buttons Row */}
               <div className="border-t border-wild-sand/80 pt-8 flex flex-wrap gap-4 mt-auto">
-                {activeNote.downloadUrl && (
-                  <WildCTA 
-                    variant="primary"
-                    href={activeNote.downloadUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <FileDown size={18} />
-                    <span>{t('download_journal')}</span>
-                  </WildCTA>
-                )}
                 <WildCTA 
                   variant="outline"
                   onClick={() => {
