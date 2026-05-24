@@ -11,6 +11,52 @@ const DEFAULT_VIDEO_CLIPS = [
   "https://videos.pexels.com/video-files/20600021/20600021-uhd_2560_1440_25fps.mp4"
 ];
 
+function getYouTubeId(url: string): string | null {
+  if (!url) return null;
+  const shortsMatch = url.match(/\/shorts\/([a-zA-Z0-9_-]{11})/);
+  if (shortsMatch) return shortsMatch[1];
+  const watchBeMatch = url.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+  if (watchBeMatch) return watchBeMatch[1];
+  const watchUrlMatch = url.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
+  if (watchUrlMatch) return watchUrlMatch[1];
+  const embedMatch = url.match(/\/embed\/([a-zA-Z0-9_-]{11})/);
+  if (embedMatch) return embedMatch[1];
+  return null;
+}
+
+function BackgroundPlayer({ url, isActive }: { url: string; isActive: boolean }) {
+  if (!url) return null;
+  const youtubeId = getYouTubeId(url);
+  const activeClasses = isActive ? 'opacity-100 z-10' : 'opacity-0 z-0';
+
+  if (youtubeId) {
+    const embedUrl = `https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&loop=1&playlist=${youtubeId}&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&enablejsapi=1&playsinline=1`;
+    return (
+      <div className={`absolute inset-0 w-full h-full overflow-hidden transition-opacity duration-1000 ${activeClasses}`}>
+        <iframe
+          src={embedUrl}
+          frameBorder="0"
+          allow="autoplay; encrypted-media; gyroscope; picture-in-picture"
+          className="absolute top-1/2 left-1/2 w-[177.77777778vh] min-w-full h-[56.25vw] min-h-full -translate-x-1/2 -translate-y-1/2 pointer-events-none scale-110"
+          title="Background YouTube Video"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <video
+      key={url}
+      src={url}
+      autoPlay
+      muted
+      playsInline
+      loop
+      className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${activeClasses}`}
+    />
+  );
+}
+
 export function ExpeditionHero() {
   const { t, settings } = useLanguage();
   const videoClips = settings?.hero_videos !== undefined
@@ -19,9 +65,22 @@ export function ExpeditionHero() {
 
   const [currentIdx, setCurrentIdx] = useState(0);
   const [activePlayer, setActivePlayer] = useState<'A' | 'B'>('A');
+  const [urlA, setUrlA] = useState<string>('');
+  const [urlB, setUrlB] = useState<string>('');
 
-  const videoRefA = useRef<HTMLVideoElement>(null);
-  const videoRefB = useRef<HTMLVideoElement>(null);
+  // Initial trigger
+  useEffect(() => {
+    if (videoClips[0]) {
+      setUrlA(videoClips[0]);
+    }
+    if (videoClips[1]) {
+      setUrlB(videoClips[1]);
+    } else {
+      setUrlB('');
+    }
+    setCurrentIdx(0);
+    setActivePlayer('A');
+  }, [videoClips]);
 
   // Cross-fade slideshow loop
   useEffect(() => {
@@ -30,54 +89,27 @@ export function ExpeditionHero() {
       const nextIdx = (currentIdx + 1) % videoClips.length;
 
       if (activePlayer === 'A') {
-        if (videoRefB.current) {
-          videoRefB.current.src = videoClips[nextIdx];
-          videoRefB.current.load();
-          videoRefB.current.play().catch(err => console.log("Video B autoplay blocked", err));
-        }
+        setUrlB(videoClips[nextIdx]);
         setActivePlayer('B');
       } else {
-        if (videoRefA.current) {
-          videoRefA.current.src = videoClips[nextIdx];
-          videoRefA.current.load();
-          videoRefA.current.play().catch(err => console.log("Video A autoplay blocked", err));
-        }
+        setUrlA(videoClips[nextIdx]);
         setActivePlayer('A');
       }
 
       setCurrentIdx(nextIdx);
-    }, 8000); // Change slide every 8 seconds
+    }, 8000);
 
     return () => clearInterval(interval);
   }, [currentIdx, activePlayer, videoClips]);
-
-  // Initial trigger to make sure first video plays or resets when dynamic videoClips load
-  useEffect(() => {
-    if (videoRefA.current && videoClips[0]) {
-      videoRefA.current.src = videoClips[0];
-      videoRefA.current.load();
-      videoRefA.current.play().catch(err => console.log("Initial autoplay blocked", err));
-    }
-    setCurrentIdx(0);
-    setActivePlayer('A');
-  }, [videoClips]);
 
   const handleIndicatorClick = (idx: number) => {
     if (idx === currentIdx) return;
 
     if (activePlayer === 'A') {
-      if (videoRefB.current) {
-        videoRefB.current.src = videoClips[idx];
-        videoRefB.current.load();
-        videoRefB.current.play().catch(err => console.log("Manual Video B play blocked", err));
-      }
+      setUrlB(videoClips[idx]);
       setActivePlayer('B');
     } else {
-      if (videoRefA.current) {
-        videoRefA.current.src = videoClips[idx];
-        videoRefA.current.load();
-        videoRefA.current.play().catch(err => console.log("Manual Video A play blocked", err));
-      }
+      setUrlA(videoClips[idx]);
       setActivePlayer('A');
     }
 
@@ -106,31 +138,9 @@ export function ExpeditionHero() {
           backgroundPosition: 'center 30%',
         }} />
 
-        {/* Video Player A */}
-        <video
-          ref={videoRefA}
-          src={videoClips[0]}
-          autoPlay
-          muted
-          playsInline
-          loop
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
-            activePlayer === 'A' ? 'opacity-100' : 'opacity-0'
-          }`}
-        />
-
-        {/* Video Player B */}
-        <video
-          ref={videoRefB}
-          src={videoClips[1]}
-          autoPlay
-          muted
-          playsInline
-          loop
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
-            activePlayer === 'B' ? 'opacity-100' : 'opacity-0'
-          }`}
-        />
+        {/* Video Players */}
+        <BackgroundPlayer url={urlA} isActive={activePlayer === 'A'} />
+        <BackgroundPlayer url={urlB} isActive={activePlayer === 'B'} />
 
         {/* Premium Overlay Gradients for Readability */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/25 to-black/65 z-10" />
