@@ -161,7 +161,7 @@ export default function AdminSettingsPage() {
         },
         (error: any) => {
           console.error("Upload failed", error);
-          alert('Failed to upload video.');
+          alert('Failed to upload video. This is usually caused by either:\n1. Firebase Storage not being initialized in your Firebase Console (go to Storage -> Get Started), or\n2. Missing CORS configuration on your storage bucket.\n\nCheck the browser console logs for the exact error details.');
           setUploadingVideo(false);
         },
         async () => {
@@ -209,7 +209,7 @@ export default function AdminSettingsPage() {
         },
         (error: any) => {
           console.error("Upload failed", error);
-          alert('Failed to upload image.');
+          alert('Failed to upload image. This is usually caused by either:\n1. Firebase Storage not being initialized in your Firebase Console (go to Storage -> Get Started), or\n2. Missing CORS configuration on your storage bucket.\n\nCheck the browser console logs for the exact error details.');
           setUploadingHero(prev => ({ ...prev, [pageKey]: false }));
         },
         async () => {
