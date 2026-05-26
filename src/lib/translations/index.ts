@@ -125,8 +125,8 @@ export const translations: Record<string, TranslationDict> = {
   classroom_badge: { en: "Field Notes", ha: "Bayanin Daji" },
   classroom_title: { en: "Conservation Classroom", ha: "Koyar da Kiyaye Muhalli" },
   classroom_p1: {
-    en: "Every expedition we lead and every film we produce is rooted in our commitment to protecting Northern Nigeria's natural heritage.",
-    ha: "Kowace tafiya da muke jagoranta da kowane fim da muke shiryawa na da alaka ne da kokarinmu na kare gadon halitta na Arewacin Najeriya."
+    en: "Every expedition we lead and every film we produce is rooted in our commitment to protecting our natural heritage.",
+    ha: "Kowace tafiya da muke jagoranta da kowane fim da muke shiryawa na da alaka ne da kokarinmu na kare gadon halitta."
   },
   classroom_p2: {
     en: "Join our educational programmes designed for schools, universities, and communities to learn about habitat preservation, anti-poaching efforts, and co-existing with wildlife.",
