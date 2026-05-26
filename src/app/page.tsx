@@ -335,7 +335,7 @@ export default function Home() {
             
             <div className="flex flex-col sm:flex-row gap-4">
               <WildCTA variant="secondary" href="/conservation">{t('btn_school')}</WildCTA>
-              <WildCTA variant="outline" href="/conservation">{t('btn_volunteer')}</WildCTA>
+              <WildCTA variant="outline" href="/contact">{t('btn_volunteer')}</WildCTA>
             </div>
           </div>
           

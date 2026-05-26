@@ -23,8 +23,8 @@ export const translations: Record<string, TranslationDict> = {
   hero_title_1: { en: "Explore Majestic", ha: "Bincika Kyawawan" },
   hero_title_2: { en: "Creatures With Us", ha: "Halittu Tare da Mu" },
   hero_subtitle: {
-    en: "Experience the untamed beauty of Northern Nigeria. Join our premium guided safaris, witness exclusive wildlife documentaries, and become part of our conservation journey.",
-    ha: "Kuyi amfani da damar ganin kyawun yankin Arewacin Najeriya. Kasance tare da mu a shirin tafiya daji na musamman, kallon bidiyon dabbobin daji, kuma ku taimaka wajen kare su."
+    en: "Experience the untamed beauty of the wilderness. Join our premium guided safaris, witness exclusive wildlife documentaries, and become part of our conservation journey.",
+    ha: "Kuyi amfani da damar ganin kyawun daji. Kasance tare da mu a shirin tafiya daji na musamman, kallon bidiyon dabbobin daji, kuma ku taimaka wajen kare su."
   },
   hero_location: { en: "Location", ha: "Wuri" },
   hero_location_placeholder: { en: "Where to next?", ha: "Ina za a gaba?" },
