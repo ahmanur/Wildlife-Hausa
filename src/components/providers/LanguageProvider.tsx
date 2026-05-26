@@ -100,7 +100,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
           </div>
           
           <div className="flex flex-col items-center gap-1.5">
-            <span className="font-serif font-bold text-4xl text-wild-forest tracking-wider">WILD HAUSA</span>
+            <span className="font-serif font-bold text-4xl text-wild-forest tracking-wider">Wild Hausa</span>
             <span className="text-[10px] text-wild-sunset uppercase tracking-widest font-sans font-bold">DUNIYAR DABBOBIN DAJI</span>
           </div>
           

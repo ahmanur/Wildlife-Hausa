@@ -56,7 +56,7 @@ export function Navbar() {
                 />
               </div>
               <div className="hidden sm:flex flex-col">
-                <span className="font-serif text-lg font-bold text-wild-forest tracking-tight leading-tight">WILD HAUSA</span>
+                <span className="font-serif text-lg font-bold text-wild-forest tracking-tight leading-tight">Wild Hausa</span>
                 <span className="text-[9px] text-wild-forest/50 tracking-[0.12em] font-sans uppercase">Duniyar Dabbobin Daji</span>
               </div>
             </Link>

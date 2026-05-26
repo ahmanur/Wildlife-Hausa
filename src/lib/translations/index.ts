@@ -136,7 +136,7 @@ export const translations: Record<string, TranslationDict> = {
   btn_volunteer: { en: "Volunteer With Us", ha: "Taimaka Mana" },
 
   // Subscription Card
-  subscribe_title: { en: "Join the Conservation Circle", ha: "Shiga Cikin Masu Kare Daji" },
+  subscribe_title: { en: "Join our newsletter", ha: "Yi rajista don samun labaranmu" },
   subscribe_subtitle: { en: "Receive field notes, rescue stories, and exclusive documentary early-access.", ha: "Sami rahotannin daji, labaran ceto, da damar kallon fina-finai tun da wuri." },
   email_placeholder: { en: "Your Email Address", ha: "Adireshin E-mail Dinku" },
   subscribe_btn: { en: "Subscribe to Field Notes", ha: "Yi Rajista Don Labaran Daji" },
@@ -157,7 +157,7 @@ export const translations: Record<string, TranslationDict> = {
     en: "Bringing people closer to nature through filmmaking, eco-tourism, and active wildlife conservation.",
     ha: "Kusantar da mutane ga halitta ta hanyar shirya fina-finai, yawon bude ido, da kiyaye dabbobin daji."
   },
-  footer_rights: { en: "© 2026 All Rights Reserve. WILD HAUSA.", ha: "© 2026 Duk hakkoki mallaka ne. WILD HAUSA." },
+  footer_rights: { en: "© 2026 All Rights Reserve. Wild Hausa.", ha: "© 2026 Duk hakkoki mallaka ne. Wild Hausa." },
   designed_by: { en: "Designed by IBK Technologies", ha: "Tsarin IBK Technologies" },
   footer_quick_links: { en: "Quick Links", ha: "Hanyoyi Masu Sauri" },
   footer_legal: { en: "Legal", ha: "Shari'a" },
@@ -284,7 +284,7 @@ export const translations: Record<string, TranslationDict> = {
   contact_get_in_touch_desc: { en: "Whether you're planning a safari, looking to partner on a documentary, or booking a school trip, our team is ready to guide you.", ha: "Ko kuna shirin safari ne, ko hadin gwiwar fim, ko ziyarar makaranta, kungiyarmu a shirye take ta taimake ku." },
   contact_hq: { en: "Headquarters", ha: "Babban Ofis" },
   contact_hq_val: { en: "123 Savanna Way, Kano, Northern Nigeria", ha: "Lamba 123 Titin Savanna, Kano, Arewacin Najeriya" },
-  contact_val: { en: "hello@wildhausa.com | +234 800 WILD HAUSA", ha: "hello@wildhausa.com | +234 800 WILD HAUSA" },
+  contact_val: { en: "hello@wildhausa.com | +234 800 Wild Hausa", ha: "hello@wildhausa.com | +234 800 Wild Hausa" },
   contact_form_name: { en: "Full Name", ha: "Cikakken Suna" },
   contact_form_email: { en: "Email Address", ha: "Adireshin Email" },
   contact_form_phone: { en: "Phone Number", ha: "Lambar Waya" },
