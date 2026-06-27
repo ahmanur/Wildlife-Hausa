@@ -68,7 +68,6 @@ export function Navbar() {
               <NavLink href="/safaris">{t('expeditions')}</NavLink>
               <NavLink href="/documentaries">{t('films')}</NavLink>
               <NavLink href="/conservation">{t('field_journal')}</NavLink>
-              <NavLink href="/expedition-map">{t('map')}</NavLink>
             </nav>
             
             <div className="flex items-center gap-4">
@@ -131,7 +130,6 @@ export function Navbar() {
             <Link href="/safaris" onClick={closeMenu} className="text-2xl font-serif font-bold text-wild-forest hover:text-wild-sunset transition-colors">{t('expeditions')}</Link>
             <Link href="/documentaries" onClick={closeMenu} className="text-2xl font-serif font-bold text-wild-forest hover:text-wild-sunset transition-colors">{t('films')}</Link>
             <Link href="/conservation" onClick={closeMenu} className="text-2xl font-serif font-bold text-wild-forest hover:text-wild-sunset transition-colors">{t('field_journal')}</Link>
-            <Link href="/expedition-map" onClick={closeMenu} className="text-2xl font-serif font-bold text-wild-forest hover:text-wild-sunset transition-colors">{t('map')}</Link>
           </nav>
 
           <div className="w-12 h-px bg-wild-forest/20 my-2"></div>

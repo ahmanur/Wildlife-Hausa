@@ -106,7 +106,6 @@ export function Footer() {
             <h3 className="font-serif text-xl mb-6 text-wild-sun-soft">{t('wild_hausa')}</h3>
             <ul className="space-y-4 font-sans text-sm text-wild-sand/80">
               <li><Link href="/about" className="hover:text-wild-sunset transition-colors">{t('our_story')}</Link></li>
-              <li><Link href="/expedition-map" className="hover:text-wild-sunset transition-colors">{t('map')}</Link></li>
               <li><Link href="/contact" className="hover:text-wild-sunset transition-colors">{t('plan_journey')}</Link></li>
             </ul>
           </div>

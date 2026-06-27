@@ -12,9 +12,9 @@ export const translations: Record<string, TranslationDict> = {
   our_story: { en: "Our Story", ha: "Tarihinmu" },
   worlds: { en: "Services", ha: "Ayyukanmu" },
   expeditions: { en: "Expeditions", ha: "Tafiye-tafiye" },
-  films: { en: "Archives", ha: "Fina-finai" },
+  films: { en: "Nature Media", ha: "Kafofin Yada Labaran Halitta" },
   map: { en: "Map", ha: "Taswira" },
-  field_journal: { en: "Blog", ha: "Littafin Daji" },
+  field_journal: { en: "Projects", ha: "Ayyukanmu" },
   plan_journey: { en: "Get In Touch", ha: "Tuntube Mu" },
   contact_us: { en: "Contact Us", ha: "Tuntube Mu" },
 
@@ -312,11 +312,11 @@ export const translations: Record<string, TranslationDict> = {
   adventure_book_btn: { en: "Book an Adventure", ha: "Aiko da Bukatar Wasa" },
 
   // Conservation Classroom Page
-  cons_field_notes: { en: "Blog", ha: "Littafin Daji" },
-  cons_hero_title: { en: "Blog", ha: "Littafin Daji" },
+  cons_field_notes: { en: "Projects", ha: "Ayyukanmu" },
+  cons_hero_title: { en: "Projects", ha: "Ayyukanmu" },
   cons_hero_subtitle: { en: "Explore our field logs, conservation updates, and wilderness journals.", ha: "Karanta rahotannin daji, labaran kiyaye muhalli, da sauran labarai." },
-  cons_loading: { en: "Loading blog entries...", ha: "Ana loda littafin daji..." },
-  back_to_blog: { en: "Back to Blog", ha: "Koma ga Blog" },
+  cons_loading: { en: "Loading projects...", ha: "Ana loda ayyukanmu..." },
+  back_to_blog: { en: "Back to Projects", ha: "Koma ga Ayyukanmu" },
   read_more: { en: "READ MORE", ha: "KARA KARANTAWA" },
   cons_school_title: { en: "School Programmes", ha: "Shirye-shiryen Makarantu" },
   cons_school_desc: { en: "We offer immersive educational modules for students of all ages. Bring your classroom into the wild or invite our conservation educators to your school for an interactive workshop.", ha: "Muna ba da kyawawan shirye-shiryen ilimi don dalibai na kowane shekaru. Ku kawo daliban ku zuwa daji ko ku gayyaci malamai zuwa makarantarku." },

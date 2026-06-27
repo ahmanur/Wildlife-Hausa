@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { getServicesContent, updateServicesContent } from '@/lib/firebase/services';
-import { Loader2, Save, Plus, Trash2, Image as ImageIcon } from 'lucide-react';
+import { storage } from '@/lib/firebase/config';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { Loader2, Save, Plus, Trash2, Image as ImageIcon, UploadCloud } from 'lucide-react';
 
 export interface ServiceItem {
   title: string;
@@ -125,6 +127,48 @@ export default function AdminServicesPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [uploadingImageIndex, setUploadingImageIndex] = useState<number | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
+
+  const handleImageUpload = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file.');
+      return;
+    }
+
+    setUploadingImageIndex(index);
+    setUploadProgress(0);
+
+    try {
+      const storageRef = ref(storage, `services/${Date.now()}_${file.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      uploadTask.on(
+        'state_changed',
+        (snapshot: any) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setUploadProgress(Math.round(progress));
+        },
+        (error: any) => {
+          console.error("Upload failed", error);
+          alert('Failed to upload image. Please check Firebase CORS configuration.');
+          setUploadingImageIndex(null);
+        },
+        async () => {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          handleServiceChange(index, 'image', downloadURL);
+          setUploadingImageIndex(null);
+        }
+      );
+    } catch (err) {
+      console.error(err);
+      setUploadingImageIndex(null);
+      alert('Failed to initialize upload.');
+    }
+  };
 
   useEffect(() => {
     async function loadData() {
@@ -354,10 +398,38 @@ export default function AdminServicesPage() {
               <div className="pt-4 border-t border-gray-200 mt-4 space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
-                    <div className="flex items-center gap-3">
-                      <ImageIcon className="text-gray-400" size={20} />
-                      <input type="text" value={service.image || ''} onChange={(e) => handleServiceChange(index, 'image', e.target.value)} className="flex-1 px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg" />
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Service Image</label>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3">
+                        <ImageIcon className="text-gray-400" size={20} />
+                        <input 
+                          type="text" 
+                          placeholder="Image URL"
+                          value={service.image || ''} 
+                          onChange={(e) => handleServiceChange(index, 'image', e.target.value)} 
+                          className="flex-1 px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-sm" 
+                        />
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <label className="flex items-center gap-2 bg-white border border-gray-300 hover:border-wild-sunset text-gray-700 px-4 py-2 rounded-lg cursor-pointer transition-colors shadow-sm text-sm font-medium">
+                          <UploadCloud size={16} className="text-wild-sunset" />
+                          {uploadingImageIndex === index 
+                            ? `Uploading... ${uploadProgress}%` 
+                            : 'Upload Image'}
+                          <input 
+                            type="file" 
+                            accept="image/*" 
+                            onChange={(e) => handleImageUpload(index, e)}
+                            className="hidden"
+                            disabled={uploadingImageIndex !== null}
+                          />
+                        </label>
+                        {uploadingImageIndex === index && (
+                          <div className="flex-1 max-w-xs bg-gray-200 rounded-full h-2">
+                            <div className="bg-wild-sunset h-2 rounded-full transition-all duration-300" style={{ width: `${uploadProgress}%` }}></div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <div>
