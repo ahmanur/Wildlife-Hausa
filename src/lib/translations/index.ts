@@ -254,10 +254,10 @@ export const translations: Record<string, TranslationDict> = {
   book_contact_guides: { en: "Contact our guides", ha: "Tuntubi guides dinmu" },
 
   // Documentaries page
-  docs_hero_title: { en: "Archive", ha: "Rumbun Fina-finan Daji" },
+  docs_hero_title: { en: "Nature Media", ha: "Kafofin Yada Labaran Halitta" },
   docs_hero_subtitle: { en: "Explore our territories, track our expeditions, and discover the wild spaces.", ha: "Bincika yankunanmu, bi sahun tafiye-tafiyenmu, kuma gano filayen daji." },
   docs_categories: { en: "Categories:", ha: "Rukunoni:" },
-  docs_all_films: { en: "All archive", ha: "Duk Fina-finai" },
+  docs_all_films: { en: "All Media", ha: "Duk Kafofi" },
   docs_cat_wildlife: { en: "Wildlife", ha: "Dabbobin Daji" },
   docs_cat_conservation: { en: "Conservation", ha: "Kiyayewa" },
   docs_cat_culture: { en: "Culture", ha: "Al'ada" },
