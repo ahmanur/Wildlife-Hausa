@@ -129,8 +129,8 @@ export const translations: Record<string, TranslationDict> = {
     ha: "Kowace tafiya da muke jagoranta da kowane fim da muke shiryawa na da alaka ne da kokarinmu na kare gadon halitta."
   },
   classroom_p2: {
-    en: "Join our educational programmes designed for schools, universities, and communities to learn about habitat preservation, anti-poaching efforts, and co-existing with wildlife.",
-    ha: "Shiga shirye-shiryenmu na ilimi da aka tsara don makarantu, jami'o'i, da al'ummomi don koyon kiyaye muhalli da rayuwa tare da dabbobi lafiya."
+    en: "Join our educational programmes designed for schools, universities, and communities to learn about habitat preservation, wildlife conservation, and co-existence.",
+    ha: "Shiga shirye-shiryenmu na ilimi da aka tsara don makarantu, jami'o'i, da al'ummomi don koyon kiyaye muhalli, kiyaye dabbobin daji, da kuma zama tare lafiya."
   },
   btn_school: { en: "School Programmes", ha: "Shirye-shiryen Makarantu" },
   btn_volunteer: { en: "Volunteer With Us", ha: "Taimaka Mana" },
