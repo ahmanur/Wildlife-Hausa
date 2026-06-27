@@ -1,9 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, X, Loader2, MapPin, Globe } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, Loader2, MapPin, Globe, UploadCloud } from 'lucide-react';
 import { getMapLocations, createDocument, updateDocument, removeDocument } from '@/lib/firebase/services';
 import { COLLECTIONS } from '@/lib/firebase/collections';
+import { storage } from '@/lib/firebase/config';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import dynamic from 'next/dynamic';
 
 // Import MapPicker dynamically with SSR disabled to prevent window object reference errors during build time.
@@ -61,6 +63,50 @@ export default function AdminMapLocationsPage() {
   const [link, setLink] = useState('');
   const [cta, setCta] = useState('View Expedition');
   const [cta_ha, setCtaHa] = useState('');
+
+  // Upload States
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file.');
+      return;
+    }
+
+    setUploadingImage(true);
+    setUploadProgress(0);
+
+    try {
+      const storageRef = ref(storage, `map_locations/${Date.now()}_${file.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      uploadTask.on(
+        'state_changed',
+        (snapshot: any) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setUploadProgress(Math.round(progress));
+        },
+        (error: any) => {
+          console.error("Upload failed", error);
+          alert('Failed to upload image. Please check Firebase CORS configuration.');
+          setUploadingImage(false);
+        },
+        async () => {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          setImage(downloadURL);
+          setUploadingImage(false);
+        }
+      );
+    } catch (err) {
+      console.error(err);
+      setUploadingImage(false);
+      alert('Failed to initialize upload.');
+    }
+  };
 
   useEffect(() => {
     loadLocations();
@@ -394,7 +440,7 @@ export default function AdminMapLocationsPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-bold text-gray-700 mb-1">State / Region *</label>
                       <input
@@ -406,16 +452,37 @@ export default function AdminMapLocationsPage() {
                         required
                       />
                     </div>
-                    <div>
-                      <label className="block text-sm font-bold text-gray-700 mb-1">Image URL *</label>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="block text-sm font-bold text-gray-700 mb-1">Image URL *</label>
+                    <div className="space-y-3">
                       <input
                         type="url"
                         value={image}
                         onChange={(e) => setImage(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-wild-sunset"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-wild-sunset text-sm"
                         placeholder="https://images.unsplash.com/..."
                         required
                       />
+                      <div className="flex items-center gap-4">
+                        <label className="flex items-center gap-2 bg-white border border-gray-300 hover:border-wild-sunset text-gray-700 px-4 py-2 rounded-lg cursor-pointer transition-colors shadow-sm text-sm font-medium">
+                          <UploadCloud size={16} className="text-wild-sunset" />
+                          {uploadingImage ? `Uploading... ${uploadProgress}%` : 'Upload Image'}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            className="hidden"
+                            disabled={uploadingImage}
+                          />
+                        </label>
+                        {uploadingImage && (
+                          <div className="flex-1 max-w-xs bg-gray-200 rounded-full h-2">
+                            <div className="bg-wild-sunset h-2 rounded-full transition-all duration-300" style={{ width: `${uploadProgress}%` }}></div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
 

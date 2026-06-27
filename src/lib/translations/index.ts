@@ -125,8 +125,8 @@ export const translations: Record<string, TranslationDict> = {
   classroom_badge: { en: "Field Notes", ha: "Bayanin Daji" },
   classroom_title: { en: "Conservation Classroom", ha: "Koyar da Kiyaye Muhalli" },
   classroom_p1: {
-    en: "Every expedition we lead and every film we produce is rooted in our commitment to protecting our natural heritage.",
-    ha: "Kowace tafiya da muke jagoranta da kowane fim da muke shiryawa na da alaka ne da kokarinmu na kare gadon halitta."
+    en: "",
+    ha: ""
   },
   classroom_p2: {
     en: "Join our educational programmes designed for schools, universities, and communities to learn about habitat preservation, wildlife conservation, and co-existence.",
@@ -136,8 +136,8 @@ export const translations: Record<string, TranslationDict> = {
   btn_volunteer: { en: "Volunteer With Us", ha: "Taimaka Mana" },
 
   // Subscription Card
-  subscribe_title: { en: "Join our newsletter", ha: "Yi rajista don samun labaranmu" },
-  subscribe_subtitle: { en: "Receive field notes, rescue stories, and exclusive documentary early-access.", ha: "Sami rahotannin daji, labaran ceto, da damar kallon fina-finai tun da wuri." },
+  subscribe_title: { en: "Join Our Newsletter", ha: "Yi rajista don samun labaranmu" },
+  subscribe_subtitle: { en: "Receive field notes, stories, and exclusive reports.", ha: "Sami rahotannin daji, labarai, da kuma rahotanni na musamman." },
   email_placeholder: { en: "Your Email Address", ha: "Adireshin E-mail Dinku" },
   subscribe_btn: { en: "Subscribe to Field Notes", ha: "Yi Rajista Don Labaran Daji" },
 

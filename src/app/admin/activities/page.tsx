@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, X, Loader2, Activity } from 'lucide-react';
+import { storage } from '@/lib/firebase/config';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { Plus, Edit2, Trash2, X, Loader2, Activity, UploadCloud } from 'lucide-react';
 import { getAdventureActivities, createDocument, updateDocument, removeDocument } from '@/lib/firebase/services';
 import { COLLECTIONS } from '@/lib/firebase/collections';
 
@@ -30,6 +32,50 @@ export default function AdminActivitiesPage() {
   const [text_ha, setTextHa] = useState('');
   const [image, setImage] = useState('');
   const [order, setOrder] = useState(1);
+
+  // Upload States
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file.');
+      return;
+    }
+
+    setUploadingImage(true);
+    setUploadProgress(0);
+
+    try {
+      const storageRef = ref(storage, `activities/${Date.now()}_${file.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      uploadTask.on(
+        'state_changed',
+        (snapshot: any) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setUploadProgress(Math.round(progress));
+        },
+        (error: any) => {
+          console.error("Upload failed", error);
+          alert('Failed to upload image. Please check Firebase CORS configuration.');
+          setUploadingImage(false);
+        },
+        async () => {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          setImage(downloadURL);
+          setUploadingImage(false);
+        }
+      );
+    } catch (err) {
+      console.error(err);
+      setUploadingImage(false);
+      alert('Failed to initialize upload.');
+    }
+  };
 
   useEffect(() => {
     loadActivities();
@@ -286,8 +332,11 @@ export default function AdminActivitiesPage() {
                     required
                   />
                 </div>
-                <div>
-                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Image URL *</label>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Image URL *</label>
+                <div className="space-y-3">
                   <input 
                     type="url" 
                     value={image} 
@@ -296,6 +345,24 @@ export default function AdminActivitiesPage() {
                     placeholder="https://images.unsplash.com/..."
                     required
                   />
+                  <div className="flex items-center gap-4">
+                    <label className="flex items-center gap-2 bg-white border border-gray-300 hover:border-wild-sunset text-gray-700 px-4 py-2 rounded-lg cursor-pointer transition-colors shadow-sm text-sm font-medium">
+                      <UploadCloud size={16} className="text-wild-sunset" />
+                      {uploadingImage ? `Uploading... ${uploadProgress}%` : 'Upload Image'}
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        onChange={handleImageUpload}
+                        className="hidden"
+                        disabled={uploadingImage}
+                      />
+                    </label>
+                    {uploadingImage && (
+                      <div className="flex-1 max-w-xs bg-gray-200 rounded-full h-2">
+                        <div className="bg-wild-sunset h-2 rounded-full transition-all duration-300" style={{ width: `${uploadProgress}%` }}></div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 

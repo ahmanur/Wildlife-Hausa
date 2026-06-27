@@ -325,9 +325,11 @@ export default function Home() {
               title={t('classroom_title')} 
             />
             <div className="space-y-6 text-wild-forest/80 text-lg leading-relaxed font-sans mb-8">
-              <p>
-                {t('classroom_p1')}
-              </p>
+              {t('classroom_p1') && (
+                <p>
+                  {t('classroom_p1')}
+                </p>
+              )}
               <p>
                 {t('classroom_p2')}
               </p>
@@ -376,7 +378,7 @@ export default function Home() {
           </h2>
           <div className="flex flex-wrap justify-center gap-4 mt-10">
             <WildCTA variant="primary" href="/safaris">{t('final_btn_plan')}</WildCTA>
-            <WildCTA variant="outline" href="/about" className="text-white border-white hover:bg-white hover:text-wild-forest">
+            <WildCTA variant="outline" href="/contact" className="text-white border-white hover:bg-white hover:text-wild-forest">
               {t('final_btn_partner')}
             </WildCTA>
           </div>

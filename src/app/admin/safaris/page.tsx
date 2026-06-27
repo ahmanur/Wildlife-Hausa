@@ -1,10 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, X, Loader2, Compass, Trash, PlusCircle } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, Loader2, Compass, Trash, PlusCircle, UploadCloud } from 'lucide-react';
 import { getSafariPackages, createDocument, updateDocument, removeDocument } from '@/lib/firebase/services';
 import { COLLECTIONS } from '@/lib/firebase/collections';
 import { parsePrice } from '@/lib/translations';
+import { storage } from '@/lib/firebase/config';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
 interface ItineraryDay {
   day: number;
@@ -65,6 +67,50 @@ export default function AdminSafarisPage() {
   const [bestTime, setBestTime] = useState('');
   const [itinerary, setItinerary] = useState<ItineraryDay[]>([]);
   const [showPricing, setShowPricing] = useState(true);
+
+  // Upload States
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file.');
+      return;
+    }
+
+    setUploadingImage(true);
+    setUploadProgress(0);
+
+    try {
+      const storageRef = ref(storage, `safaris/${Date.now()}_${file.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      uploadTask.on(
+        'state_changed',
+        (snapshot: any) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setUploadProgress(Math.round(progress));
+        },
+        (error: any) => {
+          console.error("Upload failed", error);
+          alert('Failed to upload image. Please check Firebase CORS configuration.');
+          setUploadingImage(false);
+        },
+        async () => {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          setImage(downloadURL);
+          setUploadingImage(false);
+        }
+      );
+    } catch (err) {
+      console.error(err);
+      setUploadingImage(false);
+      alert('Failed to initialize upload.');
+    }
+  };
 
   useEffect(() => {
     loadSafaris();
@@ -528,8 +574,11 @@ export default function AdminSafarisPage() {
                     className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-wild-sunset text-sm text-gray-800"
                   />
                 </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-gray-700 uppercase font-sans">Featured Image URL *</label>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-gray-700 uppercase font-sans">Featured Image URL *</label>
+                <div className="space-y-3">
                   <input
                     type="url"
                     required
@@ -538,6 +587,24 @@ export default function AdminSafarisPage() {
                     placeholder="https://images.unsplash.com/..."
                     className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-wild-sunset text-sm text-gray-800"
                   />
+                  <div className="flex items-center gap-4">
+                    <label className="flex items-center gap-2 bg-white border border-gray-300 hover:border-wild-sunset text-gray-700 px-4 py-2 rounded-lg cursor-pointer transition-colors shadow-sm text-sm font-medium">
+                      <UploadCloud size={16} className="text-wild-sunset" />
+                      {uploadingImage ? `Uploading... ${uploadProgress}%` : 'Upload Image'}
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        onChange={handleImageUpload}
+                        className="hidden"
+                        disabled={uploadingImage}
+                      />
+                    </label>
+                    {uploadingImage && (
+                      <div className="flex-1 max-w-xs bg-gray-200 rounded-full h-2">
+                        <div className="bg-wild-sunset h-2 rounded-full transition-all duration-300" style={{ width: `${uploadProgress}%` }}></div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
