@@ -1,9 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLanguage } from '@/components/providers/LanguageProvider';
-import { Search, Calendar, MapPin } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 
 const DEFAULT_VIDEO_CLIPS = [
   "https://videos.pexels.com/video-files/855538/855538-hd_1920_1080_25fps.mp4",
@@ -116,17 +114,7 @@ export function ExpeditionHero() {
     setCurrentIdx(idx);
   };
 
-  const [searchLocation, setSearchLocation] = useState('');
-  const [searchDate, setSearchDate] = useState('');
-  const router = useRouter();
 
-  const handleSearch = () => {
-    const params = new URLSearchParams();
-    if (searchLocation) params.append('location', searchLocation);
-    if (searchDate) params.append('date', searchDate);
-    
-    router.push(`/safaris?${params.toString()}`);
-  };
 
   return (
     <section className="relative w-full h-[95vh] min-h-[700px] flex items-center justify-center overflow-hidden">
@@ -156,47 +144,6 @@ export function ExpeditionHero() {
           {t('hero_subtitle')}
         </p>
         
-        {/* Glassmorphism Booking/Search Bar */}
-        <div className="w-full max-w-4xl bg-white/10 backdrop-blur-xl border border-white/20 rounded-full p-2 flex flex-col md:flex-row items-center gap-2 md:gap-4 shadow-2xl">
-          <div className="flex-1 flex items-center w-full px-6 py-3 md:py-0 border-b md:border-b-0 md:border-r border-white/20">
-            <MapPin className="text-wild-sunset mr-3 shrink-0" size={24} />
-            <div className="text-left w-full">
-              <div className="text-xs text-white/60 font-bold uppercase tracking-wider mb-0.5">{t('hero_location')}</div>
-              <input 
-                type="text" 
-                value={searchLocation}
-                onChange={(e) => setSearchLocation(e.target.value)}
-                placeholder={t('hero_location_placeholder')} 
-                className="w-full bg-transparent text-white placeholder:text-white/80 focus:outline-none font-semibold text-sm" 
-                aria-label={t('hero_location')}
-              />
-            </div>
-          </div>
-          
-          <div className="flex-1 flex items-center w-full px-6 py-3 md:py-0 border-b md:border-b-0 md:border-r border-white/20">
-            <Calendar className="text-wild-sunset mr-3 shrink-0" size={24} />
-            <div className="text-left w-full">
-              <div className="text-xs text-white/60 font-bold uppercase tracking-wider mb-0.5">{t('hero_date')}</div>
-              <input 
-                type="date" 
-                value={searchDate}
-                onChange={(e) => setSearchDate(e.target.value)}
-                className="w-full bg-transparent text-white focus:outline-none font-semibold text-sm cursor-pointer [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert" 
-                aria-label={t('hero_date')}
-              />
-            </div>
-          </div>
-          
-          <div className="w-full md:w-auto mt-2 md:mt-0 p-1">
-            <button 
-              onClick={handleSearch}
-              className="w-full md:w-auto h-14 px-8 rounded-full bg-wild-sunset text-white hover:bg-[#FF8C42] transition-colors flex items-center justify-center font-bold tracking-wide shadow-lg hover:shadow-wild-sunset/30 cursor-pointer"
-            >
-              <Search className="mr-2 shrink-0" size={20} />
-              {t('hero_find_safari')}
-            </button>
-          </div>
-        </div>
       </div>
 
       {/* Slide Indicators */}

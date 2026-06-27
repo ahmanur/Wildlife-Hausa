@@ -15,7 +15,7 @@ export const translations: Record<string, TranslationDict> = {
   films: { en: "Archives", ha: "Fina-finai" },
   map: { en: "Map", ha: "Taswira" },
   field_journal: { en: "Blog", ha: "Littafin Daji" },
-  plan_journey: { en: "Plan Journey", ha: "Shirya Tafiya" },
+  plan_journey: { en: "Get In Touch", ha: "Tuntube Mu" },
   contact_us: { en: "Contact Us", ha: "Tuntube Mu" },
 
   // Hero Section
