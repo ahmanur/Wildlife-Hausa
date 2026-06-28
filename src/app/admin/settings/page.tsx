@@ -32,6 +32,10 @@ const DEFAULT_OVERRIDES: Record<string, OverrideEntry> = {
   },
   contact_hq_val: { en: "123 Savanna Way, Kano, Northern Nigeria", ha: "Lamba 123 Titin Savanna, Kano, Arewacin Najeriya", label: "Contact HQ Address (Footer/Contact Page, e.g., '123 Savanna Way...')", type: 'text' },
   contact_val: { en: "hello@wildhausa.com | +234 800 WILD HAUSA", ha: "hello@wildhausa.com | +234 800 WILD HAUSA", label: "Contact Phone & Email Row (Footer/Contact Page, e.g., 'hello@wildhausa.com | +234...')", type: 'text' },
+  social_facebook: { en: "https://facebook.com", ha: "https://facebook.com", label: "Facebook Link (e.g., 'https://facebook.com/...')", type: 'text' },
+  social_youtube: { en: "https://youtube.com", ha: "https://youtube.com", label: "YouTube Link (e.g., 'https://youtube.com/...')", type: 'text' },
+  social_instagram: { en: "https://instagram.com", ha: "https://instagram.com", label: "Instagram Link (e.g., 'https://instagram.com/...')", type: 'text' },
+  social_tiktok: { en: "https://tiktok.com", ha: "https://tiktok.com", label: "TikTok Link (e.g., 'https://tiktok.com/...')", type: 'text' },
 };
 
 const DEFAULT_HERO_IMAGES: Record<string, string> = {
