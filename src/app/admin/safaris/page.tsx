@@ -24,8 +24,6 @@ interface SafariPackage {
   location_ha?: string;
   duration: string;
   duration_ha?: string;
-  difficulty: string;
-  difficulty_ha?: string;
   bestFor: string;
   bestFor_ha?: string;
   price: string;
@@ -55,8 +53,6 @@ export default function AdminSafarisPage() {
   const [location_ha, setLocationHa] = useState('');
   const [duration, setDuration] = useState('');
   const [duration_ha, setDurationHa] = useState('');
-  const [difficulty, setDifficulty] = useState('Beginner / Family');
-  const [difficulty_ha, setDifficultyHa] = useState('');
   const [bestFor, setBestFor] = useState('');
   const [bestFor_ha, setBestForHa] = useState('');
   const [price, setPrice] = useState('');
@@ -136,8 +132,6 @@ export default function AdminSafarisPage() {
     setLocationHa('');
     setDuration('');
     setDurationHa('');
-    setDifficulty('Beginner / Family');
-    setDifficultyHa('');
     setBestFor('');
     setBestForHa('');
     setPrice('');
@@ -160,8 +154,6 @@ export default function AdminSafarisPage() {
     setLocationHa(safari.location_ha || '');
     setDuration(safari.duration || '');
     setDurationHa(safari.duration_ha || '');
-    setDifficulty(safari.difficulty || 'Beginner / Family');
-    setDifficultyHa(safari.difficulty_ha || '');
     setBestFor(safari.bestFor || '');
     setBestForHa(safari.bestFor_ha || '');
     setPrice(safari.price ? parsePrice(safari.price).toString() : '');
@@ -232,8 +224,6 @@ export default function AdminSafarisPage() {
       location_ha,
       duration,
       duration_ha,
-      difficulty,
-      difficulty_ha,
       bestFor,
       bestFor_ha,
       price,
@@ -338,7 +328,6 @@ export default function AdminSafarisPage() {
                         )}
                         <div>
                           <p className="font-semibold text-gray-800">{safari.title}</p>
-                          <p className="text-xs text-gray-400">{safari.difficulty}</p>
                         </div>
                       </div>
                     </td>
@@ -478,41 +467,16 @@ export default function AdminSafarisPage() {
               </div>
 
               {/* Price, Difficulty & Difficulty HA */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-gray-700 uppercase font-sans">Price Per Person (₦) *</label>
-                  <input
-                    type="number"
-                    required
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    placeholder="e.g. 150000"
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-wild-sunset text-sm text-gray-800"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-gray-700 uppercase font-sans">Difficulty (English)</label>
-                  <select
-                    value={difficulty}
-                    onChange={(e) => setDifficulty(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-wild-sunset text-sm text-gray-800"
-                  >
-                    <option>Beginner / Family</option>
-                    <option>Moderate</option>
-                    <option>Advanced</option>
-                    <option>Expert</option>
-                  </select>
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-gray-700 uppercase font-sans">Difficulty (Hausa)</label>
-                  <input
-                    type="text"
-                    value={difficulty_ha}
-                    onChange={(e) => setDifficultyHa(e.target.value)}
-                    placeholder="e.g. Mai Sauki / Iyali"
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-wild-sunset text-sm text-gray-800"
-                  />
-                </div>
+              <div>
+                <label className="text-xs font-bold text-gray-700 uppercase font-sans">Price Per Person (₦) *</label>
+                <input
+                  type="number"
+                  required
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  placeholder="e.g. 150000"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-wild-sunset text-sm text-gray-800"
+                />
               </div>
 
               {/* Price Visibility Toggle */}

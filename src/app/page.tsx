@@ -194,7 +194,6 @@ export default function Home() {
                   title={safari.title}
                   location={safari.location}
                   duration={safari.duration}
-                  difficulty={safari.difficulty}
                   bestFor={safari.bestFor}
                   price={safari.price}
                   showPricing={safari.showPricing}
@@ -423,7 +422,7 @@ function WorldCard({ icon, title, label, description, image, link, exploreText }
   );
 }
 
-function SafariCard({ title, location, duration, difficulty, bestFor, price, showPricing, image, slug, startingText, viewDetailsLabel }: any) {
+function SafariCard({ title, location, duration, bestFor, price, showPricing, image, slug, startingText, viewDetailsLabel }: any) {
   const { language } = useLanguage();
   return (
     <div className="bg-white rounded-[2rem] overflow-hidden shadow-sm border border-wild-sand hover:shadow-xl transition-all duration-500 flex flex-col h-full group p-2">
@@ -441,9 +440,6 @@ function SafariCard({ title, location, duration, difficulty, bestFor, price, sho
         <div className="flex flex-wrap gap-2 mb-6 flex-grow">
           <div className="px-3 py-1 rounded-full bg-wild-sand/50 text-wild-charcoal text-xs font-semibold tracking-wide border border-wild-sand">
             {duration}
-          </div>
-          <div className="px-3 py-1 rounded-full bg-wild-sand/50 text-wild-charcoal text-xs font-semibold tracking-wide border border-wild-sand">
-            {difficulty}
           </div>
           <div className="px-3 py-1 rounded-full bg-wild-sand/50 text-wild-charcoal text-xs font-semibold tracking-wide border border-wild-sand truncate max-w-[200px]" title={bestFor}>
             {bestFor}

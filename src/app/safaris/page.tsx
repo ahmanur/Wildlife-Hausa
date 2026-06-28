@@ -62,14 +62,14 @@ function SafarisContent() {
       setFilteredSafaris(baseList);
     } else if (filter === 'Family') {
       setFilteredSafaris(baseList.filter(s => 
-        s.difficulty?.toLowerCase().includes('family') || 
-        s.difficulty?.toLowerCase().includes('beginner') ||
-        s.bestFor?.toLowerCase().includes('family')
+        s.bestFor?.toLowerCase().includes('family') ||
+        s.title?.toLowerCase().includes('family')
       ));
     } else if (filter === 'Advanced') {
       setFilteredSafaris(baseList.filter(s => 
-        s.difficulty?.toLowerCase().includes('advanced') || 
-        s.difficulty?.toLowerCase().includes('expert')
+        s.bestFor?.toLowerCase().includes('adventure') || 
+        s.bestFor?.toLowerCase().includes('trekker') ||
+        s.bestFor?.toLowerCase().includes('seasoned')
       ));
     } else if (filter === 'Photography') {
       setFilteredSafaris(baseList.filter(s => 
@@ -160,14 +160,12 @@ function SafarisContent() {
                 title={safari.title}
                 location={safari.location}
                 duration={safari.duration}
-                difficulty={safari.difficulty}
                 bestFor={safari.bestFor}
                 price={safari.price}
                 showPricing={safari.showPricing}
                 image={safari.image}
                 slug={safari.slug}
                 durationLabel={t('safari_duration')}
-                difficultyLabel={t('safari_difficulty')}
                 bestForLabel={t('safari_best_for')}
                 startingFromLabel={t('starting_from')}
                 viewDetailsLabel={t('view_safari_details')}
@@ -184,14 +182,12 @@ function SafariCard({
   title, 
   location, 
   duration, 
-  difficulty, 
   bestFor, 
   price, 
   showPricing,
   image, 
   slug,
   durationLabel,
-  difficultyLabel,
   bestForLabel,
   startingFromLabel,
   viewDetailsLabel
@@ -215,11 +211,6 @@ function SafariCard({
             <span className="font-medium text-wild-charcoal">{durationLabel}</span>
           </div>
           <div>{duration}</div>
-          <div className="flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-wild-sunset" />
-            <span className="font-medium text-wild-charcoal">{difficultyLabel}</span>
-          </div>
-          <div>{difficulty}</div>
           {bestFor && (
             <>
               <div className="flex items-center gap-2">

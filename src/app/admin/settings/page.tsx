@@ -14,7 +14,7 @@ interface OverrideEntry {
 }
 
 const DEFAULT_OVERRIDES: Record<string, OverrideEntry> = {
-  hero_badge: { en: "DUNIYAR DABBOBIN DAJI", ha: "DUNIYAR DABBOBIN DAJI", label: "Homepage Hero Badge Tagline (e.g., 'DUNIYAR DABBOBIN DAJI')", type: 'text' },
+  hero_badge: { en: "Connecting you to the Wild", ha: "Haɗa ku da Daji", label: "Homepage Hero Badge Tagline (e.g., 'Connecting you to the Wild')", type: 'text' },
   hero_title_1: { en: "Explore Majestic", ha: "Bincika Kyawawan", label: "Homepage Hero Title Line 1 (e.g., 'Explore Majestic')", type: 'text' },
   hero_title_2: { en: "Creatures With Us", ha: "Halittu Tare da Mu", label: "Homepage Hero Title Line 2 (e.g., 'Creatures With Us')", type: 'text' },
   hero_subtitle: {

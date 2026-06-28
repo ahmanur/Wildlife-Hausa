@@ -131,11 +131,7 @@ export default function SafariDetailsPage({ params }: { params: Promise<{ slug: 
             <p className="text-wild-muted text-lg leading-relaxed mb-6">
               {translatedSafari.overview || "Embark on an unforgettable journey. Experience local wildlife up close, guided by our master conservationist trackers."}
             </p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-6 border-t border-wild-sand">
-              <div>
-                <span className="block text-xs text-wild-muted uppercase tracking-wider mb-1">{t('details_difficulty')}</span>
-                <span className="font-bold text-wild-charcoal">{translatedSafari.difficulty || "Moderate"}</span>
-              </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-6 pt-6 border-t border-wild-sand">
               <div>
                 <span className="block text-xs text-wild-muted uppercase tracking-wider mb-1">{t('details_group_size')}</span>
                 <span className="font-bold text-wild-charcoal">{translatedSafari.groupSize || "2 - 8 People"}</span>

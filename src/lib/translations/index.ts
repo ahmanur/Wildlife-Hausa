@@ -19,7 +19,7 @@ export const translations: Record<string, TranslationDict> = {
   contact_us: { en: "Contact Us", ha: "Tuntube Mu" },
 
   // Hero Section
-  hero_badge: { en: "DUNIYAR DABBOBIN DAJI", ha: "DUNIYAR DABBOBIN DAJI" },
+  hero_badge: { en: "Connecting you to the Wild", ha: "Haɗa ku da Daji" },
   hero_title_1: { en: "Explore Majestic", ha: "Bincika Kyawawan" },
   hero_title_2: { en: "Creatures With Us", ha: "Halittu Tare da Mu" },
   hero_subtitle: {
@@ -210,7 +210,6 @@ export const translations: Record<string, TranslationDict> = {
   filter_photography: { en: "Photography", ha: "Daukar Hoto" },
   no_safaris_matching: { en: "No safaris matching this filter.", ha: "Babu safaris da suka dace da wannan tace." },
   safari_duration: { en: "Duration:", ha: "Tsawon Lokaci:" },
-  safari_difficulty: { en: "Difficulty:", ha: "Wuyar Tafiya:" },
   safari_best_for: { en: "Best For:", ha: "Mafi Dace Da:" },
 
   // Safari Details page
@@ -219,7 +218,6 @@ export const translations: Record<string, TranslationDict> = {
   details_not_found_desc: { en: "We couldn't find the safari route you are looking for. It may have been updated or removed.", ha: "Ba mu sami hanyar safari da kuke nema ba. Wataƙila an sabunta ko an cire ta." },
   details_back_btn: { en: "Back to All Safaris", ha: "Koma Ga Duk Safaris" },
   details_overview: { en: "Expedition Overview", ha: "Bayanin Tafiya" },
-  details_difficulty: { en: "Difficulty", ha: "Wuyar Tafiya" },
   details_group_size: { en: "Group Size", ha: "Adadin Mutane" },
   details_best_time: { en: "Best Time", ha: "Mafi Kyawun Lokaci" },
   details_starting_price: { en: "Starting Price", ha: "Farashin Farawa" },
@@ -335,7 +333,6 @@ export const safariTranslations: Record<string, any> = {
     title: "Gidan Gandun Yankari",
     location: "Bauchi State",
     duration: "Kwana 3, Dare 2",
-    difficulty: "Ga Kowa da Iyalai",
     bestFor: "Iyalai da Masu Bude Ido",
     overview: "Venture into one of West Africa's most renowned reserves. Expect to encounter elephants, baboons, and a spectacular array of birdlife as you explore the savanna plains and natural warm springs.",
     itinerary: [
@@ -348,7 +345,6 @@ export const safariTranslations: Record<string, any> = {
     title: "Gidan Gandun Yankari",
     location: "Bauchi State",
     duration: "Kwana 3, Dare 2",
-    difficulty: "Ga Kowa da Iyalai",
     bestFor: "Iyalai da Masu Bude Ido",
     overview: "Venture into one of West Africa's most renowned reserves. Expect to encounter elephants, baboons, and a spectacular array of birdlife as you explore the savanna plains and natural warm springs.",
     itinerary: [
@@ -361,7 +357,6 @@ export const safariTranslations: Record<string, any> = {
     title: "Tafiyar Dajin Kamuku",
     location: "Kaduna State",
     duration: "Kwana 5, Dare 4",
-    difficulty: "Tafiya Mai Nisa (Advanced)",
     bestFor: "Masu Kasada da Masu Bincike",
     overview: "A deep trek into the pristine woodlands of Kamuku. Spot rare hornbills, baboons, and explore our active conservation research stations.",
     itinerary: [
@@ -376,7 +371,6 @@ export const safariTranslations: Record<string, any> = {
     title: "Safari na Daukar Hoton Daji",
     location: "Wurare Daban-daban",
     duration: "Kwana 2, Dare 1",
-    difficulty: "Tsaka-tsaki",
     bestFor: "Masu Daukar Hoto",
     overview: "Capture the raw essence of West African wildlife under the golden savanna sun. Led by award-winning wildlife photographers.",
     itinerary: [
@@ -388,7 +382,6 @@ export const safariTranslations: Record<string, any> = {
     title: "Dajin Gashaka Gumti",
     location: "Taraba State",
     duration: "Kwana 7, Dare 6",
-    difficulty: "Kwararru Kaɗai",
     bestFor: "Kwararrun Masu Tafiyar Daji",
     overview: "Our ultimate challenge. Trek through the mountainous rain forests of Gashaka Gumti, home to chimpanzees and leopards.",
     itinerary: [
@@ -467,7 +460,6 @@ export function translateSafari(safari: any, language: Language) {
       title: safari.title_ha || safari.title,
       location: safari.location_ha || safari.location,
       duration: safari.duration_ha || safari.duration,
-      difficulty: safari.difficulty_ha || safari.difficulty,
       bestFor: safari.bestFor_ha || safari.bestFor,
       overview: safari.overview_ha || safari.overview,
       itinerary: safari.itinerary?.map((day: any) => ({
@@ -486,7 +478,6 @@ export function translateSafari(safari: any, language: Language) {
     title: tSafari.title || safari.title,
     location: safari.location,
     duration: tSafari.duration || safari.duration,
-    difficulty: tSafari.difficulty || safari.difficulty,
     bestFor: tSafari.bestFor || safari.bestFor,
     overview: tSafari.overview || safari.overview,
     itinerary: safari.itinerary?.map((day: any, idx: number) => {
