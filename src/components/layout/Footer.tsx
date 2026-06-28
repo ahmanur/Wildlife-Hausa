@@ -54,7 +54,7 @@ export function Footer() {
           {/* Brand Col */}
           <div>
             <div className="flex items-center gap-3 mb-6">
-              <div className="relative w-12 h-12 shrink-0">
+              <div className="relative w-12 h-12 shrink-0 rounded-full overflow-hidden">
                 <Image
                   src="/logo.png"
                   alt="Wild Hausa Logo"

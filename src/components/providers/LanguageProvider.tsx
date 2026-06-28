@@ -88,11 +88,11 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     return (
       <div className="fixed inset-0 z-[99999] bg-[#FAF9F5] flex flex-col items-center justify-center">
         <div className="flex flex-col items-center gap-6">
-          <div className="relative w-28 h-28 animate-pulse">
+          <div className="relative w-28 h-28 animate-pulse rounded-full overflow-hidden">
             <img
               src="/logo.png"
               alt="Wild Hausa Logo"
-              className="w-full h-full object-contain animate-spin-slow"
+              className="w-full h-full object-contain animate-spin-slow rounded-full"
               onError={(e) => {
                 (e.currentTarget as HTMLElement).style.display = 'none';
               }}

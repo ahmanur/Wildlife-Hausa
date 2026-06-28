@@ -46,7 +46,7 @@ export function Navbar() {
         <div className="w-full max-w-7xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-lg rounded-full pointer-events-auto transition-all duration-300">
           <div className="px-6 h-20 flex items-center justify-between">
             <Link href="/" className="flex items-center gap-3 group" onClick={closeMenu}>
-              <div className="relative w-16 h-16 transition-transform duration-300 group-hover:scale-105 drop-shadow-md">
+              <div className="relative w-16 h-16 transition-transform duration-300 group-hover:scale-105 drop-shadow-md rounded-full overflow-hidden">
                 <Image
                   src="/logo.png"
                   alt="Wild Hausa Logo"
