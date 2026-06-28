@@ -324,11 +324,6 @@ export default function Home() {
               title={t('classroom_title')} 
             />
             <div className="space-y-6 text-wild-forest/80 text-lg leading-relaxed font-sans mb-8">
-              {t('classroom_p1') && (
-                <p>
-                  {t('classroom_p1')}
-                </p>
-              )}
               <p>
                 {t('classroom_p2')}
               </p>
