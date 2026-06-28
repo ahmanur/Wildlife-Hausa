@@ -11,6 +11,7 @@ interface OverrideEntry {
   ha: string;
   label: string;
   type?: 'text' | 'textarea';
+  isGlobal?: boolean;
 }
 
 const DEFAULT_OVERRIDES: Record<string, OverrideEntry> = {
@@ -30,12 +31,12 @@ const DEFAULT_OVERRIDES: Record<string, OverrideEntry> = {
     label: "About Page Hero Subtitle (e.g., 'Born from a deep respect...')",
     type: 'textarea'
   },
-  contact_hq_val: { en: "123 Savanna Way, Kano, Northern Nigeria", ha: "Lamba 123 Titin Savanna, Kano, Arewacin Najeriya", label: "Contact HQ Address (Footer/Contact Page, e.g., '123 Savanna Way...')", type: 'text' },
-  contact_val: { en: "hello@wildhausa.com | +234 800 WILD HAUSA", ha: "hello@wildhausa.com | +234 800 WILD HAUSA", label: "Contact Phone & Email Row (Footer/Contact Page, e.g., 'hello@wildhausa.com | +234...')", type: 'text' },
-  social_facebook: { en: "https://facebook.com", ha: "https://facebook.com", label: "Facebook Link (e.g., 'https://facebook.com/...')", type: 'text' },
-  social_youtube: { en: "https://youtube.com", ha: "https://youtube.com", label: "YouTube Link (e.g., 'https://youtube.com/...')", type: 'text' },
-  social_instagram: { en: "https://instagram.com", ha: "https://instagram.com", label: "Instagram Link (e.g., 'https://instagram.com/...')", type: 'text' },
-  social_tiktok: { en: "https://tiktok.com", ha: "https://tiktok.com", label: "TikTok Link (e.g., 'https://tiktok.com/...')", type: 'text' },
+  contact_hq_val: { en: "123 Savanna Way, Kano, Northern Nigeria", ha: "123 Savanna Way, Kano, Northern Nigeria", label: "Contact HQ Address (Footer/Contact Page, e.g., '123 Savanna Way...')", type: 'text', isGlobal: true },
+  contact_val: { en: "hello@wildhausa.com | +234 800 WILD HAUSA", ha: "hello@wildhausa.com | +234 800 WILD HAUSA", label: "Contact Phone & Email Row (Footer/Contact Page, e.g., 'hello@wildhausa.com | +234...')", type: 'text', isGlobal: true },
+  social_facebook: { en: "https://facebook.com", ha: "https://facebook.com", label: "Facebook Link (e.g., 'https://facebook.com/...')", type: 'text', isGlobal: true },
+  social_youtube: { en: "https://youtube.com", ha: "https://youtube.com", label: "YouTube Link (e.g., 'https://youtube.com/...')", type: 'text', isGlobal: true },
+  social_instagram: { en: "https://instagram.com", ha: "https://instagram.com", label: "Instagram Link (e.g., 'https://instagram.com/...')", type: 'text', isGlobal: true },
+  social_tiktok: { en: "https://tiktok.com", ha: "https://tiktok.com", label: "TikTok Link (e.g., 'https://tiktok.com/...')", type: 'text', isGlobal: true },
 };
 
 const DEFAULT_HERO_IMAGES: Record<string, string> = {
@@ -345,47 +346,62 @@ export default function AdminSettingsPage() {
                   {entry.label}
                 </span>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* English Field */}
+                {entry.isGlobal ? (
                   <div>
-                    <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">English</label>
-                    {entry.type === 'textarea' ? (
-                      <textarea
-                        rows={3}
-                        value={current.en}
-                        onChange={(e) => handleCopyChange(key, 'en', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-850 focus:outline-none focus:border-wild-sunset resize-none"
-                      />
-                    ) : (
-                      <input
-                        type="text"
-                        value={current.en}
-                        onChange={(e) => handleCopyChange(key, 'en', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-850 focus:outline-none focus:border-wild-sunset"
-                      />
-                    )}
+                    <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Global Value (Same for English and Hausa)</label>
+                    <input
+                      type="text"
+                      value={current.en}
+                      onChange={(e) => {
+                        handleCopyChange(key, 'en', e.target.value);
+                        handleCopyChange(key, 'ha', e.target.value);
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-850 focus:outline-none focus:border-wild-sunset"
+                    />
                   </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* English Field */}
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">English</label>
+                      {entry.type === 'textarea' ? (
+                        <textarea
+                          rows={3}
+                          value={current.en}
+                          onChange={(e) => handleCopyChange(key, 'en', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-850 focus:outline-none focus:border-wild-sunset resize-none"
+                        />
+                      ) : (
+                        <input
+                          type="text"
+                          value={current.en}
+                          onChange={(e) => handleCopyChange(key, 'en', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-850 focus:outline-none focus:border-wild-sunset"
+                        />
+                      )}
+                    </div>
 
-                  {/* Hausa Field */}
-                  <div>
-                    <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Hausa</label>
-                    {entry.type === 'textarea' ? (
-                      <textarea
-                        rows={3}
-                        value={current.ha}
-                        onChange={(e) => handleCopyChange(key, 'ha', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-850 focus:outline-none focus:border-wild-sunset resize-none"
-                      />
-                    ) : (
-                      <input
-                        type="text"
-                        value={current.ha}
-                        onChange={(e) => handleCopyChange(key, 'ha', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-850 focus:outline-none focus:border-wild-sunset"
-                      />
-                    )}
+                    {/* Hausa Field */}
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Hausa</label>
+                      {entry.type === 'textarea' ? (
+                        <textarea
+                          rows={3}
+                          value={current.ha}
+                          onChange={(e) => handleCopyChange(key, 'ha', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-850 focus:outline-none focus:border-wild-sunset resize-none"
+                        />
+                      ) : (
+                        <input
+                          type="text"
+                          value={current.ha}
+                          onChange={(e) => handleCopyChange(key, 'ha', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-850 focus:outline-none focus:border-wild-sunset"
+                        />
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             );
           })}
