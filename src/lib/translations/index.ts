@@ -19,7 +19,7 @@ export const translations: Record<string, TranslationDict> = {
   contact_us: { en: "Contact Us", ha: "Tuntube Mu" },
 
   // Hero Section
-  hero_badge: { en: "Connecting you to the Wild", ha: "Haɗa ku da Daji" },
+  hero_badge: { en: "Connecting you to the Wild", ha: "Connecting you to the Wild" },
   hero_title_1: { en: "Explore Majestic", ha: "Bincika Kyawawan" },
   hero_title_2: { en: "Creatures With Us", ha: "Halittu Tare da Mu" },
   hero_subtitle: {
