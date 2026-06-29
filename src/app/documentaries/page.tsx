@@ -172,7 +172,7 @@ function DocCard({ title, category, image, duration, videoUrl, onClick, idx }: a
       <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors z-10" />
       <div className="absolute inset-0 border border-wild-sand/20 z-20 m-3 rounded-lg pointer-events-none" />
       <div className="absolute inset-0 w-full h-full">
-        {isDirectVideo && (!image || image.trim() === '') ? (
+        {isDirectVideo ? (
           <video 
             src={videoUrl}
             muted 
