@@ -428,3 +428,27 @@ export async function getServicesContent() {
 export async function updateServicesContent(data: Record<string, unknown>) {
   return updateDocument('settings', 'services', data);
 }
+
+// ───────────────────────────────────────────────
+// Trip Resources
+// ───────────────────────────────────────────────
+
+/** Fetch all trip resources */
+export async function getResources() {
+  return fetchCollection<any>(COLLECTIONS.RESOURCES, orderBy('tripDate', 'desc'));
+}
+
+/** Create a new resource */
+export async function createResource(data: Record<string, unknown>) {
+  return createDocument(COLLECTIONS.RESOURCES, data);
+}
+
+/** Update an existing resource */
+export async function updateResource(id: string, data: Record<string, unknown>) {
+  return updateDocument(COLLECTIONS.RESOURCES, id, data);
+}
+
+/** Delete a resource */
+export async function removeResource(id: string) {
+  return removeDocument(COLLECTIONS.RESOURCES, id);
+}

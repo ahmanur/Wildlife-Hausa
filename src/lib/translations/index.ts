@@ -10,6 +10,7 @@ export const translations: Record<string, TranslationDict> = {
   home: { en: "Home", ha: "Gida" },
   price_on_request: { en: "Price on request", ha: "Nemi Farashi" },
   our_story: { en: "Our Story", ha: "Tarihinmu" },
+  resources: { en: "Resources", ha: "Albarkatu" },
   worlds: { en: "Services", ha: "Ayyukanmu" },
   expeditions: { en: "Expeditions", ha: "Tafiye-tafiye" },
   films: { en: "Nature Media", ha: "Kafofin Yada Labaran Halitta" },
@@ -213,6 +214,17 @@ export const translations: Record<string, TranslationDict> = {
   no_safaris_matching: { en: "No safaris matching this filter.", ha: "Babu safaris da suka dace da wannan tace." },
   safari_duration: { en: "Duration:", ha: "Tsawon Lokaci:" },
   safari_best_for: { en: "Best For:", ha: "Mafi Dace Da:" },
+
+  // Resources page
+  resources_hero_title: { en: "Field Trip Resources", ha: "Albarkatun Ziyara" },
+  resources_hero_subtitle: { en: "Access field trip reports, maps, research papers, and photographs from our expeditions.", ha: "Hanyar samun rahotannin ziyara, taswira, takardun bincike, da hotuna daga tafiye-tafiyenmu." },
+  download_report: { en: "Download Report", ha: "Sauke Rahoton" },
+  trip_date: { en: "Trip Date", ha: "Ranar Ziyara" },
+  view_photos: { en: "View Gallery", ha: "Kalli Hotuna" },
+  no_resources_found: { en: "No field trip resources available yet.", ha: "Babu albarkatun ziyara a halin yanzu." },
+  loading_resources: { en: "Loading field trip resources...", ha: "Ana loda albarkatun ziyara..." },
+  filter_reports: { en: "Trip Reports", ha: "Rahotannin Ziyara" },
+  filter_photos: { en: "Field Photos", ha: "Hotunan Ziyara" },
 
   // Safari Details page
   details_loading: { en: "Gathering expedition details...", ha: "Ana tattara bayanan tafiya..." },
@@ -670,4 +682,14 @@ export function calculateEstimatedTotal(price: any, guestsStr: string, language:
   }
   
   return format(priceNum);
+}
+
+export function translateResource(resource: any, language: Language) {
+  if (language === 'en' || !resource) return resource;
+  return {
+    ...resource,
+    title: resource.title_ha || resource.title,
+    category: resource.category_ha || resource.category,
+    description: resource.description_ha || resource.description
+  };
 }

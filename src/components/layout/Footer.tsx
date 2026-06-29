@@ -105,6 +105,7 @@ export function Footer() {
               <li><Link href="/safaris" className="hover:text-wild-sunset transition-colors">{t('expeditions')}</Link></li>
               <li><Link href="/documentaries" className="hover:text-wild-sunset transition-colors">{t('films')}</Link></li>
               <li><Link href="/services" className="hover:text-wild-sunset transition-colors">{t('worlds')}</Link></li>
+              <li><Link href="/resources" className="hover:text-wild-sunset transition-colors">{t('resources')}</Link></li>
             </ul>
           </div>
 

@@ -29,4 +29,7 @@ export const COLLECTIONS = {
 
   /** Newsletter email subscribers */
   NEWSLETTER_SUBSCRIBERS: 'newsletter_subscribers',
+
+  /** Field trip resources, reports and pictures */
+  RESOURCES: 'resources',
 } as const;
