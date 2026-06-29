@@ -22,6 +22,42 @@ interface MediaItem {
   createdAt?: any;
 }
 
+function getYouTubeId(url?: string): string | null {
+  if (!url) return null;
+  const shortsMatch = url.match(/\/shorts\/([a-zA-Z0-9_-]{11})/);
+  if (shortsMatch) return shortsMatch[1];
+  const watchBeMatch = url.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+  if (watchBeMatch) return watchBeMatch[1];
+  const watchUrlMatch = url.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
+  if (watchUrlMatch) return watchUrlMatch[1];
+  const embedMatch = url.match(/\/embed\/([a-zA-Z0-9_-]{11})/);
+  if (embedMatch) return embedMatch[1];
+  return null;
+}
+
+function getVimeoId(url?: string): string | null {
+  if (!url) return null;
+  const match = url.match(/(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(\d+)/);
+  return match ? match[1] : null;
+}
+
+function resolveThumbnail(item: MediaItem): string {
+  if (item.image && item.image.trim() !== '') {
+    return item.image;
+  }
+  if (item.videoUrl) {
+    const ytId = getYouTubeId(item.videoUrl);
+    if (ytId) {
+      return `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+    }
+    const vimeoId = getVimeoId(item.videoUrl);
+    if (vimeoId) {
+      return `https://vumbnail.com/${vimeoId}.jpg`;
+    }
+  }
+  return "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&q=80&w=1000";
+}
+
 export default function AdminContentPage() {
   const [items, setItems] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -235,9 +271,9 @@ export default function AdminContentPage() {
                   <tr key={item.id} className="hover:bg-gray-50/50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
                       <div className="flex items-center gap-3">
-                        {item.image ? (
+                        {item.image || item.videoUrl ? (
                           <img
-                            src={item.image}
+                            src={resolveThumbnail(item)}
                             alt={item.title}
                             className="w-12 h-8 object-cover rounded bg-gray-100"
                           />
@@ -383,14 +419,13 @@ export default function AdminContentPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-gray-700 uppercase font-sans">Image URL *</label>
+                <label className="text-xs font-bold text-gray-700 uppercase font-sans">Image URL</label>
                 <div className="space-y-3">
                   <input
                     type="url"
-                    required
                     value={image}
                     onChange={(e) => setImage(e.target.value)}
-                    placeholder="https://images.unsplash.com/..."
+                    placeholder="https://images.unsplash.com/... (optional if video is provided)"
                     className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-wild-sunset text-sm text-gray-800"
                   />
                   <div className="flex items-center gap-4">

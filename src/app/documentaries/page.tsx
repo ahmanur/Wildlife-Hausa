@@ -97,12 +97,13 @@ export default function DocumentariesPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {translatedFiltered.map((film, idx) => (
-              <DocCard
+               <DocCard
                 key={film.id || idx}
                 title={film.title}
                 category={film.category}
                 image={film.image}
                 duration={film.duration}
+                videoUrl={film.videoUrl}
                 onClick={() => {
                   if (film.videoUrl) {
                     setActiveVideoUrl(film.videoUrl);
@@ -131,13 +132,63 @@ export default function DocumentariesPage() {
   );
 }
 
-function DocCard({ title, category, image, duration, onClick }: any) {
+function getYouTubeId(url?: string): string | null {
+  if (!url) return null;
+  const shortsMatch = url.match(/\/shorts\/([a-zA-Z0-9_-]{11})/);
+  if (shortsMatch) return shortsMatch[1];
+  const watchBeMatch = url.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+  if (watchBeMatch) return watchBeMatch[1];
+  const watchUrlMatch = url.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
+  if (watchUrlMatch) return watchUrlMatch[1];
+  const embedMatch = url.match(/\/embed\/([a-zA-Z0-9_-]{11})/);
+  if (embedMatch) return embedMatch[1];
+  return null;
+}
+
+function getVimeoId(url?: string): string | null {
+  if (!url) return null;
+  const match = url.match(/(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(\d+)/);
+  return match ? match[1] : null;
+}
+
+function DocCard({ title, category, image, duration, videoUrl, onClick, idx }: any) {
+  const isDirectVideo = videoUrl && (videoUrl.includes('.mp4') || videoUrl.includes('.webm') || videoUrl.includes('.ogg') || videoUrl.includes('pexels.com/video') || videoUrl.includes('firebasestorage.googleapis.com'));
+  
+  let thumbnailSrc = image;
+  if (!image || image.trim() === '') {
+    const ytId = getYouTubeId(videoUrl);
+    if (ytId) {
+      thumbnailSrc = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+    } else {
+      const vimeoId = getVimeoId(videoUrl);
+      if (vimeoId) {
+        thumbnailSrc = `https://vumbnail.com/${vimeoId}.jpg`;
+      }
+    }
+  }
+
   return (
-    <div onClick={onClick} className="group relative rounded-xl overflow-hidden cursor-pointer bg-black">
+    <div onClick={onClick} className="group relative rounded-xl overflow-hidden cursor-pointer bg-black h-64">
       <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors z-10" />
       <div className="absolute inset-0 border border-wild-sand/20 z-20 m-3 rounded-lg pointer-events-none" />
-      <div className="h-64 relative">
-        <Image src={image} alt={title} fill className="object-cover transform group-hover:scale-105 transition-transform duration-700" />
+      <div className="absolute inset-0 w-full h-full">
+        {isDirectVideo && (!image || image.trim() === '') ? (
+          <video 
+            src={videoUrl}
+            muted 
+            loop 
+            playsInline 
+            preload="metadata"
+            className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
+          />
+        ) : (
+          <Image 
+            src={thumbnailSrc || "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&q=80&w=1000"} 
+            alt={title} 
+            fill 
+            className="object-cover transform group-hover:scale-105 transition-transform duration-700" 
+          />
+        )}
       </div>
       <div className="absolute inset-0 flex items-center justify-center z-20">
         <div className="w-16 h-16 bg-wild-sunset/90 rounded-full flex items-center justify-center text-white backdrop-blur-sm group-hover:scale-110 transition-transform">
