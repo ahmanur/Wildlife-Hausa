@@ -203,7 +203,7 @@ export default function AboutPage() {
 
       {/* Founder Full Bio Modal/Overlay */}
       {activeFounder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6 bg-wild-forest/80 backdrop-blur-md transition-opacity duration-300">
+        <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4 md:p-6 bg-wild-forest/80 backdrop-blur-md transition-opacity duration-300">
           <div className="relative w-full max-w-4xl bg-wild-cream rounded-3xl overflow-hidden shadow-2xl border border-wild-cream flex flex-col md:flex-row max-h-[90vh] md:max-h-[85vh]">
             <button 
               onClick={() => setActiveFounder(null)}
