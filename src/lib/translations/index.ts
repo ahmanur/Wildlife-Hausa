@@ -223,8 +223,8 @@ export const translations: Record<string, TranslationDict> = {
   view_photos: { en: "View Gallery", ha: "Kalli Hotuna" },
   no_resources_found: { en: "No field trip resources available yet.", ha: "Babu albarkatun ziyara a halin yanzu." },
   loading_resources: { en: "Loading field trip resources...", ha: "Ana loda albarkatun ziyara..." },
-  filter_reports: { en: "Trip Reports", ha: "Rahotannin Ziyara" },
-  filter_photos: { en: "Field Photos", ha: "Hotunan Ziyara" },
+  filter_reports: { en: "Reports", ha: "Rahotanni" },
+  filter_photos: { en: "Gallery", ha: "Hotuna" },
 
   // Safari Details page
   details_loading: { en: "Gathering expedition details...", ha: "Ana tattara bayanan tafiya..." },

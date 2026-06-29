@@ -71,8 +71,8 @@ export default function ResourcesPage() {
 
   const filters = [
     { key: 'All', label: language === 'en' ? 'All Resources' : 'Duk Albarkatu' },
-    { key: 'Reports', label: t('filter_reports', 'Trip Reports') },
-    { key: 'Photos', label: t('filter_photos', 'Field Photos') }
+    { key: 'Reports', label: t('filter_reports', 'Reports') },
+    { key: 'Photos', label: t('filter_photos', 'Gallery') }
   ];
 
   return (
