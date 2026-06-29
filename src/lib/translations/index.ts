@@ -184,7 +184,9 @@ export const translations: Record<string, TranslationDict> = {
     ha: "Kowace tafiya da muke jagoranta da kowane fim da muke samarwa yana taimakawa kai tsaye wajen kiyaye muhalli da tallafawa al'ummar gari."
   },
   about_principles_title: { en: "Our Field Principles", ha: "Ka'idodin Aikinmu na Daji" },
+  about_founders_title: { en: "Meet the Founders", ha: "Haɗu da Masu Kafa Wild Hausa" },
   about_ready_join: { en: "Ready to join our journey?", ha: "Kun shirya shiga tafiyarmu?" },
+
 
   // Principle Cards
   principle_1_title: { en: "Protect the Habitat", ha: "Kare Muhallin" },
@@ -583,6 +585,12 @@ export function translateAbout(content: any, language: Language) {
       ...p,
       title: p.title_ha || p.title,
       text: p.text_ha || p.text
+    })),
+    foundersTitle: content.foundersTitle_ha || content.foundersTitle,
+    founders: content.founders?.map((f: any) => ({
+      ...f,
+      role: f.role_ha || f.role,
+      bio: f.bio_ha || f.bio
     }))
   };
 }

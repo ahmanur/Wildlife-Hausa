@@ -28,6 +28,15 @@ const FALLBACK_CONTENT = {
     { title: "Deep Education", text: "Every expedition is a moving classroom about ecology." },
     { title: "Sustainable Logistics", text: "From solar-powered camps to minimal plastic use." },
     { title: "Scientific Support", text: "A percentage of our revenue funds ecological research." },
+  ],
+  foundersTitle: "Meet the Founders",
+  founders: [
+    {
+      name: "Founder Name",
+      role: "Co-Founder & Director",
+      bio: "Founder biography goes here detailing their background, passion, and role at Wild Hausa.",
+      image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=600"
+    }
   ]
 };
 
@@ -135,6 +144,47 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+
+      {/* Founders Section */}
+      {translatedContent.founders && translatedContent.founders.length > 0 && (
+        <section className="py-24 container mx-auto px-6 lg:px-12">
+          <WildSectionHeader 
+            title={translatedContent.foundersTitle || t('about_founders_title', 'Meet the Founders')} 
+            centered 
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mt-16 max-w-6xl mx-auto justify-center">
+            {translatedContent.founders.map((founder: any, idx: number) => (
+              <div 
+                key={idx} 
+                className="bg-white rounded-3xl overflow-hidden shadow-lg border border-wild-cream hover:border-wild-sunset/20 hover:shadow-2xl transition-all duration-500 group flex flex-col h-full"
+              >
+                {founder.image && (
+                  <div className="relative h-[320px] w-full overflow-hidden shrink-0">
+                    <Image 
+                      src={founder.image} 
+                      alt={founder.name} 
+                      fill 
+                      className="object-cover transition-transform duration-700 group-hover:scale-105" 
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-wild-forest/40 via-transparent to-transparent opacity-80" />
+                  </div>
+                )}
+                <div className="p-8 flex flex-col flex-1">
+                  <span className="text-wild-sunset font-sans font-bold text-xs uppercase tracking-widest mb-1">
+                    {founder.role}
+                  </span>
+                  <h3 className="font-serif text-2xl text-wild-forest font-bold mb-4">
+                    {founder.name}
+                  </h3>
+                  <p className="text-wild-muted text-sm leading-relaxed whitespace-pre-line flex-1">
+                    {founder.bio}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Final CTA */}
       <section className="py-24 text-center">

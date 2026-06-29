@@ -2,14 +2,25 @@
 
 import React, { useState, useEffect } from 'react';
 import { getAboutContent, updateAboutContent } from '@/lib/firebase/services';
-import { Loader2, Save, Plus, Trash2, Image as ImageIcon } from 'lucide-react';
+import { Loader2, Save, Plus, Trash2, Image as ImageIcon, UploadCloud } from 'lucide-react';
 import { SafariRingBadge } from '@/components/ui/SafariRingBadge';
+import { storage } from '@/lib/firebase/config';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
 export interface FieldPrinciple {
   title: string;
   title_ha?: string;
   text: string;
   text_ha?: string;
+}
+
+export interface Founder {
+  name: string;
+  role: string;
+  role_ha?: string;
+  bio: string;
+  bio_ha?: string;
+  image: string;
 }
 
 export interface AboutContent {
@@ -30,6 +41,9 @@ export interface AboutContent {
   principlesTitle: string;
   principlesTitle_ha?: string;
   principles: FieldPrinciple[];
+  foundersTitle?: string;
+  foundersTitle_ha?: string;
+  founders?: Founder[];
 }
 
 const DEFAULT_CONTENT: AboutContent = {
@@ -49,6 +63,18 @@ const DEFAULT_CONTENT: AboutContent = {
     { title: "Deep Education", text: "Every expedition is a moving classroom about ecology." },
     { title: "Sustainable Logistics", text: "From solar-powered camps to minimal plastic use." },
     { title: "Scientific Support", text: "A percentage of our revenue funds ecological research." },
+  ],
+  foundersTitle: "Meet the Founders",
+  foundersTitle_ha: "Haɗu da Masu Kafa Wild Hausa",
+  founders: [
+    {
+      name: "Founder Name",
+      role: "Co-Founder & Director",
+      role_ha: "Mataimakin Kafa & Darakta",
+      bio: "Founder biography goes here detailing their background, passion, and role at Wild Hausa.",
+      bio_ha: "Tarihin mai kafa zai shiga nan yana bayyana asalinsa, sha'awarsa, da matsayinsa a Wild Hausa.",
+      image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=600"
+    }
   ]
 };
 
@@ -57,6 +83,134 @@ export default function AdminAboutPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  // Upload States
+  const [uploadingHero, setUploadingHero] = useState(false);
+  const [heroProgress, setHeroProgress] = useState(0);
+  const [uploadingMission, setUploadingMission] = useState(false);
+  const [missionProgress, setMissionProgress] = useState(0);
+  const [uploadingFounder, setUploadingFounder] = useState<{[key: number]: boolean}>({});
+  const [founderProgress, setFounderProgress] = useState<{[key: number]: number}>({});
+
+  const handleHeroImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file.');
+      return;
+    }
+
+    setUploadingHero(true);
+    setHeroProgress(0);
+
+    try {
+      const storageRef = ref(storage, `about/${Date.now()}_${file.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      uploadTask.on(
+        'state_changed',
+        (snapshot: any) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setHeroProgress(Math.round(progress));
+        },
+        (error: any) => {
+          console.error("Upload failed", error);
+          alert('Failed to upload image.');
+          setUploadingHero(false);
+        },
+        async () => {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          handleChange('heroImage', downloadURL);
+          setUploadingHero(false);
+        }
+      );
+    } catch (err) {
+      console.error(err);
+      setUploadingHero(false);
+      alert('Failed to initialize upload.');
+    }
+  };
+
+  const handleMissionImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file.');
+      return;
+    }
+
+    setUploadingMission(true);
+    setMissionProgress(0);
+
+    try {
+      const storageRef = ref(storage, `about/${Date.now()}_${file.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      uploadTask.on(
+        'state_changed',
+        (snapshot: any) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setMissionProgress(Math.round(progress));
+        },
+        (error: any) => {
+          console.error("Upload failed", error);
+          alert('Failed to upload image.');
+          setUploadingMission(false);
+        },
+        async () => {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          handleChange('missionImage', downloadURL);
+          setUploadingMission(false);
+        }
+      );
+    } catch (err) {
+      console.error(err);
+      setUploadingMission(false);
+      alert('Failed to initialize upload.');
+    }
+  };
+
+  const handleFounderImageUpload = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file.');
+      return;
+    }
+
+    setUploadingFounder(prev => ({ ...prev, [index]: true }));
+    setFounderProgress(prev => ({ ...prev, [index]: 0 }));
+
+    try {
+      const storageRef = ref(storage, `about/founders_${Date.now()}_${file.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      uploadTask.on(
+        'state_changed',
+        (snapshot: any) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setFounderProgress(prev => ({ ...prev, [index]: Math.round(progress) }));
+        },
+        (error: any) => {
+          console.error("Upload failed", error);
+          alert('Failed to upload image.');
+          setUploadingFounder(prev => ({ ...prev, [index]: false }));
+        },
+        async () => {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          handleFounderChange(index, 'image', downloadURL);
+          setUploadingFounder(prev => ({ ...prev, [index]: false }));
+        }
+      );
+    } catch (err) {
+      console.error(err);
+      setUploadingFounder(prev => ({ ...prev, [index]: false }));
+      alert('Failed to initialize upload.');
+    }
+  };
 
   useEffect(() => {
     async function loadData() {
@@ -95,6 +249,25 @@ export default function AdminAboutPage() {
     const newPrinciples = [...content.principles];
     newPrinciples.splice(index, 1);
     setContent(prev => ({ ...prev, principles: newPrinciples }));
+  };
+
+  const handleFounderChange = (index: number, field: keyof Founder, value: string) => {
+    const newFounders = [...(content.founders || [])];
+    newFounders[index] = { ...newFounders[index], [field]: value };
+    setContent(prev => ({ ...prev, founders: newFounders }));
+  };
+
+  const addFounder = () => {
+    setContent(prev => ({
+      ...prev,
+      founders: [...(prev.founders || []), { name: 'New Founder', role: 'Role', bio: 'Biography', image: '' }]
+    }));
+  };
+
+  const removeFounder = (index: number) => {
+    const newFounders = [...(content.founders || [])];
+    newFounders.splice(index, 1);
+    setContent(prev => ({ ...prev, founders: newFounders }));
   };
 
   const handleSave = async () => {
@@ -172,10 +345,36 @@ export default function AdminAboutPage() {
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Hero Background Image URL</label>
-            <div className="flex items-center gap-3">
-              <ImageIcon className="text-gray-400" size={20} />
-              <input type="text" value={content.heroImage || ''} onChange={(e) => handleChange('heroImage', e.target.value)} className="flex-1 px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg" />
+            <label className="block text-sm font-medium text-gray-700 mb-1">Hero Background Image</label>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <ImageIcon className="text-gray-400" size={20} />
+                <input 
+                  type="text" 
+                  placeholder="Image URL"
+                  value={content.heroImage || ''} 
+                  onChange={(e) => handleChange('heroImage', e.target.value)} 
+                  className="flex-1 px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-sm" 
+                />
+              </div>
+              <div className="flex items-center gap-4">
+                <label className="flex items-center gap-2 bg-white border border-gray-300 hover:border-wild-sunset text-gray-700 px-4 py-2 rounded-lg cursor-pointer transition-colors shadow-sm text-sm font-medium">
+                  <UploadCloud size={16} className="text-wild-sunset" />
+                  {uploadingHero ? `Uploading... ${heroProgress}%` : 'Upload Image'}
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={handleHeroImageUpload}
+                    className="hidden"
+                    disabled={uploadingHero}
+                  />
+                </label>
+                {uploadingHero && (
+                  <div className="flex-1 max-w-xs bg-gray-200 rounded-full h-2">
+                    <div className="bg-wild-sunset h-2 rounded-full transition-all duration-300" style={{ width: `${heroProgress}%` }}></div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -226,10 +425,36 @@ export default function AdminAboutPage() {
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Mission Image URL</label>
-            <div className="flex items-center gap-3">
-              <ImageIcon className="text-gray-400" size={20} />
-              <input type="text" value={content.missionImage || ''} onChange={(e) => handleChange('missionImage', e.target.value)} className="flex-1 px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg" />
+            <label className="block text-sm font-medium text-gray-700 mb-1">Mission Image</label>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <ImageIcon className="text-gray-400" size={20} />
+                <input 
+                  type="text" 
+                  placeholder="Image URL"
+                  value={content.missionImage || ''} 
+                  onChange={(e) => handleChange('missionImage', e.target.value)} 
+                  className="flex-1 px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-sm" 
+                />
+              </div>
+              <div className="flex items-center gap-4">
+                <label className="flex items-center gap-2 bg-white border border-gray-300 hover:border-wild-sunset text-gray-700 px-4 py-2 rounded-lg cursor-pointer transition-colors shadow-sm text-sm font-medium">
+                  <UploadCloud size={16} className="text-wild-sunset" />
+                  {uploadingMission ? `Uploading... ${missionProgress}%` : 'Upload Image'}
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={handleMissionImageUpload}
+                    className="hidden"
+                    disabled={uploadingMission}
+                  />
+                </label>
+                {uploadingMission && (
+                  <div className="flex-1 max-w-xs bg-gray-200 rounded-full h-2">
+                    <div className="bg-wild-sunset h-2 rounded-full transition-all duration-300" style={{ width: `${missionProgress}%` }}></div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -299,6 +524,141 @@ export default function AdminAboutPage() {
                       className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded" 
                     />
                   </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Founders Section */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-gray-50 border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+          <h2 className="text-lg font-bold text-wild-deep-forest">Founders Section</h2>
+          <button onClick={addFounder} className="flex items-center gap-2 text-sm font-medium text-wild-sunset hover:text-[#FF8C42]">
+            <Plus size={16} /> Add Founder
+          </button>
+        </div>
+        <div className="p-6 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Founders Section Title (e.g., 'Meet the Founders')</label>
+              <input type="text" value={content.foundersTitle || ''} onChange={(e) => handleChange('foundersTitle', e.target.value)} className="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Founders Section Title (Hausa)</label>
+              <input type="text" value={content.foundersTitle_ha || ''} onChange={(e) => handleChange('foundersTitle_ha', e.target.value)} className="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg" />
+            </div>
+          </div>
+          
+          <div className="space-y-6">
+            {(content.founders || []).map((founder, index) => (
+              <div key={index} className="p-4 border border-gray-200 rounded-lg relative">
+                <button 
+                  onClick={() => removeFounder(index)}
+                  className="absolute top-4 right-4 text-gray-400 hover:text-red-500"
+                  title="Remove Founder"
+                >
+                  <Trash2 size={18} />
+                </button>
+                <div className="font-medium text-gray-500 mb-4 uppercase tracking-wider text-xs font-bold text-wild-sunset">Founder {index + 1}</div>
+                <div className="grid grid-cols-1 gap-6">
+                  
+                  {/* Name and Image URL */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Full Name</label>
+                      <input 
+                        type="text" 
+                        placeholder="Founder Name" 
+                        value={founder.name} 
+                        onChange={(e) => handleFounderChange(index, 'name', e.target.value)} 
+                        className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded" 
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Founder Photo</label>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <ImageIcon className="text-gray-400" size={16} />
+                          <input 
+                            type="text" 
+                            placeholder="Image URL"
+                            value={founder.image} 
+                            onChange={(e) => handleFounderChange(index, 'image', e.target.value)} 
+                            className="flex-1 px-3 py-1 bg-gray-50 border border-gray-300 rounded text-xs" 
+                          />
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <label className="flex items-center gap-1 bg-white border border-gray-300 hover:border-wild-sunset text-gray-700 px-3 py-1 rounded cursor-pointer transition-colors shadow-sm text-xs font-medium">
+                            <UploadCloud size={14} className="text-wild-sunset" />
+                            {uploadingFounder[index] ? `Uploading... ${founderProgress[index] || 0}%` : 'Upload Photo'}
+                            <input 
+                              type="file" 
+                              accept="image/*" 
+                              onChange={(e) => handleFounderImageUpload(index, e)}
+                              className="hidden"
+                              disabled={uploadingFounder[index]}
+                            />
+                          </label>
+                          {uploadingFounder[index] && (
+                            <div className="flex-1 max-w-xs bg-gray-200 rounded-full h-1">
+                              <div className="bg-wild-sunset h-1 rounded-full transition-all duration-300" style={{ width: `${founderProgress[index] || 0}%` }}></div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Role/Title */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Role / Title (English)</label>
+                      <input 
+                        type="text" 
+                        placeholder="Co-Founder & CEO" 
+                        value={founder.role} 
+                        onChange={(e) => handleFounderChange(index, 'role', e.target.value)} 
+                        className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded" 
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Role / Title (Hausa)</label>
+                      <input 
+                        type="text" 
+                        placeholder="Mataimakin Kafa & Shugaba" 
+                        value={founder.role_ha || ''} 
+                        onChange={(e) => handleFounderChange(index, 'role_ha', e.target.value)} 
+                        className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded" 
+                      />
+                    </div>
+                  </div>
+
+                  {/* Biography */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Biography (English)</label>
+                      <textarea 
+                        placeholder="Founder biography in English..." 
+                        rows={4} 
+                        value={founder.bio} 
+                        onChange={(e) => handleFounderChange(index, 'bio', e.target.value)} 
+                        className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded" 
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Biography (Hausa)</label>
+                      <textarea 
+                        placeholder="Tarihin mai kafa a Hausa..." 
+                        rows={4} 
+                        value={founder.bio_ha || ''} 
+                        onChange={(e) => handleFounderChange(index, 'bio_ha', e.target.value)} 
+                        className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded" 
+                      />
+                    </div>
+                  </div>
+
                 </div>
               </div>
             ))}
