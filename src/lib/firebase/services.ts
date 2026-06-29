@@ -43,10 +43,20 @@ function withTimeout<T>(promise: Promise<T>, timeoutMs: number = 3000): Promise<
 // ───────────────────────────────────────────────
 
 async function seedCollectionIfNeeded(collectionName: string): Promise<boolean> {
+  if (typeof window !== 'undefined') {
+    const seedKey = `wild_hausa_seeded_${collectionName}`;
+    if (localStorage.getItem(seedKey)) {
+      return false; // Already seeded in the past
+    }
+  }
+
   const ref = collection(db, collectionName);
   const snapshot = await getDocs(query(ref, limit(1)));
   
   if (!snapshot.empty) {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(`wild_hausa_seeded_${collectionName}`, 'true');
+    }
     return false; // Already has data, no seeding needed
   }
 
@@ -74,6 +84,10 @@ async function seedCollectionIfNeeded(collectionName: string): Promise<boolean> 
       ...item,
       createdAt: serverTimestamp(),
     });
+  }
+
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(`wild_hausa_seeded_${collectionName}`, 'true');
   }
   return true;
 }

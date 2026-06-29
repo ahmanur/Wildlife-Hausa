@@ -172,8 +172,8 @@ export default function AdminContentPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title || !image || !duration) {
-      setError('Please fill in all required fields (Title, Image URL, Duration).');
+    if (!title || !duration) {
+      setError('Please fill in all required fields (Title, Duration).');
       return;
     }
 

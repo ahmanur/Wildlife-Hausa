@@ -176,9 +176,10 @@ function DocCard({ title, category, image, duration, videoUrl, onClick, idx }: a
           <video 
             src={videoUrl}
             muted 
+            autoPlay
             loop 
             playsInline 
-            preload="metadata"
+            preload="auto"
             className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
           />
         ) : (
