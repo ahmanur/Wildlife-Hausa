@@ -399,7 +399,8 @@ export default function AdminResourcesPage() {
                     className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-wild-sunset text-sm text-gray-800 bg-white"
                   >
                     <option value="Reports">Reports</option>
-                    <option value="Photos">Photos</option>
+                    <option value="Photos">Photos (Gallery)</option>
+                    <option value="Downloads">Downloads</option>
                     <option value="All">All / Other</option>
                   </select>
                 </div>

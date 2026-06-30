@@ -219,12 +219,14 @@ export const translations: Record<string, TranslationDict> = {
   resources_hero_title: { en: "Field Trip Resources", ha: "Albarkatun Ziyara" },
   resources_hero_subtitle: { en: "Access field trip reports, maps, research papers, and photographs from our expeditions.", ha: "Hanyar samun rahotannin ziyara, taswira, takardun bincike, da hotuna daga tafiye-tafiyenmu." },
   download_report: { en: "Download Report", ha: "Sauke Rahoton" },
+  download_file: { en: "Download File", ha: "Sauke Fayil" },
   trip_date: { en: "Trip Date", ha: "Ranar Ziyara" },
   view_photos: { en: "View Gallery", ha: "Kalli Hotuna" },
   no_resources_found: { en: "No field trip resources available yet.", ha: "Babu albarkatun ziyara a halin yanzu." },
   loading_resources: { en: "Loading field trip resources...", ha: "Ana loda albarkatun ziyara..." },
   filter_reports: { en: "Reports", ha: "Rahotanni" },
   filter_photos: { en: "Gallery", ha: "Hotuna" },
+  filter_downloads: { en: "Downloads", ha: "Saukewa" },
 
   // Safari Details page
   details_loading: { en: "Gathering expedition details...", ha: "Ana tattara bayanan tafiya..." },

@@ -71,7 +71,7 @@ export default function ResourcesPage() {
   const displayResources = resources.filter(res => {
     // 1. Category Filter
     if (activeFilter !== 'All') {
-      const matchCat = activeFilter === 'Reports' ? 'reports' : 'photos';
+      const matchCat = activeFilter === 'Reports' ? 'reports' : (activeFilter === 'Photos' ? 'photos' : 'downloads');
       if (res.category?.toLowerCase() !== matchCat) return false;
     }
     
@@ -116,7 +116,8 @@ export default function ResourcesPage() {
   const filters = [
     { key: 'All', label: language === 'en' ? 'All Resources' : 'Duk Albarkatu' },
     { key: 'Reports', label: t('filter_reports', 'Reports') },
-    { key: 'Photos', label: t('filter_photos', 'Gallery') }
+    { key: 'Photos', label: t('filter_photos', 'Gallery') },
+    { key: 'Downloads', label: t('filter_downloads', 'Downloads') }
   ];
 
   return (
@@ -242,7 +243,7 @@ export default function ResourcesPage() {
                                 className="inline-flex items-center gap-3 bg-wild-forest text-white hover:bg-wild-sunset hover:shadow-md px-6 py-3 rounded-full text-sm font-bold tracking-wide transition-all duration-300 group cursor-pointer"
                               >
                                 <FileText size={18} className="text-wild-sand group-hover:scale-110 transition-transform" />
-                                <span>{t('download_report', 'Download Report')}</span>
+                                <span>{res.category?.toLowerCase() === 'downloads' ? t('download_file', 'Download File') : t('download_report', 'Download Report')}</span>
                                 <Download size={14} className="opacity-75" />
                               </a>
                             </div>
