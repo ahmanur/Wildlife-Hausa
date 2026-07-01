@@ -197,114 +197,76 @@ export default function ResourcesPage() {
             <p className="text-lg font-serif italic">{t('no_resources_found', 'No field trip resources available yet.')}</p>
           </div>
         ) : (
-          <div className="space-y-12">
-            {sortedYears.map((year) => {
-              // Separate photos and documents (reports/downloads) to handle layouts cleanly
-              const yearItems = resourcesByYear[year];
-              const photosItems = yearItems.filter((item: any) => item.category?.toLowerCase() === 'photos');
-              const docItems = yearItems.filter((item: any) => item.category?.toLowerCase() !== 'photos');
+          <div className="divide-y divide-wild-forest/10 border-t border-b border-wild-forest/10">
+            {sortedYears.map((year) => (
+              <React.Fragment key={year}>
+                {resourcesByYear[year].map((res: any, idx: number) => {
+                  const hasImages = res.images && res.images.length > 0;
+                  const firstImage = hasImages ? res.images[0] : null;
 
-              return (
-                <div key={year} className="space-y-8">
-                  {/* Documents List (Reports & Downloads) */}
-                  {docItems.length > 0 && (
-                    <div className="divide-y divide-wild-forest/10 border-t border-b border-wild-forest/10">
-                      {docItems.map((res: any, idx: number) => (
-                        <div 
-                          key={res.id || idx}
-                          className="grid grid-cols-1 md:grid-cols-12 gap-4 py-8 items-start"
-                        >
-                          {/* Year shown on left side (matches the attached picture) */}
-                          <div className="md:col-span-2 text-wild-sunset font-serif font-bold text-xl md:text-2xl pt-1">
-                            {year}
-                          </div>
+                  return (
+                    <div 
+                      key={res.id || idx}
+                      className="flex flex-col md:flex-row gap-6 py-8 items-start"
+                    >
+                      {/* Left: Thumbnail Image (or high-quality default fallback) */}
+                      <div className="relative w-full md:w-56 h-36 rounded-2xl overflow-hidden shrink-0 border border-wild-cream shadow-sm bg-wild-sand/40">
+                        <Image
+                          src={firstImage || "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&q=80&w=400"}
+                          alt={res.title}
+                          fill
+                          className="object-cover transition-transform duration-500 hover:scale-105"
+                          sizes="(max-width: 768px) 100vw, 224px"
+                        />
+                      </div>
 
-                          {/* Report/Download details and action button */}
-                          <div className="md:col-span-10 space-y-3">
-                            <h3 className="font-serif text-xl md:text-2xl text-wild-forest font-bold leading-snug">
-                              {res.title}
-                            </h3>
-                            {res.description && (
-                              <p className="text-sm text-wild-muted leading-relaxed font-sans font-medium">
-                                {res.description}
-                              </p>
-                            )}
-
-                            <div className="flex flex-wrap items-center gap-4 pt-1">
-                              <span className="text-[10px] font-bold text-wild-forest/50 uppercase tracking-wider bg-wild-sand/80 px-2.5 py-1 rounded">
-                                {res.category}
-                              </span>
-
-                              {res.fileUrl && (
-                                <a 
-                                  href={res.fileUrl} 
-                                  target="_blank" 
-                                  rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-2 bg-wild-sunset text-white hover:bg-[#FF8C42] hover:shadow px-5 py-2 rounded-full text-xs font-bold transition-all duration-300 group cursor-pointer"
-                                >
-                                  <FileText size={14} className="text-wild-sand group-hover:scale-110 transition-transform" />
-                                  <span>{res.category?.toLowerCase() === 'downloads' ? t('download_file', 'Download File') : t('download_report', 'Download Report')}</span>
-                                  <Download size={12} className="opacity-75" />
-                                </a>
-                              )}
-                            </div>
-                          </div>
+                      {/* Right: Content details and actions */}
+                      <div className="flex-grow space-y-3">
+                        <div className="flex items-center gap-2 text-wild-muted text-xs font-bold uppercase tracking-wider">
+                          <span className="text-wild-sunset">{res.category}</span>
+                          <span>•</span>
+                          <span>{year}</span>
                         </div>
-                      ))}
-                    </div>
-                  )}
 
-                  {/* Photo Galleries List */}
-                  {photosItems.length > 0 && (
-                    <div className="space-y-6">
-                      {photosItems.map((res: any, idx: number) => (
-                        <div 
-                          key={res.id || idx}
-                          className="bg-white rounded-3xl shadow-lg border border-wild-cream p-8 md:p-12 hover:shadow-xl transition-all duration-300 flex flex-col gap-6"
-                        >
-                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-wild-cream pb-4">
-                            <div>
-                              <span className="text-wild-sunset font-sans font-bold text-xs uppercase tracking-widest block mb-1">
-                                {res.category}
-                              </span>
-                              <h3 className="font-serif text-2xl text-wild-forest font-bold">{res.title}</h3>
-                            </div>
-                            <div className="flex items-center gap-2 text-wild-muted text-sm shrink-0 bg-wild-sand/40 px-4 py-2 rounded-full font-medium">
-                              <Calendar size={16} className="text-wild-sunset" />
-                              <span>{t('trip_date', 'Trip Date')}: {res.tripDate}</span>
-                            </div>
-                          </div>
+                        <h3 className="font-serif text-xl md:text-2xl text-wild-forest font-bold leading-snug">
+                          {res.title}
+                        </h3>
+                        {res.description && (
+                          <p className="text-sm text-wild-muted leading-relaxed font-sans font-medium">
+                            {res.description}
+                          </p>
+                        )}
 
-                          {res.description && (
-                            <p className="text-wild-forest/80 text-sm leading-relaxed">{res.description}</p>
+                        <div className="flex flex-wrap items-center gap-3 pt-1">
+                          {res.fileUrl && (
+                            <a 
+                              href={res.fileUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 bg-wild-sunset text-white hover:bg-[#FF8C42] hover:shadow px-5 py-2.5 rounded-full text-xs font-bold transition-all duration-300 group cursor-pointer"
+                            >
+                              <FileText size={14} className="text-wild-sand group-hover:scale-110 transition-transform" />
+                              <span>{res.category?.toLowerCase() === 'downloads' ? t('download_file', 'Download File') : t('download_report', 'Download Report')}</span>
+                              <Download size={12} className="opacity-75" />
+                            </a>
                           )}
 
-                          {res.images && res.images.length > 0 && (
-                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                              {res.images.map((img: string, iIndex: number) => (
-                                <div 
-                                  key={iIndex}
-                                  onClick={() => openLightbox(res.images, iIndex)}
-                                  className="relative aspect-video rounded-2xl overflow-hidden border border-wild-cream cursor-zoom-in hover:border-wild-sunset/35 hover:shadow-md transition-all duration-300 group"
-                                >
-                                  <Image 
-                                    src={img} 
-                                    alt={`${res.title} gallery thumbnail ${iIndex + 1}`} 
-                                    fill 
-                                    className="object-cover transition-transform duration-500 group-hover:scale-105" 
-                                  />
-                                  <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors" />
-                                </div>
-                              ))}
-                            </div>
+                          {hasImages && (
+                            <button 
+                              onClick={() => openLightbox(res.images, 0)}
+                              className="inline-flex items-center gap-2 bg-wild-forest hover:bg-wild-sunset text-white px-5 py-2.5 rounded-full text-xs font-bold transition-all duration-300 group cursor-pointer"
+                            >
+                              <ImageIcon size={14} className="text-wild-sand group-hover:scale-110 transition-transform" />
+                              <span>{t('view_photos', 'View Gallery')} ({res.images.length})</span>
+                            </button>
                           )}
                         </div>
-                      ))}
+                      </div>
                     </div>
-                  )}
-                </div>
-              );
-            })}
+                  );
+                })}
+              </React.Fragment>
+            ))}
           </div>
         )}
       </section>
