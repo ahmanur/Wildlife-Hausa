@@ -76,7 +76,7 @@ export default function AdminSettingsPage() {
   const [emailjsServiceId, setEmailjsServiceId] = useState('service_q9frjor');
   const [emailjsPublicKey, setEmailjsPublicKey] = useState('BmkB8_vOUBQyrfu7j');
   const [emailjsPrivateKey, setEmailjsPrivateKey] = useState('');
-  const [emailjsReplyTemplateId, setEmailjsReplyTemplateId] = useState('');
+  const [emailjsReplyTemplateId, setEmailjsReplyTemplateId] = useState('template_pjgylzh');
   const [emailjsNewsletterTemplateId, setEmailjsNewsletterTemplateId] = useState('');
 
   useEffect(() => {
@@ -102,7 +102,7 @@ export default function AdminSettingsPage() {
           setEmailjsServiceId(data.emailjs_service_id || 'service_q9frjor');
           setEmailjsPublicKey(data.emailjs_public_key || 'BmkB8_vOUBQyrfu7j');
           setEmailjsPrivateKey(data.emailjs_private_key || '');
-          setEmailjsReplyTemplateId(data.emailjs_reply_template_id || '');
+          setEmailjsReplyTemplateId(data.emailjs_reply_template_id || 'template_pjgylzh');
           setEmailjsNewsletterTemplateId(data.emailjs_newsletter_template_id || '');
         }
 

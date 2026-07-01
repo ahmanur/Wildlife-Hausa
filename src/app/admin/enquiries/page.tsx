@@ -49,7 +49,7 @@ export default function AdminEnquiriesPage() {
         serviceId: data?.emailjs_service_id || 'service_q9frjor',
         publicKey: data?.emailjs_public_key || 'BmkB8_vOUBQyrfu7j',
         privateKey: data?.emailjs_private_key || '',
-        replyTemplateId: data?.emailjs_reply_template_id || ''
+        replyTemplateId: data?.emailjs_reply_template_id || 'template_pjgylzh'
       });
     } catch (err) {
       console.error('Failed to load EmailJS config:', err);
@@ -57,7 +57,7 @@ export default function AdminEnquiriesPage() {
         serviceId: 'service_q9frjor',
         publicKey: 'BmkB8_vOUBQyrfu7j',
         privateKey: '',
-        replyTemplateId: ''
+        replyTemplateId: 'template_pjgylzh'
       });
     }
   }
