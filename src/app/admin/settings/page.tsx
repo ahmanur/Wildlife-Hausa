@@ -73,8 +73,8 @@ export default function AdminSettingsPage() {
   const [heroProgress, setHeroProgress] = useState<Record<string, number>>({});
 
   // States for EmailJS Settings
-  const [emailjsServiceId, setEmailjsServiceId] = useState('');
-  const [emailjsPublicKey, setEmailjsPublicKey] = useState('');
+  const [emailjsServiceId, setEmailjsServiceId] = useState('service_q9frjor');
+  const [emailjsPublicKey, setEmailjsPublicKey] = useState('BmkB8_vOUBQyrfu7j');
   const [emailjsReplyTemplateId, setEmailjsReplyTemplateId] = useState('');
   const [emailjsNewsletterTemplateId, setEmailjsNewsletterTemplateId] = useState('');
 
@@ -98,8 +98,8 @@ export default function AdminSettingsPage() {
           if ('hero_images' in data) {
             heroImagesVal = data.hero_images || {};
           }
-          setEmailjsServiceId(data.emailjs_service_id || '');
-          setEmailjsPublicKey(data.emailjs_public_key || '');
+          setEmailjsServiceId(data.emailjs_service_id || 'service_q9frjor');
+          setEmailjsPublicKey(data.emailjs_public_key || 'BmkB8_vOUBQyrfu7j');
           setEmailjsReplyTemplateId(data.emailjs_reply_template_id || '');
           setEmailjsNewsletterTemplateId(data.emailjs_newsletter_template_id || '');
         }
