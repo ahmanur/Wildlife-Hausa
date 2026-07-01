@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { db, storage } from '@/lib/firebase/config';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { Loader2, Video, Languages, Plus, Trash2, Save, Play, Check, UploadCloud, Compass, Image as ImageIcon } from 'lucide-react';
+import { Loader2, Video, Languages, Plus, Trash2, Save, Play, Check, UploadCloud, Compass, Image as ImageIcon, Mail } from 'lucide-react';
 
 interface OverrideEntry {
   en: string;
@@ -57,7 +57,7 @@ export default function AdminSettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
-  const [activeTab, setActiveTab] = useState<'copy' | 'videos' | 'hero_images'>('copy');
+  const [activeTab, setActiveTab] = useState<'copy' | 'videos' | 'hero_images' | 'email_config'>('copy');
   const [error, setError] = useState('');
 
   // States for edited content
@@ -71,6 +71,12 @@ export default function AdminSettingsPage() {
   const [heroImages, setHeroImages] = useState<Record<string, string>>({});
   const [uploadingHero, setUploadingHero] = useState<Record<string, boolean>>({});
   const [heroProgress, setHeroProgress] = useState<Record<string, number>>({});
+
+  // States for EmailJS Settings
+  const [emailjsServiceId, setEmailjsServiceId] = useState('');
+  const [emailjsPublicKey, setEmailjsPublicKey] = useState('');
+  const [emailjsReplyTemplateId, setEmailjsReplyTemplateId] = useState('');
+  const [emailjsNewsletterTemplateId, setEmailjsNewsletterTemplateId] = useState('');
 
   useEffect(() => {
     async function loadSettings() {
@@ -92,6 +98,10 @@ export default function AdminSettingsPage() {
           if ('hero_images' in data) {
             heroImagesVal = data.hero_images || {};
           }
+          setEmailjsServiceId(data.emailjs_service_id || '');
+          setEmailjsPublicKey(data.emailjs_public_key || '');
+          setEmailjsReplyTemplateId(data.emailjs_reply_template_id || '');
+          setEmailjsNewsletterTemplateId(data.emailjs_newsletter_template_id || '');
         }
 
         // Merge overrides with defaults so all keys exist in form
@@ -241,6 +251,10 @@ export default function AdminSettingsPage() {
         overrides: copyOverrides,
         hero_videos: videoUrls,
         hero_images: heroImages,
+        emailjs_service_id: emailjsServiceId,
+        emailjs_public_key: emailjsPublicKey,
+        emailjs_reply_template_id: emailjsReplyTemplateId,
+        emailjs_newsletter_template_id: emailjsNewsletterTemplateId,
         updatedAt: new Date()
       }, { merge: true });
 
@@ -329,6 +343,18 @@ export default function AdminSettingsPage() {
         >
           <ImageIcon size={16} />
           <span>Hero Images</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('email_config')}
+          className={`pb-4 border-b-2 flex items-center gap-2 transition-colors ${
+            activeTab === 'email_config' 
+              ? 'border-wild-sunset text-wild-sunset' 
+              : 'border-transparent text-gray-500 hover:text-gray-800'
+          }`}
+        >
+          <Mail size={16} />
+          <span>Email Config (EmailJS)</span>
         </button>
       </div>
 
@@ -572,6 +598,63 @@ export default function AdminSettingsPage() {
                 </div>
               );
             })}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'email_config' && (
+        <div className="space-y-6 bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+          <h3 className="font-serif font-bold text-gray-800 border-b border-gray-100 pb-3 mb-4">EmailJS API Credentials</h3>
+          <p className="text-sm text-gray-500 mb-6">
+            Configure your <a href="https://www.emailjs.com" target="_blank" rel="noopener noreferrer" className="text-wild-sunset font-bold hover:underline">emailjs.com</a> service IDs to send replies and newsletters from this dashboard.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-gray-700 uppercase">EmailJS Service ID</label>
+              <input
+                type="text"
+                value={emailjsServiceId}
+                onChange={(e) => setEmailjsServiceId(e.target.value)}
+                placeholder="e.g. service_xxxxxxx"
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-wild-sunset text-sm text-gray-800"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-gray-700 uppercase">EmailJS Public Key</label>
+              <input
+                type="text"
+                value={emailjsPublicKey}
+                onChange={(e) => setEmailjsPublicKey(e.target.value)}
+                placeholder="e.g. user_xxxxxxxxxxxxxxxx"
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-wild-sunset text-sm text-gray-800"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-gray-700 uppercase">Reply Email Template ID</label>
+              <input
+                type="text"
+                value={emailjsReplyTemplateId}
+                onChange={(e) => setEmailjsReplyTemplateId(e.target.value)}
+                placeholder="e.g. template_xxxxxxx"
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-wild-sunset text-sm text-gray-800"
+              />
+              <span className="text-[10px] text-gray-400 font-medium block">Variables: {"{{to_email}}"}, {"{{subject}}"}, {"{{message}}"}, {"{{to_name}}"}</span>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-gray-700 uppercase">Newsletter Email Template ID</label>
+              <input
+                type="text"
+                value={emailjsNewsletterTemplateId}
+                onChange={(e) => setEmailjsNewsletterTemplateId(e.target.value)}
+                placeholder="e.g. template_xxxxxxx"
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-wild-sunset text-sm text-gray-800"
+              />
+              <span className="text-[10px] text-gray-400 font-medium block">Variables: {"{{to_email}}"}, {"{{subject}}"}, {"{{message}}"}</span>
+            </div>
           </div>
         </div>
       )}

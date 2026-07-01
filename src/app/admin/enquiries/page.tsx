@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { getEnquiries, updateDocument, createDocument, removeDocument } from '@/lib/firebase/services';
+import { getEnquiries, updateDocument, createDocument, removeDocument, fetchDocument } from '@/lib/firebase/services';
 import { COLLECTIONS } from '@/lib/firebase/collections';
 import { 
   Loader2, Mail, Phone, Calendar, User, Eye, EyeOff, 
@@ -35,10 +35,27 @@ export default function AdminEnquiriesPage() {
   const [editingDraftId, setEditingDraftId] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [emailJSConfig, setEmailJSConfig] = useState<any>(null);
 
   useEffect(() => {
     loadEnquiries();
+    loadEmailConfig();
   }, []);
+
+  async function loadEmailConfig() {
+    try {
+      const data = await fetchDocument<any>('settings', 'global');
+      if (data) {
+        setEmailJSConfig({
+          serviceId: data.emailjs_service_id,
+          publicKey: data.emailjs_public_key,
+          replyTemplateId: data.emailjs_reply_template_id
+        });
+      }
+    } catch (err) {
+      console.error('Failed to load EmailJS config:', err);
+    }
+  }
 
   async function loadEnquiries() {
     setLoading(true);
@@ -179,6 +196,37 @@ export default function AdminEnquiriesPage() {
     if (!toAddress || !subject || !bodyText) return;
     setActionLoading(true);
     try {
+      // 1. Try sending via EmailJS if configured
+      let deliverySuccessful = true;
+      if (emailJSConfig?.serviceId && emailJSConfig?.replyTemplateId && emailJSConfig?.publicKey) {
+        try {
+          const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              service_id: emailJSConfig.serviceId,
+              template_id: emailJSConfig.replyTemplateId,
+              user_id: emailJSConfig.publicKey,
+              template_params: {
+                to_email: toAddress,
+                subject: subject,
+                message: bodyText,
+                to_name: selectedEnquiry ? selectedEnquiry.name : 'Explorer'
+              }
+            })
+          });
+          if (!response.ok) {
+            const errText = await response.text();
+            console.error('EmailJS sending failed:', errText);
+            deliverySuccessful = false;
+          }
+        } catch (mailErr) {
+          console.error('EmailJS network error:', mailErr);
+          deliverySuccessful = false;
+        }
+      }
+
+      // 2. Save email to Firestore Sent folder
       const emailPayload = {
         name: 'Sent Reply',
         email: toAddress,
@@ -197,13 +245,18 @@ export default function AdminEnquiriesPage() {
         await createDocument(COLLECTIONS.ENQUIRIES, emailPayload);
       }
       
-      showToast('Email sent successfully!');
+      if (emailJSConfig?.serviceId && emailJSConfig?.replyTemplateId && emailJSConfig?.publicKey) {
+        showToast(deliverySuccessful ? 'Email delivered successfully!' : 'Saved to Sent, but delivery failed. Check API Config.');
+      } else {
+        showToast('Email saved to Sent folder (EmailJS not configured)');
+      }
+      
       setComposeMode('view');
       setSelectedEnquiry(null);
       await loadEnquiries();
     } catch (err) {
       console.error(err);
-      alert('Failed to send email.');
+      alert('Failed to process sent email.');
     } finally {
       setActionLoading(false);
     }
