@@ -197,99 +197,114 @@ export default function ResourcesPage() {
             <p className="text-lg font-serif italic">{t('no_resources_found', 'No field trip resources available yet.')}</p>
           </div>
         ) : (
-          <div className="space-y-16">
-            {sortedYears.map((year) => (
-              <div key={year} className="space-y-8">
-                {/* Year Header badge */}
-                <div className="flex items-center gap-4">
-                  <h2 className="font-serif text-3xl font-bold text-wild-forest shrink-0 bg-wild-sand/50 px-6 py-2 rounded-2xl border border-wild-cream">
-                    {year}
-                  </h2>
-                  <div className="h-px bg-wild-forest/10 flex-1" />
-                </div>
+          <div className="space-y-12">
+            {sortedYears.map((year) => {
+              // Separate photos and documents (reports/downloads) to handle layouts cleanly
+              const yearItems = resourcesByYear[year];
+              const photosItems = yearItems.filter((item: any) => item.category?.toLowerCase() === 'photos');
+              const docItems = yearItems.filter((item: any) => item.category?.toLowerCase() !== 'photos');
 
-                <div className="space-y-8">
-                  {resourcesByYear[year].map((res, idx) => (
-                    <div 
-                      key={res.id || idx}
-                      className="bg-white rounded-3xl shadow-lg border border-wild-cream p-8 md:p-12 hover:shadow-xl transition-all duration-300 flex flex-col gap-8"
-                    >
-                      {/* Header Information */}
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-wild-cream pb-6">
-                        <div>
-                          <span className="text-wild-sunset font-sans font-bold text-xs uppercase tracking-widest block mb-2">
-                            {res.category}
-                          </span>
-                          <h3 className="font-serif text-2xl md:text-3xl text-wild-forest font-bold">{res.title}</h3>
-                        </div>
-                        <div className="flex items-center gap-2 text-wild-muted text-sm shrink-0 bg-wild-sand/40 px-4 py-2 rounded-full font-medium">
-                          <Calendar size={16} className="text-wild-sunset" />
-                          <span>{t('trip_date', 'Trip Date')}: {res.tripDate}</span>
-                        </div>
-                      </div>
+              return (
+                <div key={year} className="space-y-8">
+                  {/* Documents List (Reports & Downloads) */}
+                  {docItems.length > 0 && (
+                    <div className="divide-y divide-wild-forest/10 border-t border-b border-wild-forest/10">
+                      {docItems.map((res: any, idx: number) => (
+                        <div 
+                          key={res.id || idx}
+                          className="grid grid-cols-1 md:grid-cols-12 gap-4 py-8 items-start"
+                        >
+                          {/* Year shown on left side (matches the attached picture) */}
+                          <div className="md:col-span-2 text-wild-sunset font-serif font-bold text-xl md:text-2xl pt-1">
+                            {year}
+                          </div>
 
-                      {/* Description and Document download */}
-                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-                        <div className="lg:col-span-2 space-y-6">
-                          <p className="text-wild-forest/80 text-base leading-relaxed whitespace-pre-line">
-                            {res.description || (language === 'en' ? 'No description available for this field trip resource.' : 'Babu bayanin wannan albarkatun.')}
-                          </p>
-                          {res.fileUrl && (
-                            <div className="pt-2">
-                              <a 
-                                href={res.fileUrl} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-3 bg-wild-forest text-white hover:bg-wild-sunset hover:shadow-md px-6 py-3 rounded-full text-sm font-bold tracking-wide transition-all duration-300 group cursor-pointer"
-                              >
-                                <FileText size={18} className="text-wild-sand group-hover:scale-110 transition-transform" />
-                                <span>{res.category?.toLowerCase() === 'downloads' ? t('download_file', 'Download File') : t('download_report', 'Download Report')}</span>
-                                <Download size={14} className="opacity-75" />
-                              </a>
+                          {/* Report/Download details and action button */}
+                          <div className="md:col-span-10 space-y-3">
+                            <h3 className="font-serif text-xl md:text-2xl text-wild-forest font-bold leading-snug">
+                              {res.title}
+                            </h3>
+                            {res.description && (
+                              <p className="text-sm text-wild-muted leading-relaxed font-sans font-medium">
+                                {res.description}
+                              </p>
+                            )}
+
+                            <div className="flex flex-wrap items-center gap-4 pt-1">
+                              <span className="text-[10px] font-bold text-wild-forest/50 uppercase tracking-wider bg-wild-sand/80 px-2.5 py-1 rounded">
+                                {res.category}
+                              </span>
+
+                              {res.fileUrl && (
+                                <a 
+                                  href={res.fileUrl} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-2 bg-wild-sunset text-white hover:bg-[#FF8C42] hover:shadow px-5 py-2 rounded-full text-xs font-bold transition-all duration-300 group cursor-pointer"
+                                >
+                                  <FileText size={14} className="text-wild-sand group-hover:scale-110 transition-transform" />
+                                  <span>{res.category?.toLowerCase() === 'downloads' ? t('download_file', 'Download File') : t('download_report', 'Download Report')}</span>
+                                  <Download size={12} className="opacity-75" />
+                                </a>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Photo Galleries List */}
+                  {photosItems.length > 0 && (
+                    <div className="space-y-6">
+                      {photosItems.map((res: any, idx: number) => (
+                        <div 
+                          key={res.id || idx}
+                          className="bg-white rounded-3xl shadow-lg border border-wild-cream p-8 md:p-12 hover:shadow-xl transition-all duration-300 flex flex-col gap-6"
+                        >
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-wild-cream pb-4">
+                            <div>
+                              <span className="text-wild-sunset font-sans font-bold text-xs uppercase tracking-widest block mb-1">
+                                {res.category}
+                              </span>
+                              <h3 className="font-serif text-2xl text-wild-forest font-bold">{res.title}</h3>
+                            </div>
+                            <div className="flex items-center gap-2 text-wild-muted text-sm shrink-0 bg-wild-sand/40 px-4 py-2 rounded-full font-medium">
+                              <Calendar size={16} className="text-wild-sunset" />
+                              <span>{t('trip_date', 'Trip Date')}: {res.tripDate}</span>
+                            </div>
+                          </div>
+
+                          {res.description && (
+                            <p className="text-wild-forest/80 text-sm leading-relaxed">{res.description}</p>
+                          )}
+
+                          {res.images && res.images.length > 0 && (
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                              {res.images.map((img: string, iIndex: number) => (
+                                <div 
+                                  key={iIndex}
+                                  onClick={() => openLightbox(res.images, iIndex)}
+                                  className="relative aspect-video rounded-2xl overflow-hidden border border-wild-cream cursor-zoom-in hover:border-wild-sunset/35 hover:shadow-md transition-all duration-300 group"
+                                >
+                                  <Image 
+                                    src={img} 
+                                    alt={`${res.title} gallery thumbnail ${iIndex + 1}`} 
+                                    fill 
+                                    className="object-cover transition-transform duration-500 group-hover:scale-105" 
+                                  />
+                                  <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors" />
+                                </div>
+                              ))}
                             </div>
                           )}
                         </div>
-
-                        {/* Quick file status box if applicable */}
-                        {!res.fileUrl && (
-                          <div className="bg-wild-sand/20 rounded-2xl p-6 border border-wild-cream text-center lg:col-span-1">
-                            <p className="text-xs font-semibold text-wild-forest/60 uppercase tracking-widest mb-1">Status</p>
-                            <p className="text-sm font-bold text-wild-forest font-serif italic font-sans">Gallery & Summary Only</p>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Photo Gallery Grid */}
-                      {res.images && res.images.length > 0 && (
-                        <div className="space-y-4">
-                          <h4 className="text-xs font-bold text-wild-forest/60 uppercase tracking-widest flex items-center gap-2 font-sans">
-                            <ImageIcon size={14} className="text-wild-sunset" />
-                            {t('view_photos', 'View Gallery')} ({res.images.length})
-                          </h4>
-                          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                            {res.images.map((img: string, iIndex: number) => (
-                              <div 
-                                key={iIndex}
-                                onClick={() => openLightbox(res.images, iIndex)}
-                                className="relative aspect-video rounded-2xl overflow-hidden border border-wild-cream cursor-zoom-in hover:border-wild-sunset/35 hover:shadow-md transition-all duration-300 group"
-                              >
-                                <Image 
-                                  src={img} 
-                                  alt={`${res.title} gallery thumbnail ${iIndex + 1}`} 
-                                  fill 
-                                  className="object-cover transition-transform duration-500 group-hover:scale-105" 
-                                />
-                                <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors" />
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
+                      ))}
                     </div>
-                  ))}
+                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </section>
