@@ -217,7 +217,7 @@ export const translations: Record<string, TranslationDict> = {
 
   // Resources page
   resources_hero_title: { en: "Field Trip Resources", ha: "Albarkatun Ziyara" },
-  resources_hero_subtitle: { en: "Access field trip reports, maps, research papers, and photographs from our expeditions.", ha: "Hanyar samun rahotannin ziyara, taswira, takardun bincike, da hotuna daga tafiye-tafiyenmu." },
+  resources_hero_subtitle: { en: "Access field trip reports, Publications, and photographs from our expeditions.", ha: "Hanyar samun rahotannin ziyara, wallafe-wallafe, da hotuna daga tafiye-tafiyenmu." },
   download_report: { en: "Download Report", ha: "Sauke Rahoton" },
   download_file: { en: "Download File", ha: "Sauke Fayil" },
   trip_date: { en: "Trip Date", ha: "Ranar Ziyara" },
