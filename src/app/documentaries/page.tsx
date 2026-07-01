@@ -107,16 +107,6 @@ export default function DocumentariesPage() {
                 onClick={() => {
                   if (film.videoUrl) {
                     setActiveVideoUrl(film.videoUrl);
-                  } else {
-                    // Fallback video URL
-                    const fallbacks = [
-                      "https://videos.pexels.com/video-files/855538/855538-hd_1920_1080_25fps.mp4",
-                      "https://videos.pexels.com/video-files/7710516/7710516-hd_1920_1080_25fps.mp4",
-                      "https://videos.pexels.com/video-files/20600021/20600021-uhd_2560_1440_25fps.mp4",
-                      "https://videos.pexels.com/video-files/4038481/4038481-hd_1920_1080_25fps.mp4",
-                      "https://videos.pexels.com/video-files/5843336/5843336-hd_1920_1080_25fps.mp4"
-                    ];
-                    setActiveVideoUrl(fallbacks[idx % fallbacks.length]);
                   }
                 }}
               />
@@ -182,20 +172,24 @@ function DocCard({ title, category, image, duration, videoUrl, onClick, idx }: a
             preload="auto"
             className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
           />
-        ) : (
+        ) : thumbnailSrc ? (
           <Image 
-            src={thumbnailSrc || "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&q=80&w=1000"} 
+            src={thumbnailSrc} 
             alt={title} 
             fill 
             className="object-cover transform group-hover:scale-105 transition-transform duration-700" 
           />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-wild-forest/90 to-wild-deep-forest transform group-hover:scale-105 transition-transform duration-700" />
         )}
       </div>
-      <div className="absolute inset-0 flex items-center justify-center z-20">
-        <div className="w-16 h-16 bg-wild-sunset/90 rounded-full flex items-center justify-center text-white backdrop-blur-sm group-hover:scale-110 transition-transform">
-          <Play size={24} className="ml-1.5" />
+      {videoUrl && (
+        <div className="absolute inset-0 flex items-center justify-center z-20">
+          <div className="w-16 h-16 bg-wild-sunset/90 rounded-full flex items-center justify-center text-white backdrop-blur-sm group-hover:scale-110 transition-transform">
+            <Play size={24} className="ml-1.5" />
+          </div>
         </div>
-      </div>
+      )}
       <div className="absolute bottom-6 left-6 right-6 z-20">
         <div className="flex justify-between items-end">
           <div>

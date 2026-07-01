@@ -209,16 +209,18 @@ export default function ResourcesPage() {
                       key={res.id || idx}
                       className="flex flex-col md:flex-row gap-6 py-8 items-start"
                     >
-                      {/* Left: Thumbnail Image (or high-quality default fallback) */}
-                      <div className="relative w-full md:w-56 h-36 rounded-2xl overflow-hidden shrink-0 border border-wild-cream shadow-sm bg-wild-sand/40">
-                        <Image
-                          src={firstImage || "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&q=80&w=400"}
-                          alt={res.title}
-                          fill
-                          className="object-cover transition-transform duration-500 hover:scale-105"
-                          sizes="(max-width: 768px) 100vw, 224px"
-                        />
-                      </div>
+                      {/* Left: Thumbnail Image (only rendered if firstImage exists) */}
+                      {firstImage && (
+                        <div className="relative w-full md:w-56 h-36 rounded-2xl overflow-hidden shrink-0 border border-wild-cream shadow-sm bg-wild-sand/40">
+                          <Image
+                            src={firstImage}
+                            alt={res.title}
+                            fill
+                            className="object-cover transition-transform duration-500 hover:scale-105"
+                            sizes="(max-width: 768px) 100vw, 224px"
+                          />
+                        </div>
+                      )}
 
                       {/* Right: Content details and actions */}
                       <div className="flex-grow space-y-3">
