@@ -46,6 +46,7 @@ export default function AdminNewsletterPage() {
         setEmailJSConfig({
           serviceId: data.emailjs_service_id,
           publicKey: data.emailjs_public_key,
+          privateKey: data.emailjs_private_key,
           newsletterTemplateId: data.emailjs_newsletter_template_id
         });
       }
@@ -82,6 +83,7 @@ export default function AdminNewsletterPage() {
             service_id: emailJSConfig.serviceId,
             template_id: emailJSConfig.newsletterTemplateId,
             user_id: emailJSConfig.publicKey,
+            ...(emailJSConfig.privateKey ? { get_signature: true, accessToken: emailJSConfig.privateKey } : {}),
             template_params: {
               to_email: sub.email,
               subject: subject,

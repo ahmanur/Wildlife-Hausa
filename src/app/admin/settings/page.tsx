@@ -75,6 +75,7 @@ export default function AdminSettingsPage() {
   // States for EmailJS Settings
   const [emailjsServiceId, setEmailjsServiceId] = useState('service_q9frjor');
   const [emailjsPublicKey, setEmailjsPublicKey] = useState('BmkB8_vOUBQyrfu7j');
+  const [emailjsPrivateKey, setEmailjsPrivateKey] = useState('');
   const [emailjsReplyTemplateId, setEmailjsReplyTemplateId] = useState('');
   const [emailjsNewsletterTemplateId, setEmailjsNewsletterTemplateId] = useState('');
 
@@ -100,6 +101,7 @@ export default function AdminSettingsPage() {
           }
           setEmailjsServiceId(data.emailjs_service_id || 'service_q9frjor');
           setEmailjsPublicKey(data.emailjs_public_key || 'BmkB8_vOUBQyrfu7j');
+          setEmailjsPrivateKey(data.emailjs_private_key || '');
           setEmailjsReplyTemplateId(data.emailjs_reply_template_id || '');
           setEmailjsNewsletterTemplateId(data.emailjs_newsletter_template_id || '');
         }
@@ -253,6 +255,7 @@ export default function AdminSettingsPage() {
         hero_images: heroImages,
         emailjs_service_id: emailjsServiceId,
         emailjs_public_key: emailjsPublicKey,
+        emailjs_private_key: emailjsPrivateKey,
         emailjs_reply_template_id: emailjsReplyTemplateId,
         emailjs_newsletter_template_id: emailjsNewsletterTemplateId,
         updatedAt: new Date()
@@ -628,6 +631,17 @@ export default function AdminSettingsPage() {
                 value={emailjsPublicKey}
                 onChange={(e) => setEmailjsPublicKey(e.target.value)}
                 placeholder="e.g. user_xxxxxxxxxxxxxxxx"
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-wild-sunset text-sm text-gray-800"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-gray-700 uppercase">EmailJS Private Key (Optional)</label>
+              <input
+                type="password"
+                value={emailjsPrivateKey}
+                onChange={(e) => setEmailjsPrivateKey(e.target.value)}
+                placeholder="Enter private key (if strict mode is enabled)"
                 className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-wild-sunset text-sm text-gray-800"
               />
             </div>

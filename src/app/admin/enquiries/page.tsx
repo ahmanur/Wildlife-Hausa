@@ -49,6 +49,7 @@ export default function AdminEnquiriesPage() {
         setEmailJSConfig({
           serviceId: data.emailjs_service_id,
           publicKey: data.emailjs_public_key,
+          privateKey: data.emailjs_private_key,
           replyTemplateId: data.emailjs_reply_template_id
         });
       }
@@ -207,6 +208,7 @@ export default function AdminEnquiriesPage() {
               service_id: emailJSConfig.serviceId,
               template_id: emailJSConfig.replyTemplateId,
               user_id: emailJSConfig.publicKey,
+              ...(emailJSConfig.privateKey ? { get_signature: true, accessToken: emailJSConfig.privateKey } : {}),
               template_params: {
                 to_email: toAddress,
                 subject: subject,
