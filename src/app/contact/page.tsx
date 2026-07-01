@@ -141,7 +141,7 @@ function ContactContent() {
             <form className="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-wild-sand" onSubmit={handleSubmit}>
               {success && (
                 <div className="mb-6 p-4 bg-green-50 border border-green-200 text-green-800 rounded-lg font-medium">
-                  ✓ {t('book_success_title', 'Enquiry Sent Successfully!')} {t('book_success_p', 'We have received your request and will get back to you shortly.')}
+                  ✓ {t('contact_success_msg', 'Enquiry has been sent successfully')}
                   <button type="button" onClick={() => setSuccess(false)} className="block mt-2 text-sm text-green-700 underline">{t('contact_success_another', 'Send another message')}</button>
                 </div>
               )}

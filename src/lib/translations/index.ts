@@ -316,6 +316,7 @@ export const translations: Record<string, TranslationDict> = {
   contact_error_fields: { en: "Please fill in all required fields.", ha: "Da fatan za a cika duk filayen da ake bukata." },
   contact_error_submit: { en: "Failed to submit enquiry. Please try again.", ha: "An gaza aika sakon. Da fatan za a sake gwadawa." },
   contact_success_another: { en: "Send another message", ha: "Aika wani sako" },
+  contact_success_msg: { en: "Enquiry has been sent successfully", ha: "An aika da tambayar ku lafiya" },
 
   // Adventure Park Page
   adventure_hero_title: { en: "Outdoor Adventure Ground", ha: "Wurin Wasannin Motsa Jiki na Kasada" },
