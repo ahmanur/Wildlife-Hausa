@@ -242,42 +242,78 @@ export default function Home() {
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               {/* Featured Video */}
-              {featuredDoc && (
-                <div 
-                  onClick={() => {
-                    if (featuredDoc.videoUrl) {
-                      setActiveVideoUrl(featuredDoc.videoUrl);
-                    } else {
-                      // Fallback if videoUrl is missing, use default pexels
-                      setActiveVideoUrl("https://videos.pexels.com/video-files/855538/855538-hd_1920_1080_25fps.mp4");
+              {featuredDoc && (() => {
+                const isFeaturedDirectVideo = featuredDoc.videoUrl && (
+                  featuredDoc.videoUrl.includes('.mp4') || 
+                  featuredDoc.videoUrl.includes('.webm') || 
+                  featuredDoc.videoUrl.includes('.ogg') || 
+                  featuredDoc.videoUrl.includes('pexels.com/video') || 
+                  featuredDoc.videoUrl.includes('firebasestorage.googleapis.com')
+                );
+
+                let featuredThumbnail = featuredDoc.image;
+                if (!featuredThumbnail || featuredThumbnail.trim() === '') {
+                  const ytId = getYouTubeId(featuredDoc.videoUrl);
+                  if (ytId) {
+                    featuredThumbnail = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+                  } else {
+                    const vimeoId = getVimeoId(featuredDoc.videoUrl);
+                    if (vimeoId) {
+                      featuredThumbnail = `https://vumbnail.com/${vimeoId}.jpg`;
                     }
-                  }}
-                  className="lg:col-span-8 group relative rounded-[2rem] overflow-hidden cursor-pointer shadow-2xl"
-                >
-                  <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors z-10" />
-                  <div className="absolute inset-0 border border-wild-sand/20 z-20 m-6 rounded-[1.5rem] pointer-events-none" />
-                  <div className="absolute top-10 left-10 z-20 bg-red-600 text-white text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-2 shadow-lg">
-                    <div className="w-2 h-2 bg-white rounded-full animate-pulse" /> {t('rec_badge')}
-                  </div>
-                  <div className="relative w-full h-[400px] md:h-[500px]">
-                    <Image 
-                      src={featuredDoc.image}
-                      alt={featuredDoc.title}
-                      fill
-                      className="object-cover transform group-hover:scale-105 transition-transform duration-700"
-                    />
-                  </div>
-                  <div className="absolute inset-0 flex items-center justify-center z-20">
-                    <div className="w-24 h-24 bg-wild-sunset/90 rounded-full flex items-center justify-center text-white backdrop-blur-md group-hover:scale-110 transition-transform shadow-xl">
-                      <Play size={40} className="ml-2" />
+                  }
+                }
+
+                return (
+                  <div 
+                    onClick={() => {
+                      if (featuredDoc.videoUrl) {
+                        setActiveVideoUrl(featuredDoc.videoUrl);
+                      }
+                    }}
+                    className="lg:col-span-8 group relative rounded-[2rem] overflow-hidden cursor-pointer shadow-2xl"
+                  >
+                    <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors z-10" />
+                    <div className="absolute inset-0 border border-wild-sand/20 z-20 m-6 rounded-[1.5rem] pointer-events-none" />
+                    <div className="absolute top-10 left-10 z-20 bg-red-600 text-white text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-2 shadow-lg">
+                      <div className="w-2 h-2 bg-white rounded-full animate-pulse" /> {t('rec_badge')}
+                    </div>
+                    <div className="relative w-full h-[400px] md:h-[500px]">
+                      {isFeaturedDirectVideo ? (
+                        <video 
+                          src={featuredDoc.videoUrl}
+                          muted 
+                          autoPlay
+                          loop 
+                          playsInline 
+                          preload="auto"
+                          className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
+                        />
+                      ) : featuredThumbnail ? (
+                        <Image 
+                          src={featuredThumbnail}
+                          alt={featuredDoc.title}
+                          fill
+                          className="object-cover transform group-hover:scale-105 transition-transform duration-700"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-wild-forest/90 to-wild-deep-forest transform group-hover:scale-105 transition-transform duration-700" />
+                      )}
+                    </div>
+                    {featuredDoc.videoUrl && (
+                      <div className="absolute inset-0 flex items-center justify-center z-20">
+                        <div className="w-24 h-24 bg-wild-sunset/90 rounded-full flex items-center justify-center text-white backdrop-blur-md group-hover:scale-110 transition-transform shadow-xl">
+                          <Play size={40} className="ml-2" />
+                        </div>
+                      </div>
+                    )}
+                    <div className="absolute bottom-10 left-10 right-10 z-20">
+                      <h3 className="font-serif text-4xl font-bold mb-3 drop-shadow-lg">{featuredDoc.title}</h3>
+                      <p className="text-wild-sand/90 line-clamp-2 text-lg drop-shadow-md font-light">{featuredDoc.description}</p>
                     </div>
                   </div>
-                  <div className="absolute bottom-10 left-10 right-10 z-20">
-                    <h3 className="font-serif text-4xl font-bold mb-3 drop-shadow-lg">{featuredDoc.title}</h3>
-                    <p className="text-wild-sand/90 line-clamp-2 text-lg drop-shadow-md font-light">{featuredDoc.description}</p>
-                  </div>
-                </div>
-              )}
+                );
+              })()}
 
               {/* Smaller Cards */}
               <div className="lg:col-span-4 flex flex-col gap-6 justify-center">
@@ -287,19 +323,11 @@ export default function Home() {
                     title={docItem.title}
                     duration={docItem.duration}
                     image={docItem.image}
+                    videoUrl={docItem.videoUrl}
                     tagText={t('field_recording')}
                     onClick={() => {
                       if (docItem.videoUrl) {
                         setActiveVideoUrl(docItem.videoUrl);
-                      } else {
-                        // Fallback pexels videos
-                        const idx = mediaItems.indexOf(docItem) % 3;
-                        const fallbacks = [
-                          "https://videos.pexels.com/video-files/7710516/7710516-hd_1920_1080_25fps.mp4",
-                          "https://videos.pexels.com/video-files/20600021/20600021-uhd_2560_1440_25fps.mp4",
-                          "https://videos.pexels.com/video-files/4038481/4038481-hd_1920_1080_25fps.mp4"
-                        ];
-                        setActiveVideoUrl(fallbacks[idx]);
                       }
                     }}
                   />
@@ -457,11 +485,51 @@ function SafariCard({ title, location, duration, bestFor, price, showPricing, im
   );
 }
 
-export function DocMiniCard({ title, duration, image, tagText, onClick }: { title: string; duration: string; image?: string; tagText: string; onClick?: () => void }) {
+export function DocMiniCard({ title, duration, image, videoUrl, tagText, onClick }: { title: string; duration: string; image?: string; videoUrl?: string; tagText: string; onClick?: () => void }) {
+  const isDirectVideo = videoUrl && (
+    videoUrl.includes('.mp4') || 
+    videoUrl.includes('.webm') || 
+    videoUrl.includes('.ogg') || 
+    videoUrl.includes('pexels.com/video') || 
+    videoUrl.includes('firebasestorage.googleapis.com')
+  );
+
+  let thumbnailSrc = image;
+  if (!image || image.trim() === '') {
+    const ytId = getYouTubeId(videoUrl);
+    if (ytId) {
+      thumbnailSrc = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+    } else {
+      const vimeoId = getVimeoId(videoUrl);
+      if (vimeoId) {
+        thumbnailSrc = `https://vumbnail.com/${vimeoId}.jpg`;
+      }
+    }
+  }
+
   return (
     <div onClick={onClick} className="group flex items-start gap-4 p-4 rounded-2xl hover:bg-wild-sand/5 transition-colors cursor-pointer border border-transparent hover:border-wild-sand/10">
       <div className="relative w-24 h-24 rounded-xl overflow-hidden shrink-0 bg-wild-forest/20">
-        {image && <Image src={image} alt={title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />}
+        {isDirectVideo ? (
+          <video 
+            src={videoUrl}
+            muted 
+            autoPlay
+            loop 
+            playsInline 
+            preload="auto"
+            className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+          />
+        ) : thumbnailSrc ? (
+          <Image 
+            src={thumbnailSrc} 
+            alt={title} 
+            fill 
+            className="object-cover group-hover:scale-105 transition-transform duration-500" 
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-wild-forest/90 to-wild-deep-forest" />
+        )}
         <div className="absolute inset-0 flex items-center justify-center">
           <Play className="w-8 h-8 text-wild-sand opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500" fill="currentColor" />
         </div>
@@ -475,4 +543,17 @@ export function DocMiniCard({ title, duration, image, tagText, onClick }: { titl
       </div>
     </div>
   );
+}
+
+function getYouTubeId(url?: string): string | null {
+  if (!url) return null;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : null;
+}
+
+function getVimeoId(url?: string): string | null {
+  if (!url) return null;
+  const match = url.match(/(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(\d+)/);
+  return match ? match[1] : null;
 }
