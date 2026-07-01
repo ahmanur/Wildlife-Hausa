@@ -45,16 +45,20 @@ export default function AdminEnquiriesPage() {
   async function loadEmailConfig() {
     try {
       const data = await fetchDocument<any>('settings', 'global');
-      if (data) {
-        setEmailJSConfig({
-          serviceId: data.emailjs_service_id,
-          publicKey: data.emailjs_public_key,
-          privateKey: data.emailjs_private_key,
-          replyTemplateId: data.emailjs_reply_template_id
-        });
-      }
+      setEmailJSConfig({
+        serviceId: data?.emailjs_service_id || 'service_q9frjor',
+        publicKey: data?.emailjs_public_key || 'BmkB8_vOUBQyrfu7j',
+        privateKey: data?.emailjs_private_key || '',
+        replyTemplateId: data?.emailjs_reply_template_id || ''
+      });
     } catch (err) {
       console.error('Failed to load EmailJS config:', err);
+      setEmailJSConfig({
+        serviceId: 'service_q9frjor',
+        publicKey: 'BmkB8_vOUBQyrfu7j',
+        privateKey: '',
+        replyTemplateId: ''
+      });
     }
   }
 
@@ -247,10 +251,12 @@ export default function AdminEnquiriesPage() {
         await createDocument(COLLECTIONS.ENQUIRIES, emailPayload);
       }
       
-      if (emailJSConfig?.serviceId && emailJSConfig?.replyTemplateId && emailJSConfig?.publicKey) {
-        showToast(deliverySuccessful ? 'Email delivered successfully!' : 'Saved to Sent, but delivery failed. Check API Config.');
+      if (!emailJSConfig?.replyTemplateId) {
+        showToast('Saved to Sent (EmailJS Template ID not configured)');
+      } else if (!emailJSConfig?.serviceId || !emailJSConfig?.publicKey) {
+        showToast('Saved to Sent (EmailJS credentials not configured)');
       } else {
-        showToast('Email saved to Sent folder (EmailJS not configured)');
+        showToast(deliverySuccessful ? 'Email delivered successfully!' : 'Saved to Sent, but delivery failed. Check API Config.');
       }
       
       setComposeMode('view');

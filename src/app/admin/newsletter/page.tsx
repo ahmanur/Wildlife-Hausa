@@ -42,16 +42,20 @@ export default function AdminNewsletterPage() {
   async function loadEmailConfig() {
     try {
       const data = await fetchDocument<any>('settings', 'global');
-      if (data) {
-        setEmailJSConfig({
-          serviceId: data.emailjs_service_id,
-          publicKey: data.emailjs_public_key,
-          privateKey: data.emailjs_private_key,
-          newsletterTemplateId: data.emailjs_newsletter_template_id
-        });
-      }
+      setEmailJSConfig({
+        serviceId: data?.emailjs_service_id || 'service_q9frjor',
+        publicKey: data?.emailjs_public_key || 'BmkB8_vOUBQyrfu7j',
+        privateKey: data?.emailjs_private_key || '',
+        newsletterTemplateId: data?.emailjs_newsletter_template_id || ''
+      });
     } catch (err) {
       console.error('Failed to load EmailJS config:', err);
+      setEmailJSConfig({
+        serviceId: 'service_q9frjor',
+        publicKey: 'BmkB8_vOUBQyrfu7j',
+        privateKey: '',
+        newsletterTemplateId: ''
+      });
     }
   }
 
