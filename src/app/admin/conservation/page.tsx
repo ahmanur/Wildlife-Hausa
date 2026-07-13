@@ -313,14 +313,14 @@ export default function AdminConservationPage() {
       await loadNotes();
     } catch (err) {
       console.error(err);
-      setError('An error occurred while saving the field journal entry.');
+      setError('An error occurred while saving the project entry.');
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this field journal entry?')) return;
+    if (!confirm('Are you sure you want to delete this project entry?')) return;
     try {
       await removeDocument(COLLECTIONS.CONSERVATION_NOTES, id);
       await loadNotes();
@@ -416,10 +416,10 @@ export default function AdminConservationPage() {
     <div>
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-serif font-bold text-gray-900">Field Journal</h1>
+          <h1 className="text-3xl font-serif font-bold text-gray-900">Project</h1>
           <p className="text-gray-500 mt-1">
             {activeTab === 'notes' 
-              ? 'Manage entries displayed on the Field Journal page.' 
+              ? 'Manage entries displayed on the Project page.' 
               : 'Customize titles, descriptions, and media for the Four Worlds of Wild Hausa.'}
           </p>
         </div>
@@ -460,7 +460,7 @@ export default function AdminConservationPage() {
           }`}
         >
           <BookOpen size={16} />
-          <span>Field Journal Entries</span>
+          <span>Project Entries</span>
         </button>
 
         <button
@@ -480,7 +480,7 @@ export default function AdminConservationPage() {
         loading ? (
           <div className="flex flex-col items-center justify-center min-h-[400px]">
             <Loader2 className="w-10 h-10 animate-spin text-wild-sunset mb-2" />
-            <p className="text-gray-500 font-serif">Loading field journal...</p>
+            <p className="text-gray-500 font-serif">Loading projects...</p>
           </div>
         ) : (
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -727,7 +727,7 @@ export default function AdminConservationPage() {
           <div className="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-xl border border-gray-100">
             <div className="px-6 py-4 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
               <h3 className="font-serif font-bold text-lg text-gray-900">
-                {currentNote ? 'Edit Field Journal Entry' : 'Add New Entry'}
+                {currentNote ? 'Edit Project Entry' : 'Add New Entry'}
               </h3>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 p-1">
                 <X size={20} />

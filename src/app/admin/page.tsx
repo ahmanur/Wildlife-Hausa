@@ -181,7 +181,7 @@ export default function AdminOverviewPage() {
           <StatCard title="Map Locations" value={stats.locations.toString()} icon={<MapIcon className="text-wild-moss" />} trend="Interactive Markers" href="/admin/map-locations" />
           <StatCard title="Media & Films" value={stats.media.toString()} icon={<ImageIcon className="text-gray-650" />} trend="Documentary Items" href="/admin/content" />
           <StatCard title="Adventure Activities" value={stats.activities.toString()} icon={<ActivityIcon className="text-amber-600" />} trend="Park Experiences" href="/admin/activities" />
-          <StatCard title="Field Journal" value={stats.notes.toString()} icon={<BookOpen className="text-emerald-700" />} trend="Journal Entries" href="/admin/conservation" />
+          <StatCard title="Project" value={stats.notes.toString()} icon={<BookOpen className="text-emerald-700" />} trend="Project Entries" href="/admin/conservation" />
         </div>
       </div>
 

@@ -525,7 +525,7 @@ export default function AdminSettingsPage() {
               { key: 'services', label: 'Services Page (Worlds)', desc: 'Header image for the Services / Our Wild Worlds page.' },
               { key: 'safaris', label: 'Safaris Page (Expeditions)', desc: 'Header image for the Safari Routes & Expeditions page.' },
               { key: 'archive', label: 'Archive Page (Documentaries)', desc: 'Header image for the Film Archive / Documentaries page.' },
-              { key: 'blog', label: 'Blog Page (Field Journal)', desc: 'Header image for the Blog / Field Journal page.' }
+              { key: 'blog', label: 'Project Page', desc: 'Header image for the Project page.' }
             ].map((page) => {
               const currentUrl = heroImages[page.key] || DEFAULT_HERO_IMAGES[page.key];
               const isUploading = uploadingHero[page.key] || false;
