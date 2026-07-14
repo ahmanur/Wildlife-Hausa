@@ -763,51 +763,7 @@ export default function AdminConservationPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Category (English)</label>
-                  <input 
-                    type="text" 
-                    value={category} 
-                    onChange={(e) => setCategory(e.target.value)}
-                    className="w-full px-3.5 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-wild-sunset text-sm"
-                    placeholder="e.g. PAST, CONSERVATION"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Category (Hausa)</label>
-                  <input 
-                    type="text" 
-                    value={category_ha} 
-                    onChange={(e) => setCategoryHa(e.target.value)}
-                    className="w-full px-3.5 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-wild-sunset text-sm"
-                    placeholder="e.g. NA DA, KIYAYEWA"
-                  />
-                </div>
-              </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Subtitle/Details (English)</label>
-                  <input 
-                    type="text" 
-                    value={subtitle} 
-                    onChange={(e) => setSubtitle(e.target.value)}
-                    className="w-full px-3.5 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-wild-sunset text-sm"
-                    placeholder="e.g. University of Ilorin · 2018"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Subtitle/Details (Hausa)</label>
-                  <input 
-                    type="text" 
-                    value={subtitle_ha} 
-                    onChange={(e) => setSubtitleHa(e.target.value)}
-                    className="w-full px-3.5 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-wild-sunset text-sm"
-                    placeholder="e.g. Jami'ar Ilorin · 2018"
-                  />
-                </div>
-              </div>
 
               <div>
                 <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Cover Image URL</label>
