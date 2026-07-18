@@ -836,33 +836,16 @@ export default function AdminConservationPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Display Icon *</label>
-                  <select 
-                    value={icon} 
-                    onChange={(e) => setIcon(e.target.value)}
-                    className="w-full px-3.5 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-wild-sunset text-sm text-gray-700 bg-white"
-                    required
-                  >
-                    {AVAILABLE_ICONS.map((ico) => (
-                      <option key={ico.name} value={ico.name}>
-                        {ico.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Display Order *</label>
-                  <input 
-                    type="number" 
-                    value={order} 
-                    onChange={(e) => setOrder(Number(e.target.value))}
-                    min={1}
-                    className="w-full px-3.5 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-wild-sunset text-sm"
-                    required
-                  />
-                </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Display Order *</label>
+                <input 
+                  type="number" 
+                  value={order} 
+                  onChange={(e) => setOrder(Number(e.target.value))}
+                  min={1}
+                  className="w-full px-3.5 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-wild-sunset text-sm"
+                  required
+                />
               </div>
 
               <div className="pt-4 border-t border-gray-100 flex justify-end gap-3">

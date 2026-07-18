@@ -44,11 +44,7 @@ export default function ConservationPage() {
           }} />
           
           <div className="relative z-20 container mx-auto px-6 lg:px-16">
-            {activeNote.category && (
-              <span className="inline-block mb-4 px-3 py-1 bg-wild-sunset text-white text-xs font-bold tracking-widest uppercase rounded">
-                {activeNote.category}
-              </span>
-            )}
+
             <h1 className="font-serif text-4xl md:text-6xl text-white font-bold leading-tight drop-shadow-lg max-w-4xl">
               {activeNote.title}
             </h1>
@@ -72,12 +68,7 @@ export default function ConservationPage() {
 
             {/* Premium detailed card layout */}
             <div className="bg-white p-8 md:p-12 rounded-[2rem] shadow-sm border border-wild-sand flex flex-col">
-              {/* Tagline / Subtitle Details */}
-              {activeNote.subtitle && (
-                <p className="text-sm font-sans text-wild-muted mb-8 leading-relaxed italic border-l-4 border-wild-sunset pl-4">
-                  {activeNote.subtitle}
-                </p>
-              )}
+
 
               {/* Body Text */}
               <div className="text-wild-forest/90 text-lg leading-relaxed whitespace-pre-wrap font-sans mb-10">
@@ -135,8 +126,7 @@ export default function ConservationPage() {
                 key={note.id || idx}
                 title={note.title}
                 text={note.text}
-                category={note.category}
-                subtitle={note.subtitle}
+
                 image={note.image}
                 downloadUrl={note.downloadUrl}
                 onReadMore={() => {
@@ -152,7 +142,7 @@ export default function ConservationPage() {
   );
 }
 
-function FieldNoteCard({ title, text, category, subtitle, image, downloadUrl, onReadMore }: any) {
+function FieldNoteCard({ title, text, image, downloadUrl, onReadMore }: any) {
   const fallbackImage = "https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&q=80&w=800";
   const { t } = useLanguage();
   
@@ -181,12 +171,7 @@ function FieldNoteCard({ title, text, category, subtitle, image, downloadUrl, on
           {title}
         </h3>
 
-        {/* Subtitle details */}
-        {subtitle && (
-          <p className="text-xs text-wild-muted/80 font-medium mb-4">
-            {subtitle}
-          </p>
-        )}
+
         
         {/* Excerpt */}
         <p className="text-wild-muted text-sm leading-relaxed mb-6 line-clamp-3 flex-grow font-sans">
