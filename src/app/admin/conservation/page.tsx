@@ -511,12 +511,6 @@ export default function AdminConservationPage() {
                         </td>
                         <td className="px-6 py-4">
                           <div className="font-semibold text-gray-900 leading-tight">{note.title}</div>
-                          {note.subtitle && <div className="text-xs text-gray-500 mt-0.5">{note.subtitle}</div>}
-                          {note.category && (
-                            <span className="inline-block px-1.5 py-0.5 mt-1 text-[8px] font-bold bg-wild-cream text-wild-forest rounded uppercase tracking-wider">
-                              {note.category}
-                            </span>
-                          )}
                           {note.title_ha && <div className="text-[10px] text-wild-sunset font-medium italic mt-0.5">HA: {note.title_ha}</div>}
                         </td>
                         <td className="px-6 py-4 max-w-xs md:max-w-md truncate">
