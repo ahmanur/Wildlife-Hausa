@@ -141,6 +141,10 @@ export default function SafariDetailsPage({ params }: { params: Promise<{ slug: 
                 <span className="font-bold text-wild-charcoal">{translatedSafari.bestTime || "All Year"}</span>
               </div>
               <div>
+                <span className="block text-xs text-wild-muted uppercase tracking-wider mb-1">{t('details_time')}</span>
+                <span className="font-bold text-wild-charcoal">{translatedSafari.time || "N/A"}</span>
+              </div>
+              <div>
                 <span className="block text-xs text-wild-muted uppercase tracking-wider mb-1">{t('details_starting_price')}</span>
                 <span className="font-bold text-wild-charcoal">
                   {formatSafariPrice(translatedSafari.price, translatedSafari.showPricing, language)}

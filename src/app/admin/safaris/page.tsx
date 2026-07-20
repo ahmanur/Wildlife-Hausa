@@ -33,6 +33,7 @@ interface SafariPackage {
   overview_ha?: string;
   groupSize: string;
   bestTime: string;
+  time?: string;
   itinerary: ItineraryDay[];
   showPricing?: boolean;
   createdAt?: any;
@@ -61,6 +62,7 @@ export default function AdminSafarisPage() {
   const [overview_ha, setOverviewHa] = useState('');
   const [groupSize, setGroupSize] = useState('');
   const [bestTime, setBestTime] = useState('');
+  const [time, setTime] = useState('');
   const [itinerary, setItinerary] = useState<ItineraryDay[]>([]);
   const [showPricing, setShowPricing] = useState(true);
 
@@ -140,6 +142,7 @@ export default function AdminSafarisPage() {
     setOverviewHa('');
     setGroupSize('');
     setBestTime('');
+    setTime('');
     setItinerary([{ day: 1, title: '', title_ha: '', description: '', description_ha: '' }]);
     setShowPricing(true);
     setError('');
@@ -162,6 +165,7 @@ export default function AdminSafarisPage() {
     setOverviewHa(safari.overview_ha || '');
     setGroupSize(safari.groupSize || '');
     setBestTime(safari.bestTime || '');
+    setTime(safari.time || '');
     setItinerary(safari.itinerary && safari.itinerary.length > 0 
       ? safari.itinerary 
       : [{ day: 1, title: '', title_ha: '', description: '', description_ha: '' }]
@@ -234,6 +238,7 @@ export default function AdminSafarisPage() {
       overview_ha,
       groupSize,
       bestTime,
+      time,
       itinerary: itinerary.filter(day => day.title.trim() !== '' || day.description.trim() !== '')
     };
 
@@ -529,12 +534,22 @@ export default function AdminSafarisPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-gray-700 uppercase font-sans">Best Time to Visit</label>
+                  <label className="text-xs font-bold text-gray-700 uppercase font-sans">Date</label>
                   <input
                     type="text"
                     value={bestTime}
                     onChange={(e) => setBestTime(e.target.value)}
                     placeholder="e.g. Nov - March"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-wild-sunset text-sm text-gray-800"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-gray-700 uppercase font-sans">Time</label>
+                  <input
+                    type="text"
+                    value={time}
+                    onChange={(e) => setTime(e.target.value)}
+                    placeholder="e.g. 8:00 AM"
                     className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-wild-sunset text-sm text-gray-800"
                   />
                 </div>
