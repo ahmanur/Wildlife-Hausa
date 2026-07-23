@@ -8,6 +8,7 @@ import { getMediaItems } from '@/lib/firebase/services';
 import { useLanguage } from '@/components/providers/LanguageProvider';
 import { translateMediaItem } from '@/lib/translations';
 import { VideoModal } from '@/components/ui/VideoModal';
+import { MediaThumbnail } from '@/components/ui/MediaThumbnail';
 
 export default function DocumentariesPage() {
   const { language, t, settings } = useLanguage();
@@ -142,46 +143,18 @@ function getVimeoId(url?: string): string | null {
 }
 
 function DocCard({ title, category, image, duration, videoUrl, onClick, idx }: any) {
-  const isDirectVideo = videoUrl && (videoUrl.includes('.mp4') || videoUrl.includes('.webm') || videoUrl.includes('.ogg') || videoUrl.includes('pexels.com/video') || videoUrl.includes('firebasestorage.googleapis.com'));
-  
-  let thumbnailSrc = image;
-  if (!image || image.trim() === '') {
-    const ytId = getYouTubeId(videoUrl);
-    if (ytId) {
-      thumbnailSrc = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
-    } else {
-      const vimeoId = getVimeoId(videoUrl);
-      if (vimeoId) {
-        thumbnailSrc = `https://vumbnail.com/${vimeoId}.jpg`;
-      }
-    }
-  }
-
   return (
     <div onClick={onClick} className="group relative rounded-xl overflow-hidden cursor-pointer bg-black h-64">
       <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors z-10" />
       <div className="absolute inset-0 border border-wild-sand/20 z-20 m-3 rounded-lg pointer-events-none" />
       <div className="absolute inset-0 w-full h-full">
-        {isDirectVideo ? (
-          <video 
-            src={videoUrl}
-            muted 
-            autoPlay
-            loop 
-            playsInline 
-            preload="auto"
-            className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
-          />
-        ) : thumbnailSrc ? (
-          <Image 
-            src={thumbnailSrc} 
-            alt={title} 
-            fill 
-            className="object-cover transform group-hover:scale-105 transition-transform duration-700" 
-          />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-br from-wild-forest/90 to-wild-deep-forest transform group-hover:scale-105 transition-transform duration-700" />
-        )}
+        <MediaThumbnail
+          fill
+          image={image}
+          videoUrl={videoUrl}
+          alt={title}
+          className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
+        />
       </div>
       {videoUrl && (
         <div className="absolute inset-0 flex items-center justify-center z-20">

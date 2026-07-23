@@ -11,6 +11,7 @@ import { getSafariPackages, getMediaItems } from '@/lib/firebase/services';
 import { useLanguage } from '@/components/providers/LanguageProvider';
 import { translateSafari, translateMediaItem, formatSafariPrice, parsePrice } from '@/lib/translations';
 import { VideoModal } from '@/components/ui/VideoModal';
+import { MediaThumbnail } from '@/components/ui/MediaThumbnail';
 
 const DEFAULT_WORLDS = [
   {
@@ -279,26 +280,13 @@ export default function Home() {
                       <div className="w-2 h-2 bg-white rounded-full animate-pulse" /> {t('rec_badge')}
                     </div>
                     <div className="relative w-full h-[400px] md:h-[500px]">
-                      {isFeaturedDirectVideo ? (
-                        <video 
-                          src={featuredDoc.videoUrl}
-                          muted 
-                          autoPlay
-                          loop 
-                          playsInline 
-                          preload="auto"
-                          className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
-                        />
-                      ) : featuredThumbnail ? (
-                        <Image 
-                          src={featuredThumbnail}
-                          alt={featuredDoc.title}
-                          fill
-                          className="object-cover transform group-hover:scale-105 transition-transform duration-700"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-wild-forest/90 to-wild-deep-forest transform group-hover:scale-105 transition-transform duration-700" />
-                      )}
+                      <MediaThumbnail
+                        fill
+                        image={featuredDoc.image}
+                        videoUrl={featuredDoc.videoUrl}
+                        alt={featuredDoc.title}
+                        className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
+                      />
                     </div>
                     {featuredDoc.videoUrl && (
                       <div className="absolute inset-0 flex items-center justify-center z-20">
@@ -486,50 +474,16 @@ function SafariCard({ title, location, duration, bestFor, price, showPricing, im
 }
 
 export function DocMiniCard({ title, duration, image, videoUrl, tagText, onClick }: { title: string; duration: string; image?: string; videoUrl?: string; tagText: string; onClick?: () => void }) {
-  const isDirectVideo = videoUrl && (
-    videoUrl.includes('.mp4') || 
-    videoUrl.includes('.webm') || 
-    videoUrl.includes('.ogg') || 
-    videoUrl.includes('pexels.com/video') || 
-    videoUrl.includes('firebasestorage.googleapis.com')
-  );
-
-  let thumbnailSrc = image;
-  if (!image || image.trim() === '') {
-    const ytId = getYouTubeId(videoUrl);
-    if (ytId) {
-      thumbnailSrc = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
-    } else {
-      const vimeoId = getVimeoId(videoUrl);
-      if (vimeoId) {
-        thumbnailSrc = `https://vumbnail.com/${vimeoId}.jpg`;
-      }
-    }
-  }
-
   return (
     <div onClick={onClick} className="group flex items-start gap-4 p-4 rounded-2xl hover:bg-wild-sand/5 transition-colors cursor-pointer border border-transparent hover:border-wild-sand/10">
       <div className="relative w-24 h-24 rounded-xl overflow-hidden shrink-0 bg-wild-forest/20">
-        {isDirectVideo ? (
-          <video 
-            src={videoUrl}
-            muted 
-            autoPlay
-            loop 
-            playsInline 
-            preload="auto"
-            className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
-          />
-        ) : thumbnailSrc ? (
-          <Image 
-            src={thumbnailSrc} 
-            alt={title} 
-            fill 
-            className="object-cover group-hover:scale-105 transition-transform duration-500" 
-          />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-br from-wild-forest/90 to-wild-deep-forest" />
-        )}
+        <MediaThumbnail
+          fill
+          image={image}
+          videoUrl={videoUrl}
+          alt={title}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        />
         <div className="absolute inset-0 flex items-center justify-center">
           <Play className="w-8 h-8 text-wild-sand opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500" fill="currentColor" />
         </div>

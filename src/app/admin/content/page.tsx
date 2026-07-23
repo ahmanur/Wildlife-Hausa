@@ -1,11 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, X, Loader2, Star, Film, UploadCloud } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, Loader2, Star, Film, UploadCloud, Video, Image as ImageIcon } from 'lucide-react';
 import { getMediaItems, createDocument, updateDocument, removeDocument } from '@/lib/firebase/services';
 import { COLLECTIONS } from '@/lib/firebase/collections';
 import { storage } from '@/lib/firebase/config';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { MediaThumbnail } from '@/components/ui/MediaThumbnail';
+import { extractVideoFrameBlob, isDirectVideoUrl } from '@/lib/utils/videoThumbnail';
 
 interface MediaItem {
   id: string;
@@ -20,42 +22,6 @@ interface MediaItem {
   featured: boolean;
   videoUrl?: string;
   createdAt?: any;
-}
-
-function getYouTubeId(url?: string): string | null {
-  if (!url) return null;
-  const shortsMatch = url.match(/\/shorts\/([a-zA-Z0-9_-]{11})/);
-  if (shortsMatch) return shortsMatch[1];
-  const watchBeMatch = url.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
-  if (watchBeMatch) return watchBeMatch[1];
-  const watchUrlMatch = url.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
-  if (watchUrlMatch) return watchUrlMatch[1];
-  const embedMatch = url.match(/\/embed\/([a-zA-Z0-9_-]{11})/);
-  if (embedMatch) return embedMatch[1];
-  return null;
-}
-
-function getVimeoId(url?: string): string | null {
-  if (!url) return null;
-  const match = url.match(/(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(\d+)/);
-  return match ? match[1] : null;
-}
-
-function resolveThumbnail(item: MediaItem): string {
-  if (item.image && item.image.trim() !== '') {
-    return item.image;
-  }
-  if (item.videoUrl) {
-    const ytId = getYouTubeId(item.videoUrl);
-    if (ytId) {
-      return `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
-    }
-    const vimeoId = getVimeoId(item.videoUrl);
-    if (vimeoId) {
-      return `https://vumbnail.com/${vimeoId}.jpg`;
-    }
-  }
-  return "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&q=80&w=1000";
 }
 
 export default function AdminContentPage() {
@@ -80,7 +46,10 @@ export default function AdminContentPage() {
 
   // Upload States
   const [uploadingImage, setUploadingImage] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
+  const [imageProgress, setImageProgress] = useState(0);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
+  const [videoProgress, setVideoProgress] = useState(0);
+  const [extractingThumb, setExtractingThumb] = useState(false);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -92,21 +61,21 @@ export default function AdminContentPage() {
     }
 
     setUploadingImage(true);
-    setUploadProgress(0);
+    setImageProgress(0);
 
     try {
-      const storageRef = ref(storage, `content/${Date.now()}_${file.name}`);
+      const storageRef = ref(storage, `content/thumbnails/${Date.now()}_${file.name}`);
       const uploadTask = uploadBytesResumable(storageRef, file);
 
       uploadTask.on(
         'state_changed',
         (snapshot: any) => {
           const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          setUploadProgress(Math.round(progress));
+          setImageProgress(Math.round(progress));
         },
-        (error: any) => {
-          console.error("Upload failed", error);
-          alert('Failed to upload image. Please check Firebase CORS configuration.');
+        (err: any) => {
+          console.error("Upload failed", err);
+          alert('Failed to upload image. Please check Firebase Storage CORS configuration.');
           setUploadingImage(false);
         },
         async () => {
@@ -119,6 +88,106 @@ export default function AdminContentPage() {
       console.error(err);
       setUploadingImage(false);
       alert('Failed to initialize upload.');
+    }
+  };
+
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('video/')) {
+      alert('Please select a valid video file (e.g. MP4, WebM, MOV).');
+      return;
+    }
+
+    setUploadingVideo(true);
+    setVideoProgress(0);
+    setExtractingThumb(true);
+
+    try {
+      // 1. Upload the video file
+      const timestamp = Date.now();
+      const videoStorageRef = ref(storage, `content/videos/${timestamp}_${file.name}`);
+      const videoUploadTask = uploadBytesResumable(videoStorageRef, file);
+
+      videoUploadTask.on(
+        'state_changed',
+        (snapshot: any) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setVideoProgress(Math.round(progress));
+        },
+        (err: any) => {
+          console.error("Video upload failed", err);
+          alert('Failed to upload video. Please check Firebase Storage setup.');
+          setUploadingVideo(false);
+          setExtractingThumb(false);
+        },
+        async () => {
+          const uploadedVideoUrl = await getDownloadURL(videoUploadTask.snapshot.ref);
+          setVideoUrl(uploadedVideoUrl);
+          setUploadingVideo(false);
+
+          // 2. Extract frame thumbnail from the uploaded video file
+          try {
+            const thumbBlob = await extractVideoFrameBlob(file, 1);
+            const thumbStorageRef = ref(storage, `content/thumbnails/${timestamp}_thumb.jpg`);
+            const thumbUploadTask = uploadBytesResumable(thumbStorageRef, thumbBlob);
+
+            thumbUploadTask.on(
+              'state_changed',
+              null,
+              (err) => {
+                console.error("Auto thumbnail upload failed", err);
+                setExtractingThumb(false);
+              },
+              async () => {
+                const thumbDownloadUrl = await getDownloadURL(thumbUploadTask.snapshot.ref);
+                setImage(thumbDownloadUrl);
+                setExtractingThumb(false);
+              }
+            );
+          } catch (thumbErr) {
+            console.error("Frame extraction error:", thumbErr);
+            setExtractingThumb(false);
+          }
+        }
+      );
+    } catch (err) {
+      console.error(err);
+      setUploadingVideo(false);
+      setExtractingThumb(false);
+      alert('Failed to initialize video upload.');
+    }
+  };
+
+  const handleExtractFromUrl = async () => {
+    if (!videoUrl || !isDirectVideoUrl(videoUrl)) {
+      alert('Please enter a valid direct video URL (e.g., MP4 or Firebase video link).');
+      return;
+    }
+    setExtractingThumb(true);
+    try {
+      const blob = await extractVideoFrameBlob(videoUrl, 1);
+      const storageRef = ref(storage, `content/thumbnails/${Date.now()}_extracted.jpg`);
+      const uploadTask = uploadBytesResumable(storageRef, blob);
+      uploadTask.on(
+        'state_changed',
+        null,
+        (err) => {
+          console.error('Upload extracted thumbnail error', err);
+          setExtractingThumb(false);
+          alert('Failed to upload extracted thumbnail.');
+        },
+        async () => {
+          const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
+          setImage(downloadUrl);
+          setExtractingThumb(false);
+        }
+      );
+    } catch (err) {
+      console.error('Extraction failed', err);
+      setExtractingThumb(false);
+      alert('Could not extract thumbnail frame from the video URL.');
     }
   };
 
@@ -271,17 +340,14 @@ export default function AdminContentPage() {
                   <tr key={item.id} className="hover:bg-gray-50/50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
                       <div className="flex items-center gap-3">
-                        {item.image || item.videoUrl ? (
-                          <img
-                            src={resolveThumbnail(item)}
+                        <div className="w-14 h-10 rounded overflow-hidden bg-gray-100 shrink-0 border border-gray-200 relative">
+                          <MediaThumbnail
+                            image={item.image}
+                            videoUrl={item.videoUrl}
                             alt={item.title}
-                            className="w-12 h-8 object-cover rounded bg-gray-100"
+                            className="w-full h-full object-cover"
                           />
-                        ) : (
-                          <div className="w-12 h-8 bg-gray-100 flex items-center justify-center rounded text-gray-400">
-                            <Film size={14} />
-                          </div>
-                        )}
+                        </div>
                         <div>
                           <p className="font-semibold text-gray-800">{item.title}</p>
                           <p className="text-xs text-gray-400 max-w-[200px] truncate">{item.description}</p>
@@ -352,6 +418,91 @@ export default function AdminContentPage() {
                   {error}
                 </div>
               )}
+
+              {/* Video File Upload */}
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-gray-700 uppercase font-sans flex items-center gap-1">
+                  <Video size={14} className="text-wild-sunset" /> Upload Video File
+                </label>
+                <div className="flex items-center gap-3">
+                  <label className="flex-1 flex items-center justify-center gap-2 px-4 py-2 border-2 border-dashed border-gray-300 hover:border-wild-sunset rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors text-sm font-medium text-gray-600">
+                    <UploadCloud size={18} />
+                    {uploadingVideo ? `Uploading Video (${videoProgress}%)...` : 'Choose Video File (MP4, WebM)'}
+                    <input
+                      type="file"
+                      accept="video/*"
+                      onChange={handleVideoUpload}
+                      disabled={uploadingVideo}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+                {extractingThumb && (
+                  <p className="text-xs text-wild-sunset flex items-center gap-1 font-medium mt-1">
+                    <Loader2 size={12} className="animate-spin" /> Auto-extracting thumbnail frame from video...
+                  </p>
+                )}
+              </div>
+
+              {/* Video Embed URL */}
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-gray-700 uppercase font-sans">Or Video URL (YouTube, Vimeo, MP4 URL)</label>
+                <div className="flex gap-2">
+                  <input
+                    type="url"
+                    value={videoUrl}
+                    onChange={(e) => setVideoUrl(e.target.value)}
+                    placeholder="https://www.youtube.com/... or https://.../video.mp4"
+                    className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-wild-sunset text-sm text-gray-800"
+                  />
+                  {isDirectVideoUrl(videoUrl) && (
+                    <button
+                      type="button"
+                      onClick={handleExtractFromUrl}
+                      disabled={extractingThumb}
+                      className="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-xs font-medium text-gray-700 rounded-lg transition-colors whitespace-nowrap"
+                    >
+                      Extract Frame
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Thumbnail Image Upload & Preview */}
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-gray-700 uppercase font-sans flex items-center gap-1">
+                  <ImageIcon size={14} className="text-wild-sunset" /> Video Thumbnail Frame / Cover
+                </label>
+                <div className="flex items-center gap-3">
+                  <div className="w-20 h-14 rounded-lg bg-gray-100 border border-gray-200 overflow-hidden shrink-0 relative flex items-center justify-center">
+                    {image || videoUrl ? (
+                      <MediaThumbnail
+                        image={image}
+                        videoUrl={videoUrl}
+                        alt="Thumbnail preview"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <Film size={20} className="text-gray-400" />
+                    )}
+                  </div>
+                  <label className="flex-1 flex items-center justify-center gap-2 px-3 py-2 border border-gray-200 hover:border-wild-sunset rounded-lg cursor-pointer bg-white hover:bg-gray-50 transition-colors text-xs font-medium text-gray-700">
+                    <UploadCloud size={16} />
+                    {uploadingImage ? `Uploading (${imageProgress}%)...` : 'Upload Custom Cover Image'}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      disabled={uploadingImage}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+                {image && (
+                  <p className="text-[11px] text-green-600 font-medium">✓ Thumbnail active</p>
+                )}
+              </div>
+
               {/* Title & Title HA */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
@@ -418,20 +569,6 @@ export default function AdminContentPage() {
                 </div>
               </div>
 
-
-
-              {/* Video URL */}
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-gray-700 uppercase font-sans">Video Embed URL</label>
-                <input
-                  type="url"
-                  value={videoUrl}
-                  onChange={(e) => setVideoUrl(e.target.value)}
-                  placeholder="https://www.youtube.com/embed/... or Vimeo URL"
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-wild-sunset text-sm text-gray-800"
-                />
-              </div>
-
               {/* Description & Description HA */}
               <div className="space-y-1">
                 <label className="text-xs font-bold text-gray-700 uppercase font-sans">Description (English)</label>
@@ -477,7 +614,7 @@ export default function AdminContentPage() {
                 </button>
                 <button
                   type="submit"
-                  disabled={submitting}
+                  disabled={submitting || uploadingVideo || uploadingImage}
                   className="flex items-center gap-2 px-5 py-2 bg-wild-deep-forest hover:bg-opacity-95 text-white rounded-lg font-medium transition-all shadow-sm disabled:opacity-70"
                 >
                   {submitting && <Loader2 size={16} className="animate-spin" />}
@@ -491,3 +628,4 @@ export default function AdminContentPage() {
     </div>
   );
 }
+
