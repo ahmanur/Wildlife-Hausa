@@ -468,40 +468,27 @@ export default function AdminContentPage() {
                 </div>
               </div>
 
-              {/* Thumbnail Image Upload & Preview */}
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-gray-700 uppercase font-sans flex items-center gap-1">
-                  <ImageIcon size={14} className="text-wild-sunset" /> Video Thumbnail Frame / Cover
-                </label>
-                <div className="flex items-center gap-3">
-                  <div className="w-20 h-14 rounded-lg bg-gray-100 border border-gray-200 overflow-hidden shrink-0 relative flex items-center justify-center">
-                    {image || videoUrl ? (
-                      <MediaThumbnail
-                        image={image}
-                        videoUrl={videoUrl}
-                        alt="Thumbnail preview"
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <Film size={20} className="text-gray-400" />
-                    )}
-                  </div>
-                  <label className="flex-1 flex items-center justify-center gap-2 px-3 py-2 border border-gray-200 hover:border-wild-sunset rounded-lg cursor-pointer bg-white hover:bg-gray-50 transition-colors text-xs font-medium text-gray-700">
-                    <UploadCloud size={16} />
-                    {uploadingImage ? `Uploading (${imageProgress}%)...` : 'Upload Custom Cover Image'}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      disabled={uploadingImage}
-                      className="hidden"
+              {/* Video Thumbnail Live Preview */}
+              {(videoUrl || image) && (
+                <div className="p-3 bg-wild-cream/40 border border-wild-sand/40 rounded-lg flex items-center gap-4">
+                  <div className="w-24 h-16 rounded bg-black overflow-hidden shrink-0 relative border border-gray-300">
+                    <MediaThumbnail
+                      image={image}
+                      videoUrl={videoUrl}
+                      alt="Auto Video Thumbnail"
+                      className="w-full h-full object-cover"
                     />
-                  </label>
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-wild-deep-forest uppercase tracking-wider block">
+                      Video Thumbnail (Auto-Generated)
+                    </span>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      This video frame will be automatically displayed as the thumbnail across the site.
+                    </p>
+                  </div>
                 </div>
-                {image && (
-                  <p className="text-[11px] text-green-600 font-medium">✓ Thumbnail active</p>
-                )}
-              </div>
+              )}
 
               {/* Title & Title HA */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

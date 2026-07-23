@@ -33,35 +33,7 @@ function getVimeoId(url?: string): string | null {
 }
 
 export function MediaThumbnail({ image, videoUrl, alt, className = 'w-full h-full object-cover', fill = false }: MediaThumbnailProps) {
-  // 1. If explicit thumbnail image URL exists
-  if (image && image.trim() !== '') {
-    if (fill) {
-      return <Image src={image} alt={alt} fill className={className} />;
-    }
-    return <img src={image} alt={alt} className={className} />;
-  }
-
-  // 2. YouTube Thumbnail
-  const ytId = getYouTubeId(videoUrl);
-  if (ytId) {
-    const ytThumb = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
-    if (fill) {
-      return <Image src={ytThumb} alt={alt} fill className={className} />;
-    }
-    return <img src={ytThumb} alt={alt} className={className} />;
-  }
-
-  // 3. Vimeo Thumbnail
-  const vimeoId = getVimeoId(videoUrl);
-  if (vimeoId) {
-    const vimeoThumb = `https://vumbnail.com/${vimeoId}.jpg`;
-    if (fill) {
-      return <Image src={vimeoThumb} alt={alt} fill className={className} />;
-    }
-    return <img src={vimeoThumb} alt={alt} className={className} />;
-  }
-
-  // 4. Direct Video File (Firebase Storage, .mp4, etc.) -> Use video poster frame at #t=0.5
+  // 1. Direct Video File (Firebase Storage, .mp4, .webm, etc.) -> Automatically render actual video frame thumbnail
   if (videoUrl && isDirectVideoUrl(videoUrl)) {
     return (
       <video
@@ -72,6 +44,34 @@ export function MediaThumbnail({ image, videoUrl, alt, className = 'w-full h-ful
         className={className}
       />
     );
+  }
+
+  // 2. YouTube Video -> Automatically render YouTube thumbnail
+  const ytId = getYouTubeId(videoUrl);
+  if (ytId) {
+    const ytThumb = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+    if (fill) {
+      return <Image src={ytThumb} alt={alt} fill className={className} />;
+    }
+    return <img src={ytThumb} alt={alt} className={className} />;
+  }
+
+  // 3. Vimeo Video -> Automatically render Vimeo thumbnail
+  const vimeoId = getVimeoId(videoUrl);
+  if (vimeoId) {
+    const vimeoThumb = `https://vumbnail.com/${vimeoId}.jpg`;
+    if (fill) {
+      return <Image src={vimeoThumb} alt={alt} fill className={className} />;
+    }
+    return <img src={vimeoThumb} alt={alt} className={className} />;
+  }
+
+  // 4. Custom Thumbnail Image (if provided and not a video)
+  if (image && image.trim() !== '') {
+    if (fill) {
+      return <Image src={image} alt={alt} fill className={className} />;
+    }
+    return <img src={image} alt={alt} className={className} />;
   }
 
   // 5. Fallback Placeholder Icon
