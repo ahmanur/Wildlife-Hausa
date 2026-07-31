@@ -3,8 +3,13 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { WildSectionHeader } from '@/components/ui/WildSectionHeader';
-import { FileText, Download, Image as ImageIcon, Calendar, X, ChevronLeft, ChevronRight, Search, Lock, CheckCircle, CreditCard, ShieldCheck, Loader2 } from 'lucide-react';
-import { getResources } from '@/lib/firebase/services';
+import { 
+  FileText, Download, Image as ImageIcon, Calendar, X, ChevronLeft, ChevronRight, Search, 
+  Lock, CheckCircle, CreditCard, ShieldCheck, Loader2, Copy, UploadCloud, Building2, Clock, AlertCircle 
+} from 'lucide-react';
+import { getResources, createPaymentRecord, getPayments } from '@/lib/firebase/services';
+import { storage } from '@/lib/firebase/config';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { useLanguage } from '@/components/providers/LanguageProvider';
 import { translateResource } from '@/lib/translations';
 
@@ -16,23 +21,28 @@ export default function ResourcesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
 
-  // Purchased Resource IDs (Persisted in localStorage)
-  const [purchasedIds, setPurchasedIds] = useState<string[]>([]);
+  // User Payment Status Map: resourceId -> { status: 'pending'|'approved'|'rejected', receiptUrl }
+  const [userPaymentsMap, setUserPaymentsMap] = useState<Record<string, { status: string; receiptUrl?: string }>>({});
+  const [userEmail, setUserEmail] = useState<string>('');
 
   // Lightbox State
   const [lightboxImages, setLightboxImages] = useState<string[]>([]);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
-  // Payment / Purchase Modal State
+  // Payment Modal & Transfer Upload State
   const [purchaseTarget, setPurchaseTarget] = useState<any | null>(null);
   const [buyerName, setBuyerName] = useState('');
-  const [buyerEmail, setBuyerEmail] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState<'card' | 'paystack' | 'transfer'>('paystack');
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [buyerEmailInput, setBuyerEmailInput] = useState('');
+  const [selectedAccountType, setSelectedAccountType] = useState<'NGN' | 'USD'>('NGN');
+  const [receiptFile, setReceiptFile] = useState<File | null>(null);
+  const [uploadingReceipt, setUploadingReceipt] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isSubmittingPayment, setIsSubmittingPayment] = useState(false);
+  const [paymentSubmittedSuccess, setPaymentSubmittedSuccess] = useState(false);
+  const [copiedAccount, setCopiedAccount] = useState<string | null>(null);
 
   useEffect(() => {
-    async function loadResources() {
+    async function loadData() {
       try {
         const fetched = await getResources();
         setResources(fetched);
@@ -42,18 +52,38 @@ export default function ResourcesPage() {
         setLoading(false);
       }
     }
-    loadResources();
+    loadData();
 
-    // Load purchased items from localStorage
+    // Check stored user email & load payments status
     try {
-      const savedPurchases = localStorage.getItem('wildlife_purchased_resources');
-      if (savedPurchases) {
-        setPurchasedIds(JSON.parse(savedPurchases));
+      const savedEmail = localStorage.getItem('wildlife_user_email');
+      if (savedEmail) {
+        setUserEmail(savedEmail);
+        fetchUserPayments(savedEmail);
       }
     } catch (e) {
-      console.error('Error reading purchased resources from localStorage:', e);
+      console.error('Error loading local storage:', e);
     }
   }, []);
+
+  async function fetchUserPayments(email: string) {
+    if (!email) return;
+    try {
+      const allPayments = await getPayments();
+      const userPayments = allPayments.filter((p: any) => p.payerEmail?.toLowerCase() === email.toLowerCase());
+      
+      const map: Record<string, { status: string; receiptUrl?: string }> = {};
+      userPayments.forEach((p: any) => {
+        // If approved exists for resource, prioritize approved over pending
+        if (!map[p.resourceId] || p.status === 'approved') {
+          map[p.resourceId] = { status: p.status, receiptUrl: p.receiptUrl };
+        }
+      });
+      setUserPaymentsMap(map);
+    } catch (err) {
+      console.error('Failed to load user payments:', err);
+    }
+  }
 
   const openLightbox = (imagesList: string[], startIndex: number) => {
     setLightboxImages(imagesList);
@@ -79,50 +109,105 @@ export default function ResourcesPage() {
     }
   };
 
+  // Copy Account Number
+  const handleCopyAccount = (accNumber: string) => {
+    navigator.clipboard.writeText(accNumber);
+    setCopiedAccount(accNumber);
+    setTimeout(() => setCopiedAccount(null), 2500);
+  };
+
   // Open Purchase Modal
   const handleOpenPurchase = (res: any) => {
     setPurchaseTarget(res);
     setBuyerName('');
-    setBuyerEmail('');
-    setIsProcessing(false);
-    setPaymentSuccess(false);
+    setBuyerEmailInput(userEmail || '');
+    setSelectedAccountType('NGN');
+    setReceiptFile(null);
+    setUploadingReceipt(false);
+    setUploadProgress(0);
+    setIsSubmittingPayment(false);
+    setPaymentSubmittedSuccess(false);
   };
 
   // Close Purchase Modal
   const handleClosePurchase = () => {
     setPurchaseTarget(null);
-    setPaymentSuccess(false);
+    setPaymentSubmittedSuccess(false);
   };
 
-  // Simulate Payment Process
-  const handleProcessPayment = (e: React.FormEvent) => {
+  // Handle Bank Transfer Receipt Submission
+  const handleSubmitReceipt = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!buyerName || !buyerEmail) {
-      alert(language === 'en' ? 'Please fill in your Name and Email.' : 'Da fatan za a cika sunanka da imel.');
+    if (!buyerName || !buyerEmailInput) {
+      alert(language === 'en' ? 'Please enter your Full Name and Email Address.' : 'Da fatan za a shigar da Cikakken Suna da Adireshin Imel.');
       return;
     }
 
-    setIsProcessing(true);
+    if (!receiptFile) {
+      alert(language === 'en' ? 'Please upload your bank transfer payment receipt file.' : 'Da fatan za a dorawa shaidar biyan kuɗin banki.');
+      return;
+    }
 
-    setTimeout(() => {
-      setIsProcessing(false);
-      setPaymentSuccess(true);
+    setIsSubmittingPayment(true);
 
-      if (purchaseTarget && purchaseTarget.id) {
-        setPurchasedIds(prev => {
-          const updated = Array.from(new Set([...prev, purchaseTarget.id]));
-          try {
-            localStorage.setItem('wildlife_purchased_resources', JSON.stringify(updated));
-          } catch (err) {
-            console.error('Failed to save purchase to localStorage', err);
+    try {
+      // 1. Save user email in localStorage for persistent payment status check
+      localStorage.setItem('wildlife_user_email', buyerEmailInput.trim().toLowerCase());
+      setUserEmail(buyerEmailInput.trim().toLowerCase());
+
+      // 2. Upload receipt image/PDF to Firebase Storage
+      const filename = `receipts/${Date.now()}_${receiptFile.name}`;
+      const storageRef = ref(storage, filename);
+      const uploadTask = uploadBytesResumable(storageRef, receiptFile);
+
+      await new Promise<void>((resolve, reject) => {
+        uploadTask.on(
+          'state_changed',
+          (snapshot) => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            setUploadProgress(Math.round(progress));
+          },
+          (err) => {
+            console.error('Receipt upload error:', err);
+            reject(err);
+          },
+          async () => {
+            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+
+            // 3. Create Payment record in Firestore
+            const amount = selectedAccountType === 'USD' 
+              ? Math.max(5, Math.round((purchaseTarget.price || 5000) / 1000))
+              : (purchaseTarget.price || 5000);
+
+            await createPaymentRecord({
+              resourceId: purchaseTarget.id,
+              resourceTitle: purchaseTarget.title,
+              payerName: buyerName.trim(),
+              payerEmail: buyerEmailInput.trim().toLowerCase(),
+              currency: selectedAccountType,
+              amount: amount,
+              receiptUrl: downloadURL,
+              paymentMethod: `Bank Transfer (${selectedAccountType})`,
+              status: 'pending',
+              createdAt: new Date().toISOString()
+            });
+
+            resolve();
           }
-          return updated;
-        });
-      }
-    }, 1500);
+        );
+      });
+
+      setIsSubmittingPayment(false);
+      setPaymentSubmittedSuccess(true);
+      fetchUserPayments(buyerEmailInput.trim().toLowerCase());
+    } catch (err) {
+      console.error('Error submitting payment receipt:', err);
+      setIsSubmittingPayment(false);
+      alert(language === 'en' ? 'Failed to submit payment receipt. Please try again.' : 'An sami matsala gurin tura shaidar biya.');
+    }
   };
 
-  // Get all unique years from resources for the filter dropdown
+  // Filter unique years
   const uniqueYears = Array.from(
     new Set(
       resources
@@ -133,19 +218,14 @@ export default function ResourcesPage() {
 
   // Filter resources dynamically
   const displayResources = resources.filter(res => {
-    // 1. Category Filter
     if (activeFilter !== 'All') {
       const matchCat = activeFilter === 'Reports' ? 'reports' : (activeFilter === 'Photos' ? 'photos' : 'downloads');
       if (res.category?.toLowerCase() !== matchCat) return false;
     }
-    
-    // 2. Year Filter
     if (selectedYear !== 'All') {
       const itemYear = res.tripDate?.substring(0, 4);
       if (itemYear !== selectedYear) return false;
     }
-    
-    // 3. Search Filter
     if (searchQuery.trim() !== '') {
       const queryLower = searchQuery.toLowerCase();
       const titleMatch = res.title?.toLowerCase().includes(queryLower) || res.title_ha?.toLowerCase().includes(queryLower);
@@ -153,14 +233,11 @@ export default function ResourcesPage() {
       const catMatch = res.category?.toLowerCase().includes(queryLower) || res.category_ha?.toLowerCase().includes(queryLower);
       if (!titleMatch && !descMatch && !catMatch) return false;
     }
-    
     return true;
   });
 
-  // Translate filtered resources
   const translatedFiltered = displayResources.map(r => translateResource(r, language));
 
-  // Group translated resources by year
   const resourcesByYear: Record<string, any[]> = {};
   translatedFiltered.forEach(res => {
     const year = res.tripDate ? res.tripDate.substring(0, 4) : 'Other';
@@ -170,7 +247,6 @@ export default function ResourcesPage() {
     resourcesByYear[year].push(res);
   });
 
-  // Sort years in descending order
   const sortedYears = Object.keys(resourcesByYear).sort((a, b) => {
     if (a === 'Other') return 1;
     if (b === 'Other') return -1;
@@ -268,8 +344,14 @@ export default function ResourcesPage() {
                   const hasImages = res.images && res.images.length > 0;
                   const firstImage = hasImages ? res.images[0] : null;
                   const isPaid = res.accessType === 'paid';
-                  const isUnlocked = !isPaid || purchasedIds.includes(res.id);
-                  const priceFormatted = Number(res.price || 0).toLocaleString();
+
+                  // Determine payment status for this user
+                  const paymentInfo = userPaymentsMap[res.id];
+                  const isApproved = !isPaid || (paymentInfo && paymentInfo.status === 'approved');
+                  const isPending = isPaid && paymentInfo && paymentInfo.status === 'pending';
+                  const isRejected = isPaid && paymentInfo && paymentInfo.status === 'rejected';
+
+                  const priceNGN = Number(res.price || 5000).toLocaleString();
 
                   return (
                     <div 
@@ -298,13 +380,21 @@ export default function ResourcesPage() {
                           <span>•</span>
                           {/* Access Badge */}
                           {isPaid ? (
-                            isUnlocked ? (
+                            isApproved ? (
                               <span className="px-2.5 py-0.5 bg-green-100 text-green-800 rounded-full font-bold border border-green-200 flex items-center gap-1">
-                                <CheckCircle size={12} /> {language === 'en' ? 'Purchased & Unlocked' : 'An Saya & An Bude'}
+                                <CheckCircle size={12} /> {language === 'en' ? 'Payment Approved & Unlocked' : 'An Tabbatar da Biyan Kudi'}
+                              </span>
+                            ) : isPending ? (
+                              <span className="px-2.5 py-0.5 bg-amber-100 text-amber-800 rounded-full font-bold border border-amber-200 flex items-center gap-1 animate-pulse">
+                                <Clock size={12} /> {language === 'en' ? 'Receipt Under Admin Review' : 'Ana Binciken Biyan Kudi'}
+                              </span>
+                            ) : isRejected ? (
+                              <span className="px-2.5 py-0.5 bg-red-100 text-red-800 rounded-full font-bold border border-red-200 flex items-center gap-1">
+                                <AlertCircle size={12} /> {language === 'en' ? 'Payment Rejected (Re-submit)' : 'Aka Kina Biyan Kudi'}
                               </span>
                             ) : (
                               <span className="px-2.5 py-0.5 bg-amber-100 text-amber-800 rounded-full font-bold border border-amber-200 flex items-center gap-1">
-                                <Lock size={12} /> {language === 'en' ? `Paid • ₦${priceFormatted}` : `Wadanda Aka Biya • ₦${priceFormatted}`}
+                                <Lock size={12} /> {language === 'en' ? `Paid Resource • ₦${priceNGN}` : `Sayarwa • ₦${priceNGN}`}
                               </span>
                             )
                           ) : (
@@ -325,7 +415,7 @@ export default function ResourcesPage() {
 
                         <div className="flex flex-wrap items-center gap-3 pt-1">
                           {res.fileUrl && (
-                            isUnlocked ? (
+                            isApproved ? (
                               <a 
                                 href={res.fileUrl} 
                                 target="_blank" 
@@ -336,13 +426,18 @@ export default function ResourcesPage() {
                                 <span>{res.category?.toLowerCase() === 'downloads' ? t('download_file', 'Download File') : t('download_report', 'Download Report')}</span>
                                 <Download size={12} className="opacity-75" />
                               </a>
+                            ) : isPending ? (
+                              <div className="inline-flex items-center gap-2 bg-amber-500 text-white px-5 py-2.5 rounded-full text-xs font-bold shadow-sm">
+                                <Clock size={14} className="animate-spin" />
+                                <span>{language === 'en' ? 'Receipt Under Review (Pending Approval)' : 'Ana Bincikar Shaida (Neman Amincewa)'}</span>
+                              </div>
                             ) : (
                               <button
                                 onClick={() => handleOpenPurchase(res)}
                                 className="inline-flex items-center gap-2 bg-wild-deep-forest hover:bg-wild-sunset text-white px-5 py-2.5 rounded-full text-xs font-bold transition-all duration-300 group cursor-pointer shadow-sm"
                               >
-                                <Lock size={14} className="text-amber-400 group-hover:scale-110 transition-transform" />
-                                <span>{language === 'en' ? `Purchase to Download (₦${priceFormatted})` : `Biya Domin Saukewa (₦${priceFormatted})`}</span>
+                                <Building2 size={14} className="text-wild-sunset group-hover:scale-110 transition-transform" />
+                                <span>{language === 'en' ? `Bank Transfer to Purchase (₦${priceNGN})` : `Hanyar Biya ta Banki (₦${priceNGN})`}</span>
                               </button>
                             )
                           )}
@@ -367,64 +462,59 @@ export default function ResourcesPage() {
         )}
       </section>
 
-      {/* Resource Purchase & Payment Modal */}
+      {/* Bank Transfer & Receipt Upload Modal */}
       {purchaseTarget && (
-        <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-wild-sand">
+        <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4 bg-black/65 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[92vh] overflow-y-auto border border-wild-sand flex flex-col">
             {/* Header */}
-            <div className="bg-wild-deep-forest text-wild-cream px-6 py-4 flex items-center justify-between">
+            <div className="bg-wild-deep-forest text-wild-cream px-6 py-4 flex items-center justify-between sticky top-0 z-10 border-b border-wild-forest/30">
               <div className="flex items-center gap-2">
-                <ShieldCheck size={20} className="text-wild-sunset" />
+                <Building2 size={20} className="text-wild-sunset" />
                 <h3 className="font-serif font-bold text-lg">
-                  {paymentSuccess ? (language === 'en' ? 'Payment Successful!' : 'An Kammala Biya!') : (language === 'en' ? 'Purchase Resource Access' : 'Biyan Kudin Samun Albarkatu')}
+                  {paymentSubmittedSuccess 
+                    ? (language === 'en' ? 'Receipt Submitted Successfully' : 'An Tura Shaidar Biya') 
+                    : (language === 'en' ? 'Bank Transfer Payment & Receipt' : 'Biyan Kudin Banki da Tura Shaida')}
                 </h3>
               </div>
               <button 
                 onClick={handleClosePurchase}
-                className="text-wild-cream/70 hover:text-white transition-colors"
+                className="text-wild-cream/70 hover:text-white transition-colors cursor-pointer"
               >
                 <X size={20} />
               </button>
             </div>
 
-            {/* Content Body */}
-            {paymentSuccess ? (
+            {/* Modal Body */}
+            {paymentSubmittedSuccess ? (
               <div className="p-6 text-center space-y-4">
-                <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
-                  <CheckCircle size={36} />
+                <div className="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
+                  <Clock size={36} className="animate-spin" />
                 </div>
                 <h4 className="font-serif text-xl font-bold text-wild-forest">
-                  {language === 'en' ? 'Access Granted!' : 'An Ba Ka Samun Dama!'}
+                  {language === 'en' ? 'Payment Receipt Pending Approval' : 'Ana Binciken Shaidar Biya'}
                 </h4>
-                <p className="text-sm text-wild-muted leading-relaxed">
+                <p className="text-sm text-wild-muted leading-relaxed max-w-md mx-auto">
                   {language === 'en' 
-                    ? `Thank you, ${buyerName}. Your payment of ₦${Number(purchaseTarget.price || 0).toLocaleString()} for "${purchaseTarget.title}" was verified.`
-                    : `Mungode, ${buyerName}. An tabbatar da biyan kudinka na ₦${Number(purchaseTarget.price || 0).toLocaleString()} don "${purchaseTarget.title}".`}
+                    ? `Thank you, ${buyerName}! Your bank transfer receipt for "${purchaseTarget.title}" has been submitted to Zenith Bank verification team. Once our admin approves your payment, your resource download link will automatically unlock and be sent to ${buyerEmailInput}.`
+                    : `Mungode, ${buyerName}! An tura shaidar biyan kuɗinka don "${purchaseTarget.title}". Za a duba kuma za a ba ka samun damar saukewa da zaran admin ya amince da biyan kuɗin.`}
                 </p>
 
-                {purchaseTarget.fileUrl && (
-                  <a
-                    href={purchaseTarget.fileUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-2 w-full bg-wild-sunset hover:bg-[#FF8C42] text-white py-3 px-6 rounded-xl font-bold text-sm shadow-md transition-all mt-2"
-                  >
-                    <Download size={16} />
-                    <span>{language === 'en' ? 'Download Resource File Now' : 'Sauke Fayil Din Yanzu'}</span>
-                  </a>
-                )}
+                <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-left text-xs text-amber-800 font-medium space-y-1">
+                  <p className="font-bold">📋 Status Check Tip:</p>
+                  <p>You can check status anytime on this Resources page. Upon admin approval, the button will automatically change to &quot;Download Report&quot;.</p>
+                </div>
 
                 <button
                   onClick={handleClosePurchase}
-                  className="block w-full text-center text-xs text-wild-muted hover:underline pt-2 font-medium"
+                  className="w-full bg-wild-sunset hover:bg-[#FF8C42] text-white font-bold py-3 rounded-xl text-sm transition-all cursor-pointer shadow-md mt-2"
                 >
-                  {language === 'en' ? 'Close Window' : 'Rufe'}
+                  {language === 'en' ? 'Got it / Close' : 'Na Fahimta / Rufe'}
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleProcessPayment} className="p-6 space-y-4">
-                {/* Product Summary Card */}
-                <div className="p-4 bg-wild-sand/30 rounded-xl border border-wild-sand/60 space-y-1">
+              <form onSubmit={handleSubmitReceipt} className="p-6 space-y-5">
+                {/* Resource Title & Price Banner */}
+                <div className="p-4 bg-wild-sand/30 rounded-xl border border-wild-sand/70 space-y-1">
                   <span className="text-[10px] font-bold uppercase text-wild-sunset tracking-wider">
                     {purchaseTarget.category} • {purchaseTarget.tripDate ? purchaseTarget.tripDate.substring(0, 4) : ''}
                   </span>
@@ -432,97 +522,170 @@ export default function ResourcesPage() {
                     {purchaseTarget.title}
                   </h4>
                   <div className="pt-2 flex justify-between items-center border-t border-wild-sand/80 mt-2">
-                    <span className="text-xs text-wild-muted font-medium">{language === 'en' ? 'Total Price:' : 'Jimillar Kudi:'}</span>
-                    <span className="text-lg font-mono font-bold text-wild-forest">₦{Number(purchaseTarget.price || 0).toLocaleString()}</span>
+                    <span className="text-xs text-wild-muted font-medium">{language === 'en' ? 'Required Payment:' : 'Abinda Ake Bukata Biyan Kudi:'}</span>
+                    <span className="text-lg font-mono font-bold text-wild-forest">
+                      ₦{Number(purchaseTarget.price || 5000).toLocaleString()} NGN
+                    </span>
                   </div>
                 </div>
 
-                {/* Buyer Information */}
+                {/* Bank Account Selection & Instructions */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-wild-forest uppercase block">
+                      {language === 'en' ? 'Select Bank Account to Transfer' : 'Zabi Asusun Banki da Zaka Tura'}
+                    </label>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedAccountType('NGN')}
+                        className={`px-3 py-1 rounded-full text-xs font-bold cursor-pointer transition-all ${
+                          selectedAccountType === 'NGN'
+                            ? 'bg-wild-sunset text-white'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                      >
+                        Naira (NGN ₦)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedAccountType('USD')}
+                        className={`px-3 py-1 rounded-full text-xs font-bold cursor-pointer transition-all ${
+                          selectedAccountType === 'USD'
+                            ? 'bg-wild-sunset text-white'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                      >
+                        Dollar (USD $)
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Bank Account Details Display Card */}
+                  {selectedAccountType === 'NGN' ? (
+                    <div className="p-4 bg-wild-deep-forest text-white rounded-xl border border-wild-forest/50 space-y-2 relative shadow-inner">
+                      <div className="flex items-center justify-between text-xs text-wild-sand/80 border-b border-white/10 pb-2">
+                        <span className="font-bold tracking-wider uppercase">Zenith Bank (Naira NGN)</span>
+                        <span className="bg-green-500/20 text-green-300 px-2 py-0.5 rounded text-[10px] font-mono font-bold">Local Transfer</span>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-xs text-wild-sand/70">Account Name: <strong className="text-white">Wild Hausa Limited</strong></p>
+                        <div className="flex items-center justify-between pt-1">
+                          <div>
+                            <span className="text-[10px] uppercase text-wild-sand/60 block">Account Number:</span>
+                            <span className="text-xl font-mono font-bold text-wild-sunset tracking-wider">1310240719</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleCopyAccount('1310240719')}
+                            className="flex items-center gap-1 bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer border border-white/10"
+                          >
+                            <Copy size={12} />
+                            <span>{copiedAccount === '1310240719' ? 'Copied!' : 'Copy'}</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="p-4 bg-wild-deep-forest text-white rounded-xl border border-wild-forest/50 space-y-2 relative shadow-inner">
+                      <div className="flex items-center justify-between text-xs text-wild-sand/80 border-b border-white/10 pb-2">
+                        <span className="font-bold tracking-wider uppercase">Zenith Bank (Dollar USD)</span>
+                        <span className="bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded text-[10px] font-mono font-bold">Domiciliary</span>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-xs text-wild-sand/70">Account Name: <strong className="text-white">Wild Hausa Limited</strong></p>
+                        <div className="flex items-center justify-between pt-1">
+                          <div>
+                            <span className="text-[10px] uppercase text-wild-sand/60 block">Account Number:</span>
+                            <span className="text-xl font-mono font-bold text-wild-sunset tracking-wider">5076146735</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleCopyAccount('5076146735')}
+                            className="flex items-center gap-1 bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer border border-white/10"
+                          >
+                            <Copy size={12} />
+                            <span>{copiedAccount === '5076146735' ? 'Copied!' : 'Copy'}</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Payer Details */}
                 <div className="space-y-3 pt-1">
                   <div>
                     <label className="text-xs font-bold text-wild-forest uppercase block mb-1">
-                      {language === 'en' ? 'Full Name *' : 'Cikakken Suna *'}
+                      {language === 'en' ? 'Your Full Name *' : 'Cikakken Sunanka *'}
                     </label>
                     <input
                       type="text"
                       required
                       value={buyerName}
                       onChange={(e) => setBuyerName(e.target.value)}
-                      placeholder="e.g. Amina Umar"
-                      className="w-full px-3 py-2 bg-white border border-wild-sand rounded-lg text-sm focus:outline-none focus:border-wild-sunset text-wild-forest"
+                      placeholder="e.g. Abubakar Isah"
+                      className="w-full px-3.5 py-2.5 bg-white border border-wild-sand rounded-xl text-sm focus:outline-none focus:border-wild-sunset text-wild-forest"
                     />
                   </div>
                   <div>
                     <label className="text-xs font-bold text-wild-forest uppercase block mb-1">
-                      {language === 'en' ? 'Email Address *' : 'Adireshin Imel *'}
+                      {language === 'en' ? 'Your Email Address (For Delivery) *' : 'Adireshin Imel (Na Samun Fayil) *'}
                     </label>
                     <input
                       type="email"
                       required
-                      value={buyerEmail}
-                      onChange={(e) => setBuyerEmail(e.target.value)}
-                      placeholder="e.g. amina@example.com"
-                      className="w-full px-3 py-2 bg-white border border-wild-sand rounded-lg text-sm focus:outline-none focus:border-wild-sunset text-wild-forest"
+                      value={buyerEmailInput}
+                      onChange={(e) => setBuyerEmailInput(e.target.value)}
+                      placeholder="e.g. user@example.com"
+                      className="w-full px-3.5 py-2.5 bg-white border border-wild-sand rounded-xl text-sm focus:outline-none focus:border-wild-sunset text-wild-forest"
                     />
                   </div>
                 </div>
 
-                {/* Payment Option Selection */}
+                {/* Receipt Upload Input */}
                 <div className="space-y-2 pt-1">
                   <label className="text-xs font-bold text-wild-forest uppercase block">
-                    {language === 'en' ? 'Select Payment Method' : 'Zabi Hanyar Biya'}
+                    {language === 'en' ? 'Upload Bank Transfer Receipt (Image / PDF) *' : 'Dora Shaidar Biya ta Banki (Hoto / PDF) *'}
                   </label>
-                  <div className="grid grid-cols-2 gap-2 text-xs font-semibold">
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethod('paystack')}
-                      className={`p-2.5 rounded-lg border flex items-center justify-center gap-2 cursor-pointer transition-colors ${
-                        paymentMethod === 'paystack'
-                          ? 'border-wild-sunset bg-wild-sunset/10 text-wild-sunset'
-                          : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
-                      }`}
-                    >
-                      <CreditCard size={14} />
-                      <span>Paystack / Card</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethod('transfer')}
-                      className={`p-2.5 rounded-lg border flex items-center justify-center gap-2 cursor-pointer transition-colors ${
-                        paymentMethod === 'transfer'
-                          ? 'border-wild-sunset bg-wild-sunset/10 text-wild-sunset'
-                          : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
-                      }`}
-                    >
-                      <ShieldCheck size={14} />
-                      <span>Bank Transfer</span>
-                    </button>
-                  </div>
+                  <label className="flex items-center justify-center gap-3 p-4 border-2 border-dashed border-wild-sand hover:border-wild-sunset rounded-xl bg-wild-sand/10 hover:bg-wild-sand/20 cursor-pointer transition-colors text-xs font-semibold text-wild-forest">
+                    <UploadCloud size={20} className="text-wild-sunset" />
+                    <span>
+                      {receiptFile ? `Receipt Attached: ${receiptFile.name}` : (language === 'en' ? 'Click to select transfer receipt image/PDF' : 'Latsa don zabar shaidar biya')}
+                    </span>
+                    <input
+                      type="file"
+                      required
+                      accept="image/*,.pdf"
+                      onChange={(e) => setReceiptFile(e.target.files?.[0] || null)}
+                      className="hidden"
+                    />
+                  </label>
                 </div>
 
                 {/* Action Buttons */}
-                <div className="pt-4 flex gap-3">
+                <div className="pt-3 flex gap-3">
                   <button
                     type="button"
                     onClick={handleClosePurchase}
-                    className="flex-1 py-2.5 border border-wild-sand text-wild-forest rounded-xl font-semibold text-xs hover:bg-wild-sand/30 transition-colors"
+                    className="flex-1 py-3 border border-wild-sand text-wild-forest rounded-xl font-semibold text-xs hover:bg-wild-sand/30 transition-colors cursor-pointer"
                   >
                     {language === 'en' ? 'Cancel' : 'Soke'}
                   </button>
                   <button
                     type="submit"
-                    disabled={isProcessing}
-                    className="flex-2 py-2.5 bg-wild-sunset hover:bg-[#FF8C42] text-white rounded-xl font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-75"
+                    disabled={isSubmittingPayment}
+                    className="flex-2 py-3 bg-wild-sunset hover:bg-[#FF8C42] text-white rounded-xl font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70"
                   >
-                    {isProcessing ? (
+                    {isSubmittingPayment ? (
                       <>
-                        <Loader2 size={14} className="animate-spin" />
-                        <span>{language === 'en' ? 'Processing...' : 'Ana Aiki...'}</span>
+                        <Loader2 size={16} className="animate-spin" />
+                        <span>{language === 'en' ? `Uploading (${uploadProgress}%)...` : `Ana turawa (${uploadProgress}%)...`}</span>
                       </>
                     ) : (
                       <>
-                        <Lock size={14} />
-                        <span>{language === 'en' ? `Pay ₦${Number(purchaseTarget.price || 0).toLocaleString()}` : `Biya ₦${Number(purchaseTarget.price || 0).toLocaleString()}`}</span>
+                        <ShieldCheck size={16} />
+                        <span>{language === 'en' ? 'Submit Receipt for Verification' : 'Tura Shaidar Biya don Amintawa'}</span>
                       </>
                     )}
                   </button>
@@ -539,7 +702,6 @@ export default function ResourcesPage() {
           onClick={closeLightbox}
           className="fixed inset-0 z-[200000] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md transition-opacity duration-300 animate-fade-in"
         >
-          {/* Close button */}
           <button 
             onClick={closeLightbox}
             className="absolute top-6 right-6 z-10 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all cursor-pointer shadow"
@@ -547,7 +709,6 @@ export default function ResourcesPage() {
             <X size={24} />
           </button>
 
-          {/* Left Arrow */}
           {lightboxImages.length > 1 && (
             <button 
               onClick={prevLightboxImage}
@@ -557,7 +718,6 @@ export default function ResourcesPage() {
             </button>
           )}
 
-          {/* High-res Image Display */}
           <div className="relative w-full max-w-5xl aspect-video max-h-[80vh] md:max-h-[85vh]">
             <Image 
               src={lightboxImages[lightboxIndex]} 
@@ -569,7 +729,6 @@ export default function ResourcesPage() {
             />
           </div>
 
-          {/* Right Arrow */}
           {lightboxImages.length > 1 && (
             <button 
               onClick={nextLightboxImage}
@@ -579,7 +738,6 @@ export default function ResourcesPage() {
             </button>
           )}
 
-          {/* Image index numbering label */}
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full text-xs font-semibold select-none font-mono">
             {lightboxIndex + 1} / {lightboxImages.length}
           </div>

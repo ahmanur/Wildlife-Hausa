@@ -24,7 +24,8 @@ import {
   X,
   ChevronDown,
   ChevronUp,
-  Globe
+  Globe,
+  CreditCard
 } from 'lucide-react';
 
 
@@ -112,6 +113,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   Operations & Workflows
                 </div>
                 <SidebarLink href="/admin/bookings" icon={<Calendar size={18} />} text="Bookings" active={pathname.startsWith('/admin/bookings')} />
+                <SidebarLink href="/admin/payments" icon={<CreditCard size={18} />} text="Payments" active={pathname.startsWith('/admin/payments')} />
                 <SidebarLink href="/admin/enquiries" icon={<Mail size={18} />} text="Enquiries" active={pathname.startsWith('/admin/enquiries')} />
                 <SidebarLink href="/admin/newsletter" icon={<Users size={18} />} text="Newsletter" active={pathname.startsWith('/admin/newsletter')} />
               </div>

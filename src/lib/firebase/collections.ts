@@ -32,4 +32,7 @@ export const COLLECTIONS = {
 
   /** Field trip resources, reports and pictures */
   RESOURCES: 'resources',
+
+  /** Payment receipts and verification records */
+  PAYMENTS: 'payments',
 } as const;

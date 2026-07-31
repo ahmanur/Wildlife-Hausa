@@ -466,3 +466,35 @@ export async function updateResource(id: string, data: Record<string, unknown>) 
 export async function removeResource(id: string) {
   return removeDocument(COLLECTIONS.RESOURCES, id);
 }
+
+// ───────────────────────────────────────────────
+// Payment Verification Records
+// ───────────────────────────────────────────────
+
+/** Fetch all payment verification records */
+export async function getPayments() {
+  return fetchCollection<any>(COLLECTIONS.PAYMENTS, orderBy('createdAt', 'desc'));
+}
+
+/** Submit a new payment receipt record */
+export async function createPaymentRecord(data: Record<string, unknown>) {
+  return createDocument(COLLECTIONS.PAYMENTS, {
+    ...data,
+    status: data.status || 'pending',
+    createdAt: data.createdAt || new Date().toISOString()
+  });
+}
+
+/** Update payment status (approved / rejected) */
+export async function updatePaymentStatus(id: string, status: 'approved' | 'rejected', notes?: string) {
+  return updateDocument(COLLECTIONS.PAYMENTS, id, {
+    status,
+    notes: notes || '',
+    updatedAt: new Date().toISOString()
+  });
+}
+
+/** Delete a payment record */
+export async function removePaymentRecord(id: string) {
+  return removeDocument(COLLECTIONS.PAYMENTS, id);
+}
