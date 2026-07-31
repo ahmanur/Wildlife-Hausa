@@ -18,6 +18,8 @@ interface TripResource {
   fileUrl?: string;
   fileName?: string;
   images?: string[];
+  accessType?: 'free' | 'paid';
+  price?: number;
   createdAt?: any;
 }
 
@@ -40,6 +42,8 @@ export default function AdminResourcesPage() {
   const [fileUrl, setFileUrl] = useState('');
   const [fileName, setFileName] = useState('');
   const [images, setImages] = useState<string[]>([]);
+  const [accessType, setAccessType] = useState<'free' | 'paid'>('free');
+  const [price, setPrice] = useState<string | number>('');
 
   // Upload States
   const [uploadingFile, setUploadingFile] = useState(false);
@@ -122,7 +126,6 @@ export default function AdminResourcesPage() {
             'state_changed',
             (snapshot) => {
               const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-              // Aggregate progress representation
               setImagesProgress(Math.round(((completedCount + (progress / 100)) / files.length) * 100));
             },
             (err) => {
@@ -162,6 +165,8 @@ export default function AdminResourcesPage() {
     setFileUrl('');
     setFileName('');
     setImages([]);
+    setAccessType('free');
+    setPrice('');
     setError('');
     setIsModalOpen(true);
   };
@@ -178,6 +183,8 @@ export default function AdminResourcesPage() {
     setFileUrl(resource.fileUrl || '');
     setFileName(resource.fileName || '');
     setImages(resource.images || []);
+    setAccessType(resource.accessType === 'paid' ? 'paid' : 'free');
+    setPrice(resource.price !== undefined ? resource.price : '');
     setError('');
     setIsModalOpen(true);
   };
@@ -186,6 +193,11 @@ export default function AdminResourcesPage() {
     e.preventDefault();
     if (!title || !tripDate) {
       setError('Title and Trip Date are required.');
+      return;
+    }
+
+    if (accessType === 'paid' && (!price || Number(price) <= 0)) {
+      setError('Please specify a valid price amount for paid resources.');
       return;
     }
 
@@ -203,6 +215,8 @@ export default function AdminResourcesPage() {
       fileUrl,
       fileName,
       images,
+      accessType,
+      price: accessType === 'paid' ? Number(price) || 0 : 0,
       updatedAt: new Date().toISOString(),
     };
 
@@ -275,6 +289,7 @@ export default function AdminResourcesPage() {
                   <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Title</th>
                   <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Date</th>
                   <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Category</th>
+                  <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Access / Price</th>
                   <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Files & Photos</th>
                   <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Actions</th>
                 </tr>
@@ -295,6 +310,17 @@ export default function AdminResourcesPage() {
                       <span className="px-2 py-1 bg-wild-cream text-wild-brown font-medium rounded text-xs">
                         {res.category}
                       </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      {res.accessType === 'paid' ? (
+                        <span className="px-2.5 py-1 bg-amber-100 text-amber-800 font-bold rounded-full text-xs border border-amber-200 inline-flex items-center gap-1">
+                          🔒 Paid (₦{Number(res.price || 0).toLocaleString()})
+                        </span>
+                      ) : (
+                        <span className="px-2.5 py-1 bg-green-100 text-green-800 font-bold rounded-full text-xs border border-green-200 inline-flex items-center gap-1">
+                          🟢 Free
+                        </span>
+                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       <div className="flex flex-col gap-1 text-xs">
@@ -414,6 +440,57 @@ export default function AdminResourcesPage() {
                     className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-wild-sunset text-sm text-gray-800"
                   />
                 </div>
+              </div>
+
+              {/* Access & Pricing Settings */}
+              <div className="space-y-3 p-4 border border-gray-100 rounded-lg bg-gray-50/70">
+                <label className="text-xs font-bold text-gray-700 uppercase block">Access & Download Type *</label>
+                <div className="grid grid-cols-2 gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setAccessType('free')}
+                    className={`px-4 py-2.5 rounded-lg border text-sm font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                      accessType === 'free'
+                        ? 'bg-green-600 text-white border-green-600 shadow-sm'
+                        : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
+                    }`}
+                  >
+                    <span>🟢 Free Access</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAccessType('paid')}
+                    className={`px-4 py-2.5 rounded-lg border text-sm font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                      accessType === 'paid'
+                        ? 'bg-wild-sunset text-white border-wild-sunset shadow-sm'
+                        : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
+                    }`}
+                  >
+                    <span>🔒 Purchase Required</span>
+                  </button>
+                </div>
+
+                {accessType === 'paid' && (
+                  <div className="pt-2 space-y-1">
+                    <label className="text-xs font-bold text-gray-700 uppercase">Resource Price (₦ NGN) *</label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-sm">₦</span>
+                      <input
+                        type="number"
+                        min="0"
+                        step="100"
+                        required={accessType === 'paid'}
+                        value={price}
+                        onChange={(e) => setPrice(e.target.value)}
+                        placeholder="e.g. 5000"
+                        className="w-full pl-8 pr-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-wild-sunset text-sm text-gray-800 bg-white font-mono"
+                      />
+                    </div>
+                    <p className="text-[11px] text-gray-500 italic">
+                      Users will be required to make payment of ₦{Number(price || 0).toLocaleString()} before downloading this resource.
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Description Fields */}
