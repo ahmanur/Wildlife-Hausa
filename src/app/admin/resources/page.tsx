@@ -191,8 +191,8 @@ export default function AdminResourcesPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title || !tripDate) {
-      setError('Title and Trip Date are required.');
+    if (!title) {
+      setError('Title is required.');
       return;
     }
 
@@ -408,10 +408,9 @@ export default function AdminResourcesPage() {
               {/* Date, Category */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-gray-700 uppercase">Trip Date *</label>
+                  <label className="text-xs font-bold text-gray-700 uppercase">Trip Date</label>
                   <input
                     type="date"
-                    required
                     value={tripDate}
                     onChange={(e) => setTripDate(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-wild-sunset text-sm text-gray-800"
