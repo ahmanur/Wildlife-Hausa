@@ -1,5 +1,7 @@
 {
-  "projects": {},
+  "projects": {
+    "default": "wildlife-hausa"
+  },
   "targets": {},
   "etags": {}
 }
