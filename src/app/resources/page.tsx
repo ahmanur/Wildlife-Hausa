@@ -282,6 +282,64 @@ export default function ResourcesPage() {
       {/* Filter and Resources List */}
       <section className="py-20 container mx-auto px-6 lg:px-12 max-w-6xl">
         
+        {/* Email verification card */}
+        <div className="bg-white rounded-3xl p-6 mb-8 border border-wild-forest/10 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <h4 className="font-serif font-bold text-wild-forest text-lg">
+              {language === 'en' ? 'Access Paid Resources' : 'Samun Damar Albarkatu Masu Kudi'}
+            </h4>
+            <p className="text-sm text-wild-muted">
+              {userEmail 
+                ? (language === 'en' ? `Viewing resources for: ${userEmail}` : `Kallon albarkatu don: ${userEmail}`)
+                : (language === 'en' ? 'Enter your email to verify purchases and unlock downloads/gallery.' : 'Shigar da imel dinka domin tabbatar da saye da bude saukewa/hotuna.')
+              }
+            </p>
+          </div>
+          <div className="flex items-center gap-2 w-full md:w-auto">
+            {userEmail ? (
+              <button
+                onClick={() => {
+                  localStorage.removeItem('wildlife_user_email');
+                  setUserEmail('');
+                  setUserPaymentsMap({});
+                }}
+                className="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-bold px-6 py-2.5 rounded-xl text-sm transition-all cursor-pointer shadow-sm w-full md:w-auto"
+              >
+                {language === 'en' ? 'Clear Email / Change' : 'Goge Imel / Canza'}
+              </button>
+            ) : (
+              <form 
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const target = e.target as HTMLFormElement;
+                  const emailInput = target.elements.namedItem('unlockEmail') as HTMLInputElement;
+                  const email = emailInput?.value;
+                  if (email) {
+                    localStorage.setItem('wildlife_user_email', email.trim().toLowerCase());
+                    setUserEmail(email.trim().toLowerCase());
+                    fetchUserPayments(email.trim().toLowerCase());
+                  }
+                }} 
+                className="flex items-center gap-2 w-full md:w-auto"
+              >
+                <input
+                  name="unlockEmail"
+                  type="email"
+                  required
+                  placeholder="user@example.com"
+                  className="px-4 py-2.5 bg-white border border-wild-forest/10 rounded-xl text-sm text-wild-forest focus:outline-none focus:border-wild-sunset focus:ring-1 focus:ring-wild-sunset shadow-sm w-full md:w-64"
+                />
+                <button
+                  type="submit"
+                  className="bg-wild-sunset hover:bg-[#FF8C42] text-white font-bold px-6 py-2.5 rounded-xl text-sm transition-all cursor-pointer shadow-sm shrink-0"
+                >
+                  {language === 'en' ? 'Access' : 'Shiga'}
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+
         {/* Controls Bar */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 border-b border-wild-forest/15 pb-8">
           {/* Category Tabs */}
@@ -443,13 +501,23 @@ export default function ResourcesPage() {
                           )}
 
                           {hasImages && (
-                            <button 
-                              onClick={() => openLightbox(res.images, 0)}
-                              className="inline-flex items-center gap-2 bg-wild-forest hover:bg-wild-sunset text-white px-5 py-2.5 rounded-full text-xs font-bold transition-all duration-300 group cursor-pointer"
-                            >
-                              <ImageIcon size={14} className="text-wild-sand group-hover:scale-110 transition-transform" />
-                              <span>{t('view_photos', 'View Gallery')} ({res.images.length})</span>
-                            </button>
+                            isApproved ? (
+                              <button 
+                                onClick={() => openLightbox(res.images, 0)}
+                                className="inline-flex items-center gap-2 bg-wild-forest hover:bg-wild-sunset text-white px-5 py-2.5 rounded-full text-xs font-bold transition-all duration-300 group cursor-pointer"
+                              >
+                                <ImageIcon size={14} className="text-wild-sand group-hover:scale-110 transition-transform" />
+                                <span>{t('view_photos', 'View Gallery')} ({res.images.length})</span>
+                              </button>
+                            ) : (
+                              <button 
+                                onClick={() => handleOpenPurchase(res)}
+                                className="inline-flex items-center gap-2 bg-wild-deep-forest/40 hover:bg-wild-sunset text-white px-5 py-2.5 rounded-full text-xs font-bold transition-all duration-300 group cursor-pointer"
+                              >
+                                <Lock size={14} className="text-wild-sunset group-hover:scale-110 transition-transform" />
+                                <span>{t('view_photos', 'View Gallery')} ({res.images.length})</span>
+                              </button>
+                            )
                           )}
                         </div>
                       </div>

@@ -24,5 +24,8 @@ service cloud.firestore {
     match /newsletter/{id} {
       allow create: if true;
     }
+    match /payments/{id} {
+      allow create: if true;
+    }
   }
 }
