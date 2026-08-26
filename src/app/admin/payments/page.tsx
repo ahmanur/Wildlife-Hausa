@@ -77,7 +77,8 @@ export default function AdminPaymentsPage() {
 
     setActionLoadingId(payment.id);
     try {
-      await updatePaymentStatus(payment.id, 'approved');
+      const generatedToken = 'WH-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+      await updatePaymentStatus(payment.id, 'approved', undefined, generatedToken);
 
       // Attempt sending email via EmailJS or endpoint
       try {
@@ -98,7 +99,7 @@ export default function AdminPaymentsPage() {
               to_name: payment.payerName,
               resource_title: payment.resourceTitle,
               subject: `Payment Approved: Access Unlocked for ${payment.resourceTitle}`,
-              message: `Dear ${payment.payerName},\n\nYour bank transfer payment of ${payment.currency === 'USD' ? '$' : '₦'}${payment.amount.toLocaleString()} for "${payment.resourceTitle}" has been verified and APPROVED by our admin team.\n\nYou now have full download access to your resource on Wild Hausa.\n\nThank you for supporting Wild Hausa Expeditions & Conservation.`
+              message: `Dear ${payment.payerName},\n\nYour bank transfer payment of ${payment.currency === 'USD' ? '$' : '₦'}${payment.amount.toLocaleString()} for "${payment.resourceTitle}" has been verified and APPROVED by our admin team.\n\nYour UNIQUE ACCESS TOKEN is: ${generatedToken}\n\nPlease enter this token along with your email on the Resources page to unlock your files and view the gallery.\n\nThank you for supporting Wild Hausa Expeditions & Conservation.`
             }
           })
         });
@@ -106,7 +107,7 @@ export default function AdminPaymentsPage() {
         console.warn('Email dispatch warning:', emailErr);
       }
 
-      showToast(`Payment Approved! Download unlocked & email sent to ${payment.payerEmail}`);
+      showToast(`Payment Approved! Token: ${generatedToken} generated & sent to ${payment.payerEmail}`);
       await loadPayments();
     } catch (err) {
       console.error('Failed to approve payment:', err);

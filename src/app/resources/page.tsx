@@ -24,6 +24,7 @@ export default function ResourcesPage() {
   // User Payment Status Map: resourceId -> { status: 'pending'|'approved'|'rejected', receiptUrl }
   const [userPaymentsMap, setUserPaymentsMap] = useState<Record<string, { status: string; receiptUrl?: string }>>({});
   const [userEmail, setUserEmail] = useState<string>('');
+  const [userToken, setUserToken] = useState<string>('');
 
   // Lightbox State
   const [lightboxImages, setLightboxImages] = useState<string[]>([]);
@@ -57,20 +58,35 @@ export default function ResourcesPage() {
     // Check stored user email & load payments status
     try {
       const savedEmail = localStorage.getItem('wildlife_user_email');
+      const savedToken = localStorage.getItem('wildlife_user_token');
       if (savedEmail) {
         setUserEmail(savedEmail);
-        fetchUserPayments(savedEmail);
+        if (savedToken) {
+          setUserToken(savedToken);
+        }
+        fetchUserPayments(savedEmail, savedToken || undefined);
       }
     } catch (e) {
       console.error('Error loading local storage:', e);
     }
   }, []);
 
-  async function fetchUserPayments(email: string) {
+  async function fetchUserPayments(email: string, tokenVal?: string) {
     if (!email) return;
     try {
       const allPayments = await getPayments();
-      const userPayments = allPayments.filter((p: any) => p.payerEmail?.toLowerCase() === email.toLowerCase());
+      const userPayments = allPayments.filter((p: any) => {
+        const matchesEmail = p.payerEmail?.toLowerCase() === email.toLowerCase();
+        if (!matchesEmail) return false;
+
+        // If payment is approved, user's input token must match the approved token
+        if (p.status === 'approved') {
+          return p.token && tokenVal && p.token.trim().toUpperCase() === tokenVal.trim().toUpperCase();
+        }
+
+        // Allow pending and rejected records to show status even without a token
+        return true;
+      });
       
       const map: Record<string, { status: string; receiptUrl?: string }> = {};
       userPayments.forEach((p: any) => {
@@ -199,7 +215,7 @@ export default function ResourcesPage() {
 
       setIsSubmittingPayment(false);
       setPaymentSubmittedSuccess(true);
-      fetchUserPayments(buyerEmailInput.trim().toLowerCase());
+      fetchUserPayments(buyerEmailInput.trim().toLowerCase(), userToken);
     } catch (err) {
       console.error('Error submitting payment receipt:', err);
       setIsSubmittingPayment(false);

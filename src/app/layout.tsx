@@ -8,8 +8,19 @@ const inter = { variable: '' };
 const playfair = { variable: '' };
 
 export const metadata: Metadata = {
-  title: "Wild Hausa | Bringing People Closer to Nature",
+  title: "Wild Hausa | Connecting you to the wild",
   description: "A cinematic digital safari through conservation, culture, wildlife, and outdoor adventure in Northern Nigeria.",
+  openGraph: {
+    title: "Wild Hausa | Connecting you to the wild",
+    description: "A cinematic digital safari through conservation, culture, wildlife, and outdoor adventure in Northern Nigeria.",
+    siteName: "Wild Hausa",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Wild Hausa | Connecting you to the wild",
+    description: "A cinematic digital safari through conservation, culture, wildlife, and outdoor adventure in Northern Nigeria.",
+  },
 };
 
 export default function RootLayout({

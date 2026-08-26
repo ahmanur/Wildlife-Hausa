@@ -486,12 +486,16 @@ export async function createPaymentRecord(data: Record<string, unknown>) {
 }
 
 /** Update payment status (approved / rejected) */
-export async function updatePaymentStatus(id: string, status: 'approved' | 'rejected', notes?: string) {
-  return updateDocument(COLLECTIONS.PAYMENTS, id, {
+export async function updatePaymentStatus(id: string, status: 'approved' | 'rejected', notes?: string, token?: string) {
+  const updateData: Record<string, any> = {
     status,
     notes: notes || '',
     updatedAt: new Date().toISOString()
-  });
+  };
+  if (token) {
+    updateData.token = token;
+  }
+  return updateDocument(COLLECTIONS.PAYMENTS, id, updateData);
 }
 
 /** Delete a payment record */

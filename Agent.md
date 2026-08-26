@@ -23,7 +23,7 @@ Every agent must prioritize **brand uniqueness, visual storytelling, and cultura
 ## Project Identity
 
 **Project Name:** Wild Hausa Web Platform  
-**Tagline:** Bringing People Closer to Nature  
+**Tagline:** Connecting you to the wild  
 **Brand Character:** Wild, grounded, cinematic, educational, adventurous, African, premium, conservation-led
 
 Wild Hausa operates across:
